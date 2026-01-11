@@ -315,12 +315,12 @@ body {
 
 .chart-wrapper-distrito {
     position: relative;
-    height: 450px;
-    min-height: 400px;
+    height: 380px;
+    min-height: 350px;
 }
 
 /* ===================================
-   GRÁFICOS
+   GRÁFICOS - AJUSTES DE TAMANHO
 =================================== */
 .charts-container {
     display: grid;
@@ -345,21 +345,22 @@ body {
     border-bottom: 2px solid var(--cinza-200);
 }
 
+/* ✅ AJUSTE DE ALTURA DOS GRÁFICOS */
 .chart-wrapper {
     position: relative;
-    height: 520px;
-    min-height: 450px;
+    height: 380px;
+    min-height: 350px;
 }
 
 .chart-wrapper-pizza {
     position: relative;
-    height: 450px;
-    min-height: 400px;
+    height: 380px;
+    min-height: 350px;
 }
 
 .chart-wrapper-status {
-    height: 460px;
-    min-height: 380px;
+    height: 380px;
+    min-height: 350px;
 }
 
 /* Responsividade para gráficos */
@@ -371,19 +372,19 @@ body {
 
 @media (max-width: 768px) {
     .chart-wrapper {
-        height: 400px;
+        height: 350px;
     }
 
     .chart-wrapper-pizza {
-        height: 380px;
+        height: 350px;
     }
 
     .chart-wrapper-status {
-        height: 380px;
+        height: 350px;
     }
 
     .chart-wrapper-distrito {
-        height: 350px;
+        height: 320px;
     }
 }
 
