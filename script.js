@@ -104,6 +104,14 @@ let chartPrestadores = null;
 let chartPizzaStatus = null;
 
 // ===================================
+// ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// ===================================
+function hasUsuarioPreenchido(item) {
+    const usuario = getColumnValue(item, ['Usuário', 'Usuario', 'USUÁRIO', 'USUARIO']);
+    return usuario && usuario !== '-' && usuario.trim() !== '';
+}
+
+// ===================================
 // FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
@@ -336,13 +344,9 @@ function showLoading(show) {
 }
 
 // ===================================
-// ✅ POPULAR FILTROS (MULTISELECT + MÊS)
+// ✅ POPULAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
 // ===================================
 function populateFilters() {
-    // ✅ FILTRO DE ORIGEM
-    const origens = [...new Set(allData.map(item => item['_origem']))].filter(Boolean).sort();
-    renderMultiSelect('msOrigemPanel', origens, applyFilters);
-
     const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
     renderMultiSelect('msStatusPanel', statusList, applyFilters);
 
@@ -355,7 +359,6 @@ function populateFilters() {
     const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
     renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
 
-    setMultiSelectText('msOrigemText', [], 'Todas');
     setMultiSelectText('msStatusText', [], 'Todos');
     setMultiSelectText('msUnidadeText', [], 'Todas');
     setMultiSelectText('msEspecialidadeText', [], 'Todas');
@@ -401,24 +404,21 @@ function populateMonthFilter() {
 }
 
 // ===================================
-// ✅ APLICAR FILTROS (MULTISELECT + MÊS)
+// ✅ APLICAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
 // ===================================
 function applyFilters() {
-    const origemSel = getSelectedFromPanel('msOrigemPanel');
     const statusSel = getSelectedFromPanel('msStatusPanel');
     const unidadeSel = getSelectedFromPanel('msUnidadePanel');
     const especialidadeSel = getSelectedFromPanel('msEspecialidadePanel');
     const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
     const mesSel = document.getElementById('filterMes').value;
 
-    setMultiSelectText('msOrigemText', origemSel, 'Todas');
     setMultiSelectText('msStatusText', statusSel, 'Todos');
     setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
     setMultiSelectText('msEspecialidadeText', especialidadeSel, 'Todas');
     setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
 
     filteredData = allData.filter(item => {
-        const okOrigem = (origemSel.length === 0) || origemSel.includes(item['_origem'] || '');
         const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
         const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
         const okEsp = (especialidadeSel.length === 0) || especialidadeSel.includes(item['Cbo Especialidade'] || '');
@@ -441,23 +441,22 @@ function applyFilters() {
             }
         }
 
-        return okOrigem && okStatus && okUnidade && okEsp && okPrest && okMes;
+        return okStatus && okUnidade && okEsp && okPrest && okMes;
     });
 
     updateDashboard();
 }
 
 // ===================================
-// ✅ LIMPAR FILTROS (MULTISELECT + MÊS)
+// ✅ LIMPAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
 // ===================================
 function clearFilters() {
-    ['msOrigemPanel','msStatusPanel','msUnidadePanel','msEspecialidadePanel','msPrestadorPanel'].forEach(panelId => {
+    ['msStatusPanel','msUnidadePanel','msEspecialidadePanel','msPrestadorPanel'].forEach(panelId => {
         const panel = document.getElementById(panelId);
         if (!panel) return;
         panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
     });
 
-    setMultiSelectText('msOrigemText', [], 'Todas');
     setMultiSelectText('msStatusText', [], 'Todos');
     setMultiSelectText('msUnidadeText', [], 'Todas');
     setMultiSelectText('msEspecialidadeText', [], 'Todas');
@@ -478,17 +477,21 @@ function updateDashboard() {
 }
 
 // ===================================
-// ATUALIZAR CARDS
+// ✅ ATUALIZAR CARDS - BASEADO EM "USUÁRIO" PREENCHIDO
 // ===================================
 function updateCards() {
-    const total = allData.length;
-    const filtrado = filteredData.length;
+    // ✅ CONTA APENAS REGISTROS COM COLUNA "USUÁRIO" PREENCHIDA
+    const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
+    const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
 
     const hoje = new Date();
     let pendencias15 = 0;
     let pendencias30 = 0;
 
     filteredData.forEach(item => {
+        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
+        if (!hasUsuarioPreenchido(item)) return;
+
         const dataInicio = parseDate(getColumnValue(item, [
             'Data Início da Pendência',
             'Data Inicio da Pendencia',
@@ -504,21 +507,24 @@ function updateCards() {
         }
     });
 
-    document.getElementById('totalPendencias').textContent = total;
+    document.getElementById('totalPendencias').textContent = totalComUsuario;
     document.getElementById('pendencias15').textContent = pendencias15;
     document.getElementById('pendencias30').textContent = pendencias30;
 
-    const percentFiltrados = total > 0 ? ((filtrado / total) * 100).toFixed(1) : '100.0';
+    const percentFiltrados = totalComUsuario > 0 ? ((filtradoComUsuario / totalComUsuario) * 100).toFixed(1) : '100.0';
     document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
 }
 
 // ===================================
-// ✅ ATUALIZAR GRÁFICOS
+// ✅ ATUALIZAR GRÁFICOS - BASEADO EM "USUÁRIO" PREENCHIDO
 // ===================================
 function updateCharts() {
-    // ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - AZUL ESCURO)
+    // ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (APENAS COM USUÁRIO PREENCHIDO)
     const distritosCount = {};
     filteredData.forEach(item => {
+        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
+        if (!hasUsuarioPreenchido(item)) return;
+
         const distrito = item['_distrito'] || 'Não informado';
         distritosCount[distrito] = (distritosCount[distrito] || 0) + 1;
     });
@@ -529,14 +535,14 @@ function updateCharts() {
 
     createDistritoChart('chartDistritos', distritosLabels, distritosValues);
 
-    // ✅ GRÁFICO DE ESPECIALIDADES (IGUAL AO DE DISTRITOS, MAS VERMELHO)
+    // ✅ GRÁFICO DE ESPECIALIDADES (APENAS COM USUÁRIO PREENCHIDO)
     const especialidadesCount = {};
     filteredData.forEach(item => {
-        const status = item['Status'];
-        if (status && status.trim() !== '') {
-            const especialidade = item['Cbo Especialidade'] || 'Não informado';
-            especialidadesCount[especialidade] = (especialidadesCount[especialidade] || 0) + 1;
-        }
+        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const especialidade = item['Cbo Especialidade'] || 'Não informado';
+        especialidadesCount[especialidade] = (especialidadesCount[especialidade] || 0) + 1;
     });
 
     const especialidadesLabels = Object.keys(especialidadesCount)
@@ -546,9 +552,12 @@ function updateCharts() {
 
     createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
 
-    // ✅ GRÁFICO DE STATUS (VERTICAL LARANJA)
+    // ✅ GRÁFICO DE STATUS (APENAS COM USUÁRIO PREENCHIDO)
     const statusCount = {};
     filteredData.forEach(item => {
+        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
+        if (!hasUsuarioPreenchido(item)) return;
+
         const status = item['Status'] || 'Não informado';
         statusCount[status] = (statusCount[status] || 0) + 1;
     });
@@ -559,14 +568,14 @@ function updateCharts() {
 
     createVerticalBarChart('chartStatus', statusLabels, statusValues, '#f97316');
 
-    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (VERTICAL COM VALORES BRANCOS)
+    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (APENAS COM USUÁRIO PREENCHIDO)
     const prestadoresCount = {};
     filteredData.forEach(item => {
-        const status = item['Status'];
-        if (status && status.trim() !== '') {
-            const prestador = item['Prestador'] || 'Não informado';
-            prestadoresCount[prestador] = (prestadoresCount[prestador] || 0) + 1;
-        }
+        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const prestador = item['Prestador'] || 'Não informado';
+        prestadoresCount[prestador] = (prestadoresCount[prestador] || 0) + 1;
     });
 
     const prestadoresLabels = Object.keys(prestadoresCount)
@@ -576,7 +585,7 @@ function updateCharts() {
 
     createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
-    // ✅ GRÁFICO DE PIZZA
+    // ✅ GRÁFICO DE PIZZA (APENAS COM USUÁRIO PREENCHIDO)
     createPieChart('chartPizzaStatus', statusLabels, statusValues);
 }
 
@@ -1072,15 +1081,18 @@ function refreshData() {
 }
 
 // ===================================
-// DOWNLOAD EXCEL
+// ✅ DOWNLOAD EXCEL - BASEADO EM "USUÁRIO" PREENCHIDO
 // ===================================
 function downloadExcel() {
-    if (filteredData.length === 0) {
-        alert('Não há dados para exportar.');
+    // ✅ EXPORTA APENAS REGISTROS COM USUÁRIO PREENCHIDO
+    const dataParaExportar = filteredData.filter(item => hasUsuarioPreenchido(item));
+
+    if (dataParaExportar.length === 0) {
+        alert('Não há dados com Usuário preenchido para exportar.');
         return;
     }
 
-    const exportData = filteredData.map(item => ({
+    const exportData = dataParaExportar.map(item => ({
         'Distrito': item['_distrito'] || '',
         'Origem': item['_origem'] || '',
         'Solicitação': getColumnValue(item, ['Solicitação', 'Solicitacao', 'N° Solicitação', 'Nº Solicitação'], ''),
@@ -1092,6 +1104,7 @@ function downloadExcel() {
         'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
         'Status': item['Status'] || '',
         'Prestador': item['Prestador'] || '',
+        'Usuário': getColumnValue(item, ['Usuário', 'Usuario'], ''),
         'Data Final Prazo 15d': getColumnValue(item, ['Data Final do Prazo (Pendência com 15 dias)','Data Final do Prazo (Pendencia com 15 dias)','Data Final Prazo 15d','Prazo 15 dias'], ''),
         'Data Envio Email 15d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 15 dias)','Data do envio do Email (Prazo: Pendencia com 15 dias)','Data Envio Email 15d','Email 15 dias'], ''),
         'Data Final Prazo 30d': getColumnValue(item, ['Data Final do Prazo (Pendência com 30 dias)','Data Final do Prazo (Pendencia com 30 dias)','Data Final Prazo 30d','Prazo 30 dias'], ''),
@@ -1104,7 +1117,7 @@ function downloadExcel() {
 
     ws['!cols'] = [
         { wch: 20 }, { wch: 30 }, { wch: 22 }, { wch: 18 }, { wch: 15 }, { wch: 15 },
-        { wch: 30 }, { wch: 30 }, { wch: 18 }, { wch: 20 }, { wch: 25 },
+        { wch: 30 }, { wch: 30 }, { wch: 18 }, { wch: 20 }, { wch: 25 }, { wch: 20 },
         { wch: 18 }, { wch: 20 }, { wch: 18 }, { wch: 20 }
     ];
 
