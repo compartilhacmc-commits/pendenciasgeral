@@ -529,7 +529,7 @@ function updateCharts() {
 
     createDistritoChart('chartDistritos', distritosLabels, distritosValues);
 
-    // ✅ Gráfico de Especialidades
+    // ✅ GRÁFICO DE ESPECIALIDADES (IGUAL AO DE DISTRITOS, MAS VERMELHO)
     const especialidadesCount = {};
     filteredData.forEach(item => {
         const status = item['Status'];
@@ -544,7 +544,7 @@ function updateCharts() {
         .slice(0, 50);
     const especialidadesValues = especialidadesLabels.map(label => especialidadesCount[label]);
 
-    createHorizontalBarChart('chartEspecialidades', especialidadesLabels, especialidadesValues, '#ef4444');
+    createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
 
     // ✅ GRÁFICO DE STATUS (VERTICAL LARANJA)
     const statusCount = {};
@@ -559,7 +559,7 @@ function updateCharts() {
 
     createVerticalBarChart('chartStatus', statusLabels, statusValues, '#f97316');
 
-    // ✅ NOVO: GRÁFICO PENDÊNCIAS POR PRESTADOR
+    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (VERTICAL COM VALORES BRANCOS)
     const prestadoresCount = {};
     filteredData.forEach(item => {
         const status = item['Status'];
@@ -574,7 +574,7 @@ function updateCharts() {
         .slice(0, 50);
     const prestadoresValues = prestadoresLabels.map(label => prestadoresCount[label]);
 
-    createHorizontalBarChart('chartPrestadores', prestadoresLabels, prestadoresValues, '#8b5cf6');
+    createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
     // ✅ GRÁFICO DE PIZZA
     createPieChart('chartPizzaStatus', statusLabels, statusValues);
@@ -625,7 +625,7 @@ function createDistritoChart(canvasId, labels, data) {
             scales: {
                 x: {
                     ticks: {
-                        font: { size: 14, weight: 'bold' },
+                        font: { size: 13, weight: 'bold' },
                         color: '#1e3a8a',
                         maxRotation: 45,
                         minRotation: 0
@@ -635,7 +635,7 @@ function createDistritoChart(canvasId, labels, data) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        font: { size: 13, weight: '600' },
+                        font: { size: 12, weight: '600' },
                         color: '#4a5568'
                     },
                     grid: { color: 'rgba(0,0,0,0.06)' }
@@ -651,7 +651,7 @@ function createDistritoChart(canvasId, labels, data) {
 
                 ctx.save();
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 18px Arial';
+                ctx.font = 'bold 16px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
@@ -668,83 +668,177 @@ function createDistritoChart(canvasId, labels, data) {
 }
 
 // ===================================
-// CRIAR GRÁFICO DE BARRAS HORIZONTAIS
+// ✅ CRIAR GRÁFICO ESPECIALIDADES (IGUAL AO DE DISTRITOS, MAS VERMELHO)
 // ===================================
-function createHorizontalBarChart(canvasId, labels, data, color) {
+function createEspecialidadeChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
 
-    if (canvasId === 'chartEspecialidades' && chartEspecialidades) chartEspecialidades.destroy();
-    if (canvasId === 'chartPrestadores' && chartPrestadores) chartPrestadores.destroy();
+    if (chartEspecialidades) chartEspecialidades.destroy();
 
-    const chart = new Chart(ctx, {
+    chartEspecialidades = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels,
             datasets: [{
-                label: 'Quantidade',
-                data: data,
-                backgroundColor: color,
+                label: 'Registros',
+                data,
+                backgroundColor: '#ef4444',
                 borderWidth: 0,
-                borderRadius: 4,
-                barPercentage: 0.75,
-                categoryPercentage: 0.85
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
             }]
         },
         options: {
-            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false },
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#ef4444'
+                    }
+                },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    padding: 12,
+                    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
                     cornerRadius: 8
                 }
             },
             scales: {
-                x: { display: false, grid: { display: false } },
-                y: {
+                x: {
                     ticks: {
-                        font: { size: 12, weight: '500' },
-                        color: '#4a5568',
-                        padding: 8
+                        font: { size: 13, weight: 'bold' },
+                        color: '#ef4444',
+                        maxRotation: 45,
+                        minRotation: 0
                     },
                     grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
                 }
-            },
-            layout: { padding: { right: 50 } }
+            }
         },
         plugins: [{
-            id: 'customLabels',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                chart.data.datasets.forEach(function(dataset, i) {
-                    const meta = chart.getDatasetMeta(i);
-                    if (!meta.hidden) {
-                        meta.data.forEach(function(element, index) {
-                            ctx.fillStyle = '#000000';
-                            ctx.font = 'bold 14px Arial';
-                            ctx.textAlign = 'left';
-                            ctx.textBaseline = 'middle';
+            id: 'especialidadeValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
 
-                            const dataString = dataset.data[index].toString();
-                            const xPos = element.x + 10;
-                            const yPos = element.y;
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
 
-                            ctx.fillText(dataString, xPos, yPos);
-                        });
-                    }
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
                 });
+
+                ctx.restore();
             }
         }]
     });
+}
 
-    if (canvasId === 'chartEspecialidades') chartEspecialidades = chart;
-    if (canvasId === 'chartPrestadores') chartPrestadores = chart;
+// ===================================
+// ✅ CRIAR GRÁFICO PRESTADOR (VERTICAL COM VALORES BRANCOS EM NEGRITO)
+// ===================================
+function createPrestadorChart(canvasId, labels, data) {
+    const ctx = document.getElementById(canvasId);
+
+    if (chartPrestadores) chartPrestadores.destroy();
+
+    chartPrestadores = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Pendências',
+                data,
+                backgroundColor: '#8b5cf6',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#8b5cf6'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(139, 92, 246, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#8b5cf6',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'prestadorValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
 }
 
 // ===================================
