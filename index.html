@@ -148,7 +148,7 @@
                     </div>
                 </div>
 
-                <!-- ✅ NOVO FILTRO POR MÊS -->
+                <!-- ✅ FILTRO POR MÊS -->
                 <div class="filter-box">
                     <label>Filtrar por Mês:</label>
                     <select class="filter-select" id="filterMes" onchange="applyFilters()">
@@ -162,15 +162,16 @@
             </button>
         </div>
 
+        <!-- ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) -->
+        <div class="chart-box chart-box-full">
+            <h3 class="chart-title">Pendências por Distrito</h3>
+            <div class="chart-wrapper-distrito">
+                <canvas id="chartDistritos"></canvas>
+            </div>
+        </div>
+
         <!-- Gráficos -->
         <div class="charts-container">
-            <div class="chart-box">
-                <h3 class="chart-title">Registros por Unidade de Saúde</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartUnidades"></canvas>
-                </div>
-            </div>
-
             <div class="chart-box">
                 <h3 class="chart-title">Registros por Especialidade</h3>
                 <div class="chart-wrapper">
@@ -185,58 +186,20 @@
                 </div>
             </div>
 
+            <!-- ✅ NOVO GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
+            <div class="chart-box">
+                <h3 class="chart-title">Pendências por Prestador</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartPrestadores"></canvas>
+                </div>
+            </div>
+
             <!-- GRÁFICO DE PIZZA -->
             <div class="chart-box">
                 <h3 class="chart-title">Distribuição Percentual por Status</h3>
                 <div class="chart-wrapper chart-wrapper-pizza">
                     <canvas id="chartPizzaStatus"></canvas>
                 </div>
-            </div>
-        </div>
-
-        <!-- Tabela de Dados -->
-        <div class="table-container">
-            <h3 class="section-title">
-                <i class="fas fa-table"></i> Todas as Demandas
-            </h3>
-
-            <!-- CAIXA DE PESQUISA -->
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Pesquisar na tabela..." onkeyup="searchTable()">
-            </div>
-
-            <div class="table-wrapper">
-                <table class="data-table" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Origem</th>
-                            <th>Solicitação</th>
-                            <th>Data Solicitação</th>
-                            <th>Nº Prontuário</th>
-                            <th>Telefone</th>
-                            <th>Unidade Solicitante</th>
-                            <th>CBO Especialidade</th>
-                            <th>Data Início Pendência</th>
-                            <th>Status</th>
-                            <th>Data Final Prazo (15d)</th>
-                            <th>Data Envio Email (15d)</th>
-                            <th>Data Final Prazo (30d)</th>
-                            <th>Data Envio Email (30d)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr>
-                            <td colspan="13" class="loading-message">
-                                <i class="fas fa-spinner fa-spin"></i> Carregando dados...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="table-footer" id="tableFooter">
-                Mostrando de 1 até 0 de 0 registros
             </div>
         </div>
 
@@ -264,4 +227,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
