@@ -302,7 +302,7 @@ body {
 }
 
 /* ===================================
-   ✅ GRÁFICO DESTAQUE - PENDÊNCIAS POR DISTRITO
+   ✅ GRÁFICO DESTAQUE - LINHA COMPLETA
 =================================== */
 .chart-box-full {
     background: var(--branco);
@@ -358,11 +358,6 @@ body {
     min-height: 350px;
 }
 
-.chart-wrapper-status {
-    height: 380px;
-    min-height: 350px;
-}
-
 /* Responsividade para gráficos */
 @media (max-width: 1200px) {
     .charts-container {
@@ -376,10 +371,6 @@ body {
     }
 
     .chart-wrapper-pizza {
-        height: 350px;
-    }
-
-    .chart-wrapper-status {
         height: 350px;
     }
 
