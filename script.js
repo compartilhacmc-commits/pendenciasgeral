@@ -589,7 +589,7 @@ function updateCharts() {
 
     createStatusChart('chartStatus', statusLabels, statusValues);
 
-    // ✅ GRÁFICO DE ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS)
+    // ✅ GRÁFICO DE ESPECIALIDADES (BARRAS HORIZONTAIS - ALTERADO)
     const especialidadesCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -820,7 +820,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (COM VALOR TOTAL FIXO FORA DA BARRA)
+// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (PORCENTAGEM DENTRO DA BARRA - BRANCO E NEGRITO)
 // ===================================
 function createResolutividadeDistritoChart() {
     const ctx = document.getElementById('chartResolutividadeDistrito');
@@ -936,18 +936,16 @@ function createResolutividadeDistritoChart() {
                 ctx.save();
 
                 meta.data.forEach((bar, i) => {
-                    const distrito = chart.data.labels[i];
-                    const stats = distritosStats[distrito];
-                    const totalValue = stats.total;
+                    const percentValue = dataset.data[i];
 
-                    // ✅ VALOR TOTAL FIXO FORA DA BARRA (PRETO E NEGRITO)
-                    ctx.fillStyle = '#000000';
+                    // ✅ VALOR PERCENTUAL FIXO DENTRO DA BARRA (BRANCO E NEGRITO)
+                    ctx.fillStyle = '#FFFFFF';
                     ctx.font = 'bold 16px Arial';
-                    ctx.textAlign = 'left';
+                    ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     
-                    const xPos = bar.x + bar.width + 10;
-                    ctx.fillText(`Total: ${totalValue}`, xPos, bar.y);
+                    const xPos = bar.x + (bar.width / 2);
+                    ctx.fillText(`${percentValue}%`, xPos, bar.y);
                 });
 
                 ctx.restore();
@@ -1044,7 +1042,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS)
+// ✅ CRIAR GRÁFICO ESPECIALIDADES (BARRAS HORIZONTAIS)
 // ===================================
 function createEspecialidadeChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1066,6 +1064,7 @@ function createEspecialidadeChart(canvasId, labels, data) {
             }]
         },
         options: {
+            indexAxis: 'y', // ✅ BARRAS HORIZONTAIS
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -1087,21 +1086,19 @@ function createEspecialidadeChart(canvasId, labels, data) {
             },
             scales: {
                 x: {
-                    ticks: {
-                        font: { size: 13, weight: 'bold' },
-                        color: '#ef4444',
-                        maxRotation: 45,
-                        minRotation: 0
-                    },
-                    grid: { display: false }
-                },
-                y: {
                     beginAtZero: true,
                     ticks: {
                         font: { size: 12, weight: '600' },
                         color: '#4a5568'
                     },
                     grid: { color: 'rgba(0,0,0,0.06)' }
+                },
+                y: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#ef4444'
+                    },
+                    grid: { display: false }
                 }
             }
         },
@@ -1120,8 +1117,8 @@ function createEspecialidadeChart(canvasId, labels, data) {
 
                 meta.data.forEach((bar, i) => {
                     const value = dataset.data[i];
-                    const yPos = bar.y + (bar.height / 2);
-                    ctx.fillText(String(value), bar.x, yPos);
+                    const xPos = bar.x + (bar.width / 2);
+                    ctx.fillText(String(value), xPos, bar.y);
                 });
 
                 ctx.restore();
