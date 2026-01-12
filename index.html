@@ -150,7 +150,7 @@
             </button>
         </div>
 
-        <!-- ✅ NOVO: GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) - AGORA PRIMEIRO -->
+        <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) - PRIMEIRO -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
             <div class="chart-wrapper-distrito">
@@ -158,7 +158,7 @@
             </div>
         </div>
 
-        <!-- ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) - AGORA SEGUNDO -->
+        <!-- ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) - SEGUNDO -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Registros Geral de Pendências por Distrito</h3>
             <div class="chart-wrapper-distrito">
@@ -166,7 +166,7 @@
             </div>
         </div>
 
-        <!-- ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR DISTRITO -->
+        <!-- ✅ GRÁFICO DE RESOLUTIVIDADE POR DISTRITO - TERCEIRO -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
             <div class="chart-wrapper-distrito">
@@ -174,9 +174,25 @@
             </div>
         </div>
 
-        <!-- Gráficos -->
+        <!-- ✅ GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS) - QUARTO -->
+        <div class="chart-box chart-box-full">
+            <h3 class="chart-title">Registros Geral de Pendências por Status</h3>
+            <div class="chart-wrapper-distrito">
+                <canvas id="chartStatus"></canvas>
+            </div>
+        </div>
+
+        <!-- ✅ GRÁFICO DE ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS) - QUINTO -->
+        <div class="chart-box chart-box-full">
+            <h3 class="chart-title">Registros Geral de Pendências por Especialidade</h3>
+            <div class="chart-wrapper-distrito">
+                <canvas id="chartEspecialidades"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráficos em Duas Colunas -->
         <div class="charts-container">
-            <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR - MOVIDO PARA ANTES DE ESPECIALIDADES -->
+            <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
             <div class="chart-box">
                 <h3 class="chart-title">Registros Geral de Pendências por Prestador</h3>
                 <div class="chart-wrapper">
@@ -184,7 +200,7 @@
                 </div>
             </div>
 
-            <!-- ✅ NOVO: GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO) -->
+            <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO) -->
             <div class="chart-box">
                 <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
                 <div class="chart-wrapper">
@@ -192,17 +208,11 @@
                 </div>
             </div>
 
+            <!-- ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR - ANTES DA PIZZA -->
             <div class="chart-box">
-                <h3 class="chart-title">Registros Geral de Pendências por Especialidade</h3>
+                <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
                 <div class="chart-wrapper">
-                    <canvas id="chartEspecialidades"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-box">
-                <h3 class="chart-title">Registros Geral de Pendências por Status</h3>
-                <div class="chart-wrapper chart-wrapper-status">
-                    <canvas id="chartStatus"></canvas>
+                    <canvas id="chartResolutividadePrestador"></canvas>
                 </div>
             </div>
 
@@ -211,14 +221,6 @@
                 <h3 class="chart-title">Distribuição Percentual por Status</h3>
                 <div class="chart-wrapper chart-wrapper-pizza">
                     <canvas id="chartPizzaStatus"></canvas>
-                </div>
-            </div>
-
-            <!-- ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR -->
-            <div class="chart-box">
-                <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartResolutividadePrestador"></canvas>
                 </div>
             </div>
         </div>
@@ -246,4 +248,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
