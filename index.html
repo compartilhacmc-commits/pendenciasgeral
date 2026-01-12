@@ -150,7 +150,7 @@
             </button>
         </div>
 
-        <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) - PRIMEIRO -->
+        <!-- ✅ 1º GRÁFICO: PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
             <div class="chart-wrapper-distrito">
@@ -158,7 +158,7 @@
             </div>
         </div>
 
-        <!-- ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) - SEGUNDO -->
+        <!-- ✅ 2º GRÁFICO: PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Registros Geral de Pendências por Distrito</h3>
             <div class="chart-wrapper-distrito">
@@ -166,15 +166,7 @@
             </div>
         </div>
 
-        <!-- ✅ GRÁFICO DE RESOLUTIVIDADE POR DISTRITO - TERCEIRO -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartResolutividadeDistrito"></canvas>
-            </div>
-        </div>
-
-        <!-- ✅ GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS) - QUARTO -->
+        <!-- ✅ 3º GRÁFICO: STATUS (BARRAS LARANJA VERTICAIS) -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Registros Geral de Pendências por Status</h3>
             <div class="chart-wrapper-distrito">
@@ -182,11 +174,11 @@
             </div>
         </div>
 
-        <!-- ✅ GRÁFICO DE ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS) - QUINTO -->
+        <!-- ✅ 4º GRÁFICO: RESOLUTIVIDADE POR DISTRITO (ABAIXO DO STATUS) -->
         <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Registros Geral de Pendências por Especialidade</h3>
+            <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
             <div class="chart-wrapper-distrito">
-                <canvas id="chartEspecialidades"></canvas>
+                <canvas id="chartResolutividadeDistrito"></canvas>
             </div>
         </div>
 
@@ -222,6 +214,14 @@
                 <div class="chart-wrapper chart-wrapper-pizza">
                     <canvas id="chartPizzaStatus"></canvas>
                 </div>
+            </div>
+        </div>
+
+        <!-- ✅ 5º GRÁFICO: ESPECIALIDADES (BARRAS HORIZONTAIS - POR ÚLTIMO) -->
+        <div class="chart-box chart-box-full">
+            <h3 class="chart-title">Registros Geral de Pendências por Especialidade</h3>
+            <div class="chart-wrapper-distrito">
+                <canvas id="chartEspecialidades"></canvas>
             </div>
         </div>
 
