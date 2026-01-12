@@ -1583,7 +1583,7 @@ function refreshData() {
 }
 
 // ===================================
-// ✅ DOWNLOAD EXCEL - BASEADO EM "USUÁRIO" PREENCHIDO
+// ✅ DOWNLOAD EXCEL - MODIFICADO PARA PRIORIZAR AS 3 COLUNAS SOLICITADAS
 // ===================================
 function downloadExcel() {
     // ✅ EXPORTA APENAS REGISTROS COM USUÁRIO PREENCHIDO
@@ -1594,13 +1594,14 @@ function downloadExcel() {
         return;
     }
 
+    // ✅ ESTRUTURA COM AS 3 COLUNAS PRIORITÁRIAS NO INÍCIO
     const exportData = dataParaExportar.map(item => ({
+        'Nº Prontuário': getColumnValue(item, ['Nº Prontuário', 'N° Prontuário', 'Numero Prontuário', 'Prontuário', 'Prontuario'], ''),
+        'Nº Solicitação': getColumnValue(item, ['Solicitação', 'Solicitacao', 'N° Solicitação', 'Nº Solicitação'], ''),
+        'Telefone': item['Telefone'] || '',
         'Distrito': item['_distrito'] || '',
         'Origem': item['_origem'] || '',
-        'Solicitação': getColumnValue(item, ['Solicitação', 'Solicitacao', 'N° Solicitação', 'Nº Solicitação'], ''),
         'Data Solicitação': getColumnValue(item, ['Data da Solicitação', 'Data Solicitação', 'Data da Solicitacao', 'Data Solicitacao'], ''),
-        'Nº Prontuário': getColumnValue(item, ['Nº Prontuário', 'N° Prontuário', 'Numero Prontuário', 'Prontuário', 'Prontuario'], ''),
-        'Telefone': item['Telefone'] || '',
         'Unidade Solicitante': item['Unidade Solicitante'] || '',
         'CBO Especialidade': item['Cbo Especialidade'] || '',
         'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
@@ -1617,10 +1618,24 @@ function downloadExcel() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Dados Completos');
 
+    // ✅ AJUSTAR LARGURA DAS COLUNAS (PRIORIZANDO AS 3 PRIMEIRAS)
     ws['!cols'] = [
-        { wch: 20 }, { wch: 30 }, { wch: 22 }, { wch: 18 }, { wch: 15 }, { wch: 15 },
-        { wch: 30 }, { wch: 30 }, { wch: 18 }, { wch: 20 }, { wch: 25 }, { wch: 20 },
-        { wch: 18 }, { wch: 20 }, { wch: 18 }, { wch: 20 }
+        { wch: 18 },  // Nº Prontuário
+        { wch: 18 },  // Nº Solicitação
+        { wch: 16 },  // Telefone
+        { wch: 20 },  // Distrito
+        { wch: 30 },  // Origem
+        { wch: 18 },  // Data Solicitação
+        { wch: 30 },  // Unidade Solicitante
+        { wch: 30 },  // CBO Especialidade
+        { wch: 18 },  // Data Início Pendência
+        { wch: 20 },  // Status
+        { wch: 25 },  // Prestador
+        { wch: 20 },  // Usuário
+        { wch: 18 },  // Data Final Prazo 15d
+        { wch: 20 },  // Data Envio Email 15d
+        { wch: 18 },  // Data Final Prazo 30d
+        { wch: 20 }   // Data Envio Email 30d
     ];
 
     const hoje = new Date().toISOString().split('T')[0];
