@@ -6,89 +6,105 @@ const SHEETS = [
     {
         name: 'PENDÊNCIAS ELDORADO',
         url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'ELDORADO'
+        distrito: 'ELDORADO',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS ELDORADO',
         url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/gviz/tq?tqx=out:csv&gid=2142054254',
-        distrito: 'ELDORADO'
+        distrito: 'ELDORADO',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO INDUSTRIAL
     {
         name: 'PENDÊNCIAS INDUSTRIAL',
         url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'INDUSTRIAL'
+        distrito: 'INDUSTRIAL',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS INDUSTRIAL',
         url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/gviz/tq?tqx=out:csv&gid=1086207100',
-        distrito: 'INDUSTRIAL'
+        distrito: 'INDUSTRIAL',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO NACIONAL
     {
         name: 'PENDÊNCIAS NACIONAL',
         url: 'https://docs.google.com/spreadsheets/d/1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'NACIONAL'
+        distrito: 'NACIONAL',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS NACIONAL',
         url: 'https://docs.google.com/spreadsheets/d/1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA/gviz/tq?tqx=out:csv&gid=150768142',
-        distrito: 'NACIONAL'
+        distrito: 'NACIONAL',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO PETROLÂNDIA
     {
         name: 'PENDÊNCIAS PETROLÂNDIA',
         url: 'https://docs.google.com/spreadsheets/d/1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'PETROLÂNDIA'
+        distrito: 'PETROLÂNDIA',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS PETROLÂNDIA',
         url: 'https://docs.google.com/spreadsheets/d/1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s/gviz/tq?tqx=out:csv&gid=1067061018',
-        distrito: 'PETROLÂNDIA'
+        distrito: 'PETROLÂNDIA',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO RESSACA
     {
         name: 'PENDÊNCIAS RESSACA',
         url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'RESSACA'
+        distrito: 'RESSACA',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS RESSACA',
         url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'RESSACA'
+        distrito: 'RESSACA',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO RIACHO
     {
         name: 'PENDÊNCIAS RIACHO',
         url: 'https://docs.google.com/spreadsheets/d/1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'RIACHO'
+        distrito: 'RIACHO',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS RIACHO',
         url: 'https://docs.google.com/spreadsheets/d/1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc/gviz/tq?tqx=out:csv&gid=1996983614',
-        distrito: 'RIACHO'
+        distrito: 'RIACHO',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO SEDE
     {
         name: 'PENDÊNCIAS SEDE',
         url: 'https://docs.google.com/spreadsheets/d/1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'SEDE'
+        distrito: 'SEDE',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS SEDE',
         url: 'https://docs.google.com/spreadsheets/d/1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc/gviz/tq?tqx=out:csv&gid=626867102',
-        distrito: 'SEDE'
+        distrito: 'SEDE',
+        tipo: 'RESOLVIDO'
     },
     // DISTRITO VARGEM DAS FLORES
     {
         name: 'PENDÊNCIAS VARGEM DAS FLORES',
         url: 'https://docs.google.com/spreadsheets/d/1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk/gviz/tq?tqx=out:csv&gid=278071504',
-        distrito: 'VARGEM DAS FLORES'
+        distrito: 'VARGEM DAS FLORES',
+        tipo: 'PENDENTE'
     },
     {
         name: 'RESOLVIDOS VARGEM DAS FLORES',
         url: 'https://docs.google.com/spreadsheets/d/1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk/gviz/tq?tqx=out:csv&gid=451254610',
-        distrito: 'VARGEM DAS FLORES'
+        distrito: 'VARGEM DAS FLORES',
+        tipo: 'RESOLVIDO'
     }
 ];
 
@@ -98,10 +114,14 @@ const SHEETS = [
 let allData = [];
 let filteredData = [];
 let chartDistritos = null;
+let chartDistritosPendentes = null;
 let chartEspecialidades = null;
 let chartStatus = null;
 let chartPrestadores = null;
+let chartPrestadoresPendentes = null;
 let chartPizzaStatus = null;
+let chartResolutividadeDistrito = null;
+let chartResolutividadePrestador = null;
 
 // ===================================
 // ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
@@ -226,7 +246,7 @@ async function loadData() {
                 .then(csvText => {
                     if (!csvText) return null;
                     console.log(`Dados CSV da aba "${sheet.name}" recebidos`);
-                    return { name: sheet.name, csv: csvText, distrito: sheet.distrito };
+                    return { name: sheet.name, csv: csvText, distrito: sheet.distrito, tipo: sheet.tipo };
                 })
                 .catch(error => {
                     console.warn(`Erro ao carregar "${sheet.name}":`, error);
@@ -255,7 +275,8 @@ async function loadData() {
                 .map(row => {
                     const obj = { 
                         _origem: result.name,
-                        _distrito: result.distrito
+                        _distrito: result.distrito,
+                        _tipo: result.tipo
                     };
                     headers.forEach((header, index) => {
                         obj[header.trim()] = (row[index] || '').trim();
@@ -519,10 +540,9 @@ function updateCards() {
 // ✅ ATUALIZAR GRÁFICOS - BASEADO EM "USUÁRIO" PREENCHIDO
 // ===================================
 function updateCharts() {
-    // ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (APENAS COM USUÁRIO PREENCHIDO)
+    // ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (TODOS OS REGISTROS)
     const distritosCount = {};
     filteredData.forEach(item => {
-        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
         if (!hasUsuarioPreenchido(item)) return;
 
         const distrito = item['_distrito'] || 'Não informado';
@@ -535,10 +555,28 @@ function updateCharts() {
 
     createDistritoChart('chartDistritos', distritosLabels, distritosValues);
 
-    // ✅ GRÁFICO DE ESPECIALIDADES (APENAS COM USUÁRIO PREENCHIDO)
+    // ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS)
+    const distritosCountPendentes = {};
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+        if (item['_tipo'] !== 'PENDENTE') return;
+
+        const distrito = item['_distrito'] || 'Não informado';
+        distritosCountPendentes[distrito] = (distritosCountPendentes[distrito] || 0) + 1;
+    });
+
+    const distritosLabelsPendentes = Object.keys(distritosCountPendentes)
+        .sort((a, b) => distritosCountPendentes[b] - distritosCountPendentes[a]);
+    const distritosValuesPendentes = distritosLabelsPendentes.map(label => distritosCountPendentes[label]);
+
+    createDistritoPendenteChart('chartDistritosPendentes', distritosLabelsPendentes, distritosValuesPendentes);
+
+    // ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
+    createResolutividadeDistritoChart();
+
+    // ✅ GRÁFICO DE ESPECIALIDADES (TODOS OS REGISTROS)
     const especialidadesCount = {};
     filteredData.forEach(item => {
-        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
         if (!hasUsuarioPreenchido(item)) return;
 
         const especialidade = item['Cbo Especialidade'] || 'Não informado';
@@ -552,10 +590,9 @@ function updateCharts() {
 
     createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
 
-    // ✅ GRÁFICO DE STATUS (APENAS COM USUÁRIO PREENCHIDO)
+    // ✅ GRÁFICO DE STATUS (TODOS OS REGISTROS)
     const statusCount = {};
     filteredData.forEach(item => {
-        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
         if (!hasUsuarioPreenchido(item)) return;
 
         const status = item['Status'] || 'Não informado';
@@ -568,10 +605,9 @@ function updateCharts() {
 
     createVerticalBarChart('chartStatus', statusLabels, statusValues, '#f97316');
 
-    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (APENAS COM USUÁRIO PREENCHIDO)
+    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (TODOS OS REGISTROS)
     const prestadoresCount = {};
     filteredData.forEach(item => {
-        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
         if (!hasUsuarioPreenchido(item)) return;
 
         const prestador = item['Prestador'] || 'Não informado';
@@ -585,12 +621,32 @@ function updateCharts() {
 
     createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
-    // ✅ GRÁFICO DE PIZZA (APENAS COM USUÁRIO PREENCHIDO)
+    // ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO)
+    const prestadoresCountPendentes = {};
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+        if (item['_tipo'] !== 'PENDENTE') return;
+
+        const prestador = item['Prestador'] || 'Não informado';
+        prestadoresCountPendentes[prestador] = (prestadoresCountPendentes[prestador] || 0) + 1;
+    });
+
+    const prestadoresLabelsPendentes = Object.keys(prestadoresCountPendentes)
+        .sort((a, b) => prestadoresCountPendentes[b] - prestadoresCountPendentes[a])
+        .slice(0, 50);
+    const prestadoresValuesPendentes = prestadoresLabelsPendentes.map(label => prestadoresCountPendentes[label]);
+
+    createPrestadorPendenteChart('chartPrestadoresPendentes', prestadoresLabelsPendentes, prestadoresValuesPendentes);
+
+    // ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+    createResolutividadePrestadorChart();
+
+    // ✅ GRÁFICO DE PIZZA (TODOS OS REGISTROS)
     createPieChart('chartPizzaStatus', statusLabels, statusValues);
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO PENDÊNCIAS POR DISTRITO (DESTAQUE - AZUL ESCURO, VERTICAL)
+// ✅ CRIAR GRÁFICO PENDÊNCIAS POR DISTRITO (AZUL ESCURO, VERTICAL)
 // ===================================
 function createDistritoChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -677,7 +733,226 @@ function createDistritoChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO ESPECIALIDADES (IGUAL AO DE DISTRITOS, MAS VERMELHO)
+// ✅ CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS)
+// ===================================
+function createDistritoPendenteChart(canvasId, labels, data) {
+    const ctx = document.getElementById(canvasId);
+
+    if (chartDistritosPendentes) chartDistritosPendentes.destroy();
+
+    chartDistritosPendentes = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Pendências Não Resolvidas',
+                data,
+                backgroundColor: '#dc2626',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#dc2626'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(220, 38, 38, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#dc2626',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'distritoPendenteValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+// ===================================
+// ✅ NOVO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
+// ===================================
+function createResolutividadeDistritoChart() {
+    const ctx = document.getElementById('chartResolutividadeDistrito');
+
+    // Calcular resolutividade por distrito
+    const distritosStats = {};
+
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const distrito = item['_distrito'] || 'Não informado';
+        
+        if (!distritosStats[distrito]) {
+            distritosStats[distrito] = { total: 0, resolvidos: 0 };
+        }
+
+        distritosStats[distrito].total++;
+        
+        if (item['_tipo'] === 'RESOLVIDO') {
+            distritosStats[distrito].resolvidos++;
+        }
+    });
+
+    // Calcular porcentagens
+    const labels = Object.keys(distritosStats).sort((a, b) => {
+        const percA = (distritosStats[a].resolvidos / distritosStats[a].total) * 100;
+        const percB = (distritosStats[b].resolvidos / distritosStats[b].total) * 100;
+        return percB - percA;
+    });
+
+    const percentuais = labels.map(distrito => {
+        const stats = distritosStats[distrito];
+        return stats.total > 0 ? ((stats.resolvidos / stats.total) * 100).toFixed(1) : 0;
+    });
+
+    if (chartResolutividadeDistrito) chartResolutividadeDistrito.destroy();
+
+    chartResolutividadeDistrito = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Taxa de Resolutividade (%)',
+                data: percentuais,
+                backgroundColor: '#059669',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#059669'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(5, 150, 105, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const distrito = context.label;
+                            const stats = distritosStats[distrito];
+                            return [
+                                `Resolutividade: ${context.parsed.x}%`,
+                                `Resolvidos: ${stats.resolvidos}`,
+                                `Total: ${stats.total}`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568',
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                },
+                y: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#059669'
+                    },
+                    grid: { display: false }
+                }
+            }
+        },
+        plugins: [{
+            id: 'resolutividadeDistritoLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const xPos = bar.x + (bar.width / 2);
+                    ctx.fillText(value + '%', xPos, bar.y);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+// ===================================
+// ✅ CRIAR GRÁFICO ESPECIALIDADES (VERMELHO)
 // ===================================
 function createEspecialidadeChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -764,7 +1039,7 @@ function createEspecialidadeChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO PRESTADOR (VERTICAL COM VALORES BRANCOS EM NEGRITO)
+// ✅ CRIAR GRÁFICO PRESTADOR (ROXO - TODOS OS REGISTROS)
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -842,6 +1117,228 @@ function createPrestadorChart(canvasId, labels, data) {
                     const value = dataset.data[i];
                     const yPos = bar.y + (bar.height / 2);
                     ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+// ===================================
+// ✅ CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO)
+// ===================================
+function createPrestadorPendenteChart(canvasId, labels, data) {
+    const ctx = document.getElementById(canvasId);
+
+    if (chartPrestadoresPendentes) chartPrestadoresPendentes.destroy();
+
+    chartPrestadoresPendentes = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Pendências Não Resolvidas',
+                data,
+                backgroundColor: '#065f46',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#065f46'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(6, 95, 70, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#065f46',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'prestadorPendenteValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+// ===================================
+// ✅ NOVO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+// ===================================
+function createResolutividadePrestadorChart() {
+    const ctx = document.getElementById('chartResolutividadePrestador');
+
+    // Calcular resolutividade por prestador
+    const prestadoresStats = {};
+
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const prestador = item['Prestador'] || 'Não informado';
+        
+        if (!prestadoresStats[prestador]) {
+            prestadoresStats[prestador] = { total: 0, resolvidos: 0 };
+        }
+
+        prestadoresStats[prestador].total++;
+        
+        if (item['_tipo'] === 'RESOLVIDO') {
+            prestadoresStats[prestador].resolvidos++;
+        }
+    });
+
+    // Calcular porcentagens e ordenar
+    const labels = Object.keys(prestadoresStats)
+        .sort((a, b) => {
+            const percA = (prestadoresStats[a].resolvidos / prestadoresStats[a].total) * 100;
+            const percB = (prestadoresStats[b].resolvidos / prestadoresStats[b].total) * 100;
+            return percB - percA;
+        })
+        .slice(0, 15); // Top 15 prestadores
+
+    const percentuais = labels.map(prestador => {
+        const stats = prestadoresStats[prestador];
+        return stats.total > 0 ? ((stats.resolvidos / stats.total) * 100).toFixed(1) : 0;
+    });
+
+    if (chartResolutividadePrestador) chartResolutividadePrestador.destroy();
+
+    chartResolutividadePrestador = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Taxa de Resolutividade (%)',
+                data: percentuais,
+                backgroundColor: '#0284c7',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#0284c7'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(2, 132, 199, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const prestador = context.label;
+                            const stats = prestadoresStats[prestador];
+                            return [
+                                `Resolutividade: ${context.parsed.y}%`,
+                                `Resolvidos: ${stats.resolvidos}`,
+                                `Total: ${stats.total}`
+                            ];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 12, weight: 'bold' },
+                        color: '#0284c7',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568',
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'resolutividadePrestadorLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(value + '%', bar.x, yPos);
                 });
 
                 ctx.restore();
