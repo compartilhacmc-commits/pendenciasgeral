@@ -571,10 +571,25 @@ function updateCharts() {
 
     createDistritoPendenteChart('chartDistritosPendentes', distritosLabelsPendentes, distritosValuesPendentes);
 
-    // ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
+    // ✅ GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
     createResolutividadeDistritoChart();
 
-    // ✅ GRÁFICO DE ESPECIALIDADES (TODOS OS REGISTROS)
+    // ✅ GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS)
+    const statusCount = {};
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const status = item['Status'] || 'Não informado';
+        statusCount[status] = (statusCount[status] || 0) + 1;
+    });
+
+    const statusLabels = Object.keys(statusCount)
+        .sort((a, b) => statusCount[b] - statusCount[a]);
+    const statusValues = statusLabels.map(label => statusCount[label]);
+
+    createStatusChart('chartStatus', statusLabels, statusValues);
+
+    // ✅ GRÁFICO DE ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS)
     const especialidadesCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -589,21 +604,6 @@ function updateCharts() {
     const especialidadesValues = especialidadesLabels.map(label => especialidadesCount[label]);
 
     createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
-
-    // ✅ GRÁFICO DE STATUS (TODOS OS REGISTROS)
-    const statusCount = {};
-    filteredData.forEach(item => {
-        if (!hasUsuarioPreenchido(item)) return;
-
-        const status = item['Status'] || 'Não informado';
-        statusCount[status] = (statusCount[status] || 0) + 1;
-    });
-
-    const statusLabels = Object.keys(statusCount)
-        .sort((a, b) => statusCount[b] - statusCount[a]);
-    const statusValues = statusLabels.map(label => statusCount[label]);
-
-    createVerticalBarChart('chartStatus', statusLabels, statusValues, '#f97316');
 
     // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (TODOS OS REGISTROS)
     const prestadoresCount = {};
@@ -638,7 +638,7 @@ function updateCharts() {
 
     createPrestadorPendenteChart('chartPrestadoresPendentes', prestadoresLabelsPendentes, prestadoresValuesPendentes);
 
-    // ✅ NOVO: GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+    // ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
     createResolutividadePrestadorChart();
 
     // ✅ GRÁFICO DE PIZZA (TODOS OS REGISTROS)
@@ -820,7 +820,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ NOVO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
+// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (COM VALOR TOTAL FIXO FORA DA BARRA)
 // ===================================
 function createResolutividadeDistritoChart() {
     const ctx = document.getElementById('chartResolutividadeDistrito');
@@ -934,15 +934,20 @@ function createResolutividadeDistritoChart() {
                 const dataset = chart.data.datasets[0];
 
                 ctx.save();
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
 
                 meta.data.forEach((bar, i) => {
-                    const value = dataset.data[i];
-                    const xPos = bar.x + (bar.width / 2);
-                    ctx.fillText(value + '%', xPos, bar.y);
+                    const distrito = chart.data.labels[i];
+                    const stats = distritosStats[distrito];
+                    const totalValue = stats.total;
+
+                    // ✅ VALOR TOTAL FIXO FORA DA BARRA (PRETO E NEGRITO)
+                    ctx.fillStyle = '#000000';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    
+                    const xPos = bar.x + bar.width + 10;
+                    ctx.fillText(`Total: ${totalValue}`, xPos, bar.y);
                 });
 
                 ctx.restore();
@@ -952,7 +957,94 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO ESPECIALIDADES (VERMELHO)
+// ✅ CRIAR GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS)
+// ===================================
+function createStatusChart(canvasId, labels, data) {
+    const ctx = document.getElementById(canvasId);
+
+    if (chartStatus) chartStatus.destroy();
+
+    chartStatus = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Registros',
+                data,
+                backgroundColor: '#f97316',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#f97316'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(249, 115, 22, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#f97316',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'statusValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+// ===================================
+// ✅ CRIAR GRÁFICO ESPECIALIDADES (BARRAS VERMELHAS VERTICAIS)
 // ===================================
 function createEspecialidadeChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1213,7 +1305,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ NOVO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
 // ===================================
 function createResolutividadePrestadorChart() {
     const ctx = document.getElementById('chartResolutividadePrestador');
@@ -1345,90 +1437,6 @@ function createResolutividadePrestadorChart() {
             }
         }]
     });
-}
-
-// ===================================
-// ✅ CRIAR GRÁFICO DE BARRAS VERTICAIS (STATUS)
-// ===================================
-function createVerticalBarChart(canvasId, labels, data, color) {
-    const ctx = document.getElementById(canvasId);
-
-    if (chartStatus) chartStatus.destroy();
-
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Quantidade',
-                data,
-                backgroundColor: color,
-                borderWidth: 0,
-                borderRadius: 6,
-                barPercentage: 0.55,
-                categoryPercentage: 0.70,
-                maxBarThickness: 28
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    enabled: true,
-                    backgroundColor: 'rgba(0,0,0,0.85)',
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    padding: 12,
-                    cornerRadius: 8
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        font: { size: 12, weight: '600' },
-                        color: '#4a5568',
-                        maxRotation: 45,
-                        minRotation: 0
-                    },
-                    grid: { display: false }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        font: { size: 12, weight: '600' },
-                        color: '#4a5568'
-                    },
-                    grid: { color: 'rgba(0,0,0,0.06)' }
-                }
-            }
-        },
-        plugins: [{
-            id: 'statusValueLabelsInsideBar',
-            afterDatasetsDraw(chart) {
-                const { ctx } = chart;
-                const meta = chart.getDatasetMeta(0);
-                const dataset = chart.data.datasets[0];
-
-                ctx.save();
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                meta.data.forEach((bar, i) => {
-                    const value = dataset.data[i];
-                    const yPos = bar.y + (bar.height / 2);
-                    ctx.fillText(String(value), bar.x, yPos);
-                });
-
-                ctx.restore();
-            }
-        }]
-    });
-
-    chartStatus = chart;
 }
 
 // ===================================
