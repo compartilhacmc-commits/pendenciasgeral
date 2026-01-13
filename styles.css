@@ -166,6 +166,136 @@ body {
 }
 
 /* ===================================
+   ✅ SEÇÃO PAINÉIS DISTRITO
+=================================== */
+.paineis-distrito-section {
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--sombra-md);
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.paineis-distrito-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.painel-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.painel-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: currentColor;
+}
+
+.painel-card:hover {
+    transform: translateY(-4px) translateX(4px);
+    box-shadow: var(--sombra-lg);
+}
+
+.painel-card:hover .painel-arrow {
+    transform: translateX(5px);
+}
+
+/* Cores diferentes para cada distrito */
+.painel-eldorado {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
+.painel-sede {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
+}
+
+.painel-vargem {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.painel-nacional {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    color: #831843;
+}
+
+.painel-ressaca {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    color: #3730a3;
+}
+
+.painel-industrial {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+    color: #9a3412;
+}
+
+.painel-petrolandia {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    color: #6b21a8;
+}
+
+.painel-riacho {
+    background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+    color: #155e75;
+}
+
+.painel-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: currentColor;
+    color: var(--branco);
+    border-radius: 10px;
+    font-size: 1.5rem;
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.painel-info {
+    flex: 1;
+}
+
+.painel-info h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: inherit;
+}
+
+.painel-info p {
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.8;
+    color: inherit;
+}
+
+.painel-arrow {
+    font-size: 1.25rem;
+    color: inherit;
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+}
+
+/* ===================================
    CARDS DE MÉTRICAS
 =================================== */
 .cards-grid {
@@ -376,6 +506,10 @@ body {
 
     .chart-wrapper-distrito {
         height: 320px;
+    }
+    
+    .paineis-distrito-grid {
+        grid-template-columns: 1fr;
     }
 }
 
