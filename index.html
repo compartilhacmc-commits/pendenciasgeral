@@ -286,15 +286,34 @@
             </div>
         </div>
 
-        <!-- ✅ 4º GRÁFICO: RESOLUTIVIDADE POR DISTRITO (ABAIXO DO STATUS) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartResolutividadeDistrito"></canvas>
+        <!-- ✅✅✅ GRÁFICOS DE RESOLUTIVIDADE LADO A LADO (DISTRITO E PRESTADOR) -->
+        <div class="charts-container-resolutividade">
+            <!-- RESOLUTIVIDADE POR DISTRITO -->
+            <div class="chart-box">
+                <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartResolutividadeDistrito"></canvas>
+                </div>
+            </div>
+
+            <!-- RESOLUTIVIDADE POR PRESTADOR -->
+            <div class="chart-box">
+                <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartResolutividadePrestador"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Gráficos em Duas Colunas -->
+        <!-- ✅✅✅ GRÁFICO DE PIZZA (LOGO ABAIXO DOS GRÁFICOS DE RESOLUTIVIDADE) -->
+        <div class="chart-box chart-box-full">
+            <h3 class="chart-title">Distribuição Percentual por Status</h3>
+            <div class="chart-wrapper-pizza">
+                <canvas id="chartPizzaStatus"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráficos em Duas Colunas (GRÁFICOS DE PRESTADOR) -->
         <div class="charts-container">
             <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
             <div class="chart-box">
@@ -309,22 +328,6 @@
                 <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
                 <div class="chart-wrapper">
                     <canvas id="chartPrestadoresPendentes"></canvas>
-                </div>
-            </div>
-
-            <!-- ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR - ANTES DA PIZZA -->
-            <div class="chart-box">
-                <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartResolutividadePrestador"></canvas>
-                </div>
-            </div>
-
-            <!-- GRÁFICO DE PIZZA -->
-            <div class="chart-box">
-                <h3 class="chart-title">Distribuição Percentual por Status</h3>
-                <div class="chart-wrapper chart-wrapper-pizza">
-                    <canvas id="chartPizzaStatus"></canvas>
                 </div>
             </div>
         </div>
