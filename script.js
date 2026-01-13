@@ -123,6 +123,9 @@ let chartPizzaStatus = null;
 let chartResolutividadeDistrito = null;
 let chartResolutividadePrestador = null;
 
+// ✅ NOVO: gráfico total por mês
+let chartPendenciasPorMes = null;
+
 // ===================================
 // ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
 // ===================================
@@ -606,7 +609,7 @@ function updateCharts() {
 
     createStatusChart('chartStatus', statusLabels, statusValues);
 
-    // ✅ GRÁFICO DE ESPECIALIDADES (BARRAS HORIZONTAIS - ALTERADO)
+    // ✅ GRÁFICO DE ESPECIALIDADES (BARRAS HORIZONTAIS)
     const especialidadesCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -622,7 +625,7 @@ function updateCharts() {
 
     createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
 
-    // ✅✅✅ CORRIGIDO: GRÁFICO PENDÊNCIAS POR PRESTADOR (USANDO COLUNA "PRESTADOR")
+    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR
     const prestadoresCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -638,7 +641,7 @@ function updateCharts() {
 
     createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
-    // ✅✅✅ CORRIGIDO: GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (USANDO COLUNA "PRESTADOR")
+    // ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR
     const prestadoresCountPendentes = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -655,11 +658,129 @@ function updateCharts() {
 
     createPrestadorPendenteChart('chartPrestadoresPendentes', prestadoresLabelsPendentes, prestadoresValuesPendentes);
 
-    // ✅✅✅ CORRIGIDO: GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR (USANDO COLUNA "PRESTADOR")
+    // ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
     createResolutividadePrestadorChart();
 
     // ✅ GRÁFICO DE PIZZA (TODOS OS REGISTROS)
     createPieChart('chartPizzaStatus', statusLabels, statusValues);
+
+    // ✅✅✅ NOVO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS)
+    const mesCount = {};
+    filteredData.forEach(item => {
+        if (!hasUsuarioPreenchido(item)) return;
+
+        const dataInicio = parseDate(getColumnValue(item, [
+            'Data Início da Pendência',
+            'Data Inicio da Pendencia',
+            'Data Início Pendência',
+            'Data Inicio Pendencia'
+        ]));
+
+        if (!dataInicio) return;
+
+        const y = dataInicio.getFullYear();
+        const m = String(dataInicio.getMonth() + 1).padStart(2, '0');
+        const key = `${y}-${m}`; // ordenável
+
+        mesCount[key] = (mesCount[key] || 0) + 1;
+    });
+
+    const mesKeys = Object.keys(mesCount).sort(); // crescente no tempo
+    const mesLabels = mesKeys.map(key => {
+        const [ano, mes] = key.split('-');
+        const nomeMes = new Date(Number(ano), Number(mes) - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        return nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+    });
+    const mesValues = mesKeys.map(k => mesCount[k]);
+
+    createPendenciasPorMesChart('chartPendenciasPorMes', mesLabels, mesValues);
+}
+
+// ===================================
+// ✅ NOVO GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS, MESMO ESTILO)
+// ===================================
+function createPendenciasPorMesChart(canvasId, labels, data) {
+    const ctx = document.getElementById(canvasId);
+
+    if (chartPendenciasPorMes) chartPendenciasPorMes.destroy();
+
+    chartPendenciasPorMes = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Pendências por Mês',
+                data,
+                backgroundColor: '#1e3a8a', // ✅ azul
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.65,
+                categoryPercentage: 0.75
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: {
+                        font: { size: 14, weight: 'bold' },
+                        color: '#1e3a8a'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                    titleFont: { size: 16, weight: 'bold' },
+                    bodyFont: { size: 14 },
+                    padding: 14,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 12, weight: 'bold' },
+                        color: '#1e3a8a',
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: { size: 12, weight: '600' },
+                        color: '#4a5568'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        plugins: [{
+            id: 'pendenciasPorMesValueLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const dataset = chart.data.datasets[0];
+
+                ctx.save();
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                meta.data.forEach((bar, i) => {
+                    const value = dataset.data[i];
+                    const yPos = bar.y + (bar.height / 2);
+                    ctx.fillText(String(value), bar.x, yPos);
+                });
+
+                ctx.restore();
+            }
+        }]
+    });
 }
 
 // ===================================
@@ -882,7 +1003,7 @@ function createResolutividadeDistritoChart() {
             datasets: [{
                 label: 'Taxa de Resolutividade (%)',
                 data: percentuais,
-                backgroundColor: '#059669', // ✅ COR VERDE MANTIDA
+                backgroundColor: '#059669',
                 borderWidth: 0,
                 borderRadius: 8,
                 barPercentage: 0.65,
@@ -955,7 +1076,6 @@ function createResolutividadeDistritoChart() {
                 meta.data.forEach((bar, i) => {
                     const percentValue = dataset.data[i];
 
-                    // ✅ VALOR PERCENTUAL FIXO DENTRO DA BARRA (BRANCO E NEGRITO)
                     ctx.fillStyle = '#FFFFFF';
                     ctx.font = 'bold 16px Arial';
                     ctx.textAlign = 'center';
@@ -1081,7 +1201,7 @@ function createEspecialidadeChart(canvasId, labels, data) {
             }]
         },
         options: {
-            indexAxis: 'y', // ✅ BARRAS HORIZONTAIS
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -1145,7 +1265,7 @@ function createEspecialidadeChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO PRESTADOR (ROXO - USANDO COLUNA "PRESTADOR")
+// ✅ CRIAR GRÁFICO PRESTADOR (ROXO)
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1232,7 +1352,7 @@ function createPrestadorChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO - USANDO COLUNA "PRESTADOR")
+// ✅ CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (VERDE ESCURO)
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1319,12 +1439,11 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR (BARRA VERDE #059669 - USANDO COLUNA "PRESTADOR")
+// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
 // ===================================
 function createResolutividadePrestadorChart() {
     const ctx = document.getElementById('chartResolutividadePrestador');
 
-    // Calcular resolutividade por prestador
     const prestadoresStats = {};
 
     filteredData.forEach(item => {
@@ -1343,14 +1462,13 @@ function createResolutividadePrestadorChart() {
         }
     });
 
-    // Calcular porcentagens e ordenar
     const labels = Object.keys(prestadoresStats)
         .sort((a, b) => {
             const percA = (prestadoresStats[a].resolvidos / prestadoresStats[a].total) * 100;
             const percB = (prestadoresStats[b].resolvidos / prestadoresStats[b].total) * 100;
             return percB - percA;
         })
-        .slice(0, 15); // Top 15 prestadores
+        .slice(0, 15);
 
     const percentuais = labels.map(prestador => {
         const stats = prestadoresStats[prestador];
@@ -1366,7 +1484,7 @@ function createResolutividadePrestadorChart() {
             datasets: [{
                 label: 'Taxa de Resolutividade (%)',
                 data: percentuais,
-                backgroundColor: '#059669', // ✅ COR VERDE IGUAL AO DISTRITO
+                backgroundColor: '#059669',
                 borderWidth: 0,
                 borderRadius: 8,
                 barPercentage: 0.65,
@@ -1374,7 +1492,7 @@ function createResolutividadePrestadorChart() {
             }]
         },
         options: {
-            indexAxis: 'y', // ✅ BARRAS HORIZONTAIS IGUAL AO DISTRITO
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -1439,7 +1557,6 @@ function createResolutividadePrestadorChart() {
                 meta.data.forEach((bar, i) => {
                     const percentValue = dataset.data[i];
 
-                    // ✅ VALOR PERCENTUAL FIXO DENTRO DA BARRA (BRANCO E NEGRITO)
                     ctx.fillStyle = '#FFFFFF';
                     ctx.font = 'bold 16px Arial';
                     ctx.textAlign = 'center';
@@ -1612,7 +1729,6 @@ function downloadExcel() {
         return;
     }
 
-    // ✅ ESTRUTURA COM AS 3 COLUNAS PRIORITÁRIAS NO INÍCIO
     const exportData = dataParaExportar.map(item => ({
         'Nº Prontuário': getColumnValue(item, ['Nº Prontuário', 'N° Prontuário', 'Numero Prontuário', 'Prontuário', 'Prontuario'], ''),
         'Nº Solicitação': getColumnValue(item, ['Solicitação', 'Solicitacao', 'N° Solicitação', 'Nº Solicitação'], ''),
@@ -1636,24 +1752,23 @@ function downloadExcel() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Dados Completos');
 
-    // ✅ AJUSTAR LARGURA DAS COLUNAS (PRIORIZANDO AS 3 PRIMEIRAS)
     ws['!cols'] = [
-        { wch: 18 },  // Nº Prontuário
-        { wch: 18 },  // Nº Solicitação
-        { wch: 16 },  // Telefone
-        { wch: 20 },  // Distrito
-        { wch: 30 },  // Origem
-        { wch: 18 },  // Data Solicitação
-        { wch: 30 },  // Unidade Solicitante
-        { wch: 30 },  // CBO Especialidade
-        { wch: 18 },  // Data Início Pendência
-        { wch: 20 },  // Status
-        { wch: 25 },  // Prestador
-        { wch: 20 },  // Usuário
-        { wch: 18 },  // Data Final Prazo 15d
-        { wch: 20 },  // Data Envio Email 15d
-        { wch: 18 },  // Data Final Prazo 30d
-        { wch: 20 }   // Data Envio Email 30d
+        { wch: 18 },
+        { wch: 18 },
+        { wch: 16 },
+        { wch: 20 },
+        { wch: 30 },
+        { wch: 18 },
+        { wch: 30 },
+        { wch: 30 },
+        { wch: 18 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 18 },
+        { wch: 20 },
+        { wch: 18 },
+        { wch: 20 }
     ];
 
     const hoje = new Date().toISOString().split('T')[0];
