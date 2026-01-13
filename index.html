@@ -286,6 +286,25 @@
             </div>
         </div>
 
+        <!-- ✅✅✅ (MUDANÇA #2) GRÁFICOS DE PRESTADOR AGORA ABAIXO DO GRÁFICO DE STATUS -->
+        <div class="charts-container">
+            <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
+            <div class="chart-box">
+                <h3 class="chart-title">Registros Geral de Pendências por Prestador</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartPrestadores"></canvas>
+                </div>
+            </div>
+
+            <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR -->
+            <div class="chart-box">
+                <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
+                <div class="chart-wrapper">
+                    <canvas id="chartPrestadoresPendentes"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- ✅✅✅ GRÁFICOS DE RESOLUTIVIDADE LADO A LADO (DISTRITO E PRESTADOR) -->
         <div class="charts-container-resolutividade">
             <!-- RESOLUTIVIDADE POR DISTRITO -->
@@ -305,29 +324,21 @@
             </div>
         </div>
 
-        <!-- ✅✅✅ GRÁFICO DE PIZZA (LOGO ABAIXO DOS GRÁFICOS DE RESOLUTIVIDADE) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Distribuição Percentual por Status</h3>
-            <div class="chart-wrapper-pizza">
-                <canvas id="chartPizzaStatus"></canvas>
-            </div>
-        </div>
-
-        <!-- Gráficos em Duas Colunas (GRÁFICOS DE PRESTADOR) -->
+        <!-- ✅✅✅ (MUDANÇA #3) PIZZA + TOTAL DE PENDÊNCIAS POR MÊS LADO A LADO -->
         <div class="charts-container">
-            <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
+            <!-- GRÁFICO DE PIZZA -->
             <div class="chart-box">
-                <h3 class="chart-title">Registros Geral de Pendências por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartPrestadores"></canvas>
+                <h3 class="chart-title">Distribuição Percentual por Status</h3>
+                <div class="chart-wrapper-pizza">
+                    <canvas id="chartPizzaStatus"></canvas>
                 </div>
             </div>
 
-            <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO) -->
+            <!-- NOVO GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS) -->
             <div class="chart-box">
-                <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
+                <h3 class="chart-title">Total de Pendências por Mês</h3>
                 <div class="chart-wrapper">
-                    <canvas id="chartPrestadoresPendentes"></canvas>
+                    <canvas id="chartPendenciasPorMes"></canvas>
                 </div>
             </div>
         </div>
@@ -363,5 +374,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
