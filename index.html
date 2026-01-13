@@ -1,376 +1,338 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle - Distrito Sanitário Eldorado</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle - Distrito Sanitário Eldorado</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-    <!-- Cabeçalho com Gradiente -->
-    <header class="header">
-        <div class="header-content">
-            <h1 class="header-title">DIRETORIA DE REGULAÇÃO</h1>
-            <h2 class="header-subtitle">Controle de Pendências - Sistema Vivver</h2>
-            <h3 class="header-subtitle">Central de Marcação de Consultas / Consolidado Geral</h3>
-            <p class="footer-credits">Referência Giovanna</p>
-            <p class="footer-credits">Página Criada por Ana P. A. Silva Matr:201704/Assistente Adm. Diretoria de Regulação - Ceaps</p>
+  <!-- Cabeçalho com Gradiente -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="header-title">DIRETORIA DE REGULAÇÃO</h1>
+      <h2 class="header-subtitle">Controle de Pendências - Sistema Vivver</h2>
+      <h3 class="header-subtitle">Central de Marcação de Consultas / Consolidado Geral</h3>
+      <p class="footer-credits">Referência Giovanna</p>
+      <p class="footer-credits">Página Criada por Ana P. A. Silva Matr:201704/Assistente Adm. Diretoria de Regulação - Ceaps</p>
+    </div>
+  </header>
+
+  <!-- Container Principal -->
+  <div class="container">
+
+    <!-- Barra de Status e Ações -->
+    <div class="top-actions">
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Conectado</span>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-refresh" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Atualizar
+        </button>
+        <button class="btn btn-excel" onclick="downloadExcel()">
+          <i class="fas fa-file-excel"></i> Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Cards de Métricas -->
+    <div class="cards-grid">
+      <div class="metric-card card-primary">
+        <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
+        <div class="card-info">
+          <h3 class="card-title">Total de Registros Geral</h3>
+          <p class="card-value" id="totalPendencias">0</p>
         </div>
-    </header>
+      </div>
 
-    <!-- Container Principal -->
-    <div class="container">
-
-        <!-- Barra de Status e Ações -->
-        <div class="top-actions">
-            <div class="connection-status">
-                <span class="status-dot"></span>
-                <span class="status-text">Conectado</span>
-            </div>
-            <div class="action-buttons">
-                <button class="btn btn-refresh" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i> Atualizar
-                </button>
-                <button class="btn btn-excel" onclick="downloadExcel()">
-                    <i class="fas fa-file-excel"></i> Excel
-                </button>
-            </div>
+      <div class="metric-card card-warning">
+        <div class="card-icon"><i class="fas fa-clock"></i></div>
+        <div class="card-info">
+          <h3 class="card-title">Vencendo em 15 Dias</h3>
+          <p class="card-value" id="pendencias15">0</p>
         </div>
+      </div>
 
-        <!-- Cards de Métricas -->
-        <div class="cards-grid">
-            <div class="metric-card card-primary">
-                <div class="card-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Total de Registros Geral</h3>
-                    <p class="card-value" id="totalPendencias">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-warning">
-                <div class="card-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Vencendo em 15 Dias</h3>
-                    <p class="card-value" id="pendencias15">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-danger">
-                <div class="card-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Vencendo em 30 Dias</h3>
-                    <p class="card-value" id="pendencias30">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-info">
-                <div class="card-icon">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Porcentagem Filtrada</h3>
-                    <p class="card-value" id="percentFiltrados">100.0%</p>
-                </div>
-            </div>
+      <div class="metric-card card-danger">
+        <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="card-info">
+          <h3 class="card-title">Vencendo em 30 Dias</h3>
+          <p class="card-value" id="pendencias30">0</p>
         </div>
+      </div>
 
-        <!-- ✅ SEÇÃO PAINÉIS DISTRITO (TODOS NA COR AZUL) -->
-        <div class="paineis-distrito-section">
-            <h3 class="section-title">
-                <i class="fas fa-map-marked-alt"></i> PAINÉIS DISTRITO
-            </h3>
-            <div class="paineis-distrito-grid">
-                <a href="https://compartilhacmc-commits.github.io/distritoeldorado/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>ELDORADO</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritosede/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>SEDE</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritovargemdasflores/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>VARGEM DAS FLORES</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritonacional/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>NACIONAL</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritoressaca/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>RESSACA</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritoindustrial/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>INDUSTRIAL</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritopetrolandia/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>PETROLÂNDIA</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-
-                <a href="https://compartilhacmc-commits.github.io/distritoriacho/" target="_blank" class="painel-card painel-sede">
-                    <div class="painel-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="painel-info">
-                        <h4>RIACHO</h4>
-                        <p>Acessar Painel</p>
-                    </div>
-                    <i class="fas fa-arrow-right painel-arrow"></i>
-                </a>
-            </div>
+      <div class="metric-card card-info">
+        <div class="card-icon"><i class="fas fa-percentage"></i></div>
+        <div class="card-info">
+          <h3 class="card-title">Porcentagem Filtrada</h3>
+          <p class="card-value" id="percentFiltrados">100.0%</p>
         </div>
+      </div>
+    </div>
 
-        <!-- Seção de Filtros -->
-        <div class="filters-container">
-            <h3 class="section-title">
-                <i class="fas fa-filter"></i> Filtros
-            </h3>
+    <!-- ✅ SEÇÃO PAINÉIS DISTRITO -->
+    <div class="paineis-distrito-section">
+      <h3 class="section-title"><i class="fas fa-map-marked-alt"></i> PAINÉIS DISTRITO</h3>
+      <div class="paineis-distrito-grid">
+        <a href="https://compartilhacmc-commits.github.io/distritoeldorado/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>ELDORADO</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-            <div class="filters-grid">
-                <!-- STATUS (multi) -->
-                <div class="filter-box">
-                    <label>Status:</label>
-                    <div class="multi-select" id="msStatus">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msStatus')">
-                            <span class="multi-select-text" id="msStatusText">Todos</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msStatusPanel"></div>
-                    </div>
-                </div>
+        <a href="https://compartilhacmc-commits.github.io/distritosede/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>SEDE</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-                <!-- UNIDADE (multi) -->
-                <div class="filter-box">
-                    <label>Unidade Solicitante:</label>
-                    <div class="multi-select" id="msUnidade">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msUnidade')">
-                            <span class="multi-select-text" id="msUnidadeText">Todas</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msUnidadePanel"></div>
-                    </div>
-                </div>
+        <a href="https://compartilhacmc-commits.github.io/distritovargemdasflores/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>VARGEM DAS FLORES</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-                <!-- ESPECIALIDADE (multi) -->
-                <div class="filter-box">
-                    <label>CBO Especialidade:</label>
-                    <div class="multi-select" id="msEspecialidade">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msEspecialidade')">
-                            <span class="multi-select-text" id="msEspecialidadeText">Todas</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msEspecialidadePanel"></div>
-                    </div>
-                </div>
+        <a href="https://compartilhacmc-commits.github.io/distritonacional/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>NACIONAL</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-                <!-- PRESTADOR (multi) -->
-                <div class="filter-box">
-                    <label>Prestador:</label>
-                    <div class="multi-select" id="msPrestador">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msPrestador')">
-                            <span class="multi-select-text" id="msPrestadorText">Todos</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msPrestadorPanel"></div>
-                    </div>
-                </div>
+        <a href="https://compartilhacmc-commits.github.io/distritoressaca/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>RESSACA</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-                <!-- ✅ FILTRO POR MÊS (MULTI-SELECT COM BOTÕES) -->
-                <div class="filter-box">
-                    <label>Filtrar por Mês:</label>
-                    <div class="multi-select" id="msMes">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msMes')">
-                            <span class="multi-select-text" id="msMesText">Todos os Meses</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msMesPanel"></div>
-                    </div>
-                </div>
+        <a href="https://compartilhacmc-commits.github.io/distritoindustrial/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>INDUSTRIAL</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-                <!-- ✅ NOVO FILTRO POR DISTRITO (MULTI-SELECT COM BOTÕES) -->
-                <div class="filter-box">
-                    <label>Filtrar por Distrito:</label>
-                    <div class="multi-select" id="msDistrito">
-                        <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msDistrito')">
-                            <span class="multi-select-text" id="msDistritoText">Todos os Distritos</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="multi-select-panel" id="msDistritoPanel"></div>
-                    </div>
-                </div>
-            </div>
+        <a href="https://compartilhacmc-commits.github.io/distritopetrolandia/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>PETROLÂNDIA</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
 
-            <button class="btn btn-clear" onclick="clearFilters()">
-                <i class="fas fa-times-circle"></i> Limpar Filtros
+        <a href="https://compartilhacmc-commits.github.io/distritoriacho/" target="_blank" class="painel-card painel-sede">
+          <div class="painel-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="painel-info"><h4>RIACHO</h4><p>Acessar Painel</p></div>
+          <i class="fas fa-arrow-right painel-arrow"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Seção de Filtros -->
+    <div class="filters-container">
+      <h3 class="section-title"><i class="fas fa-filter"></i> Filtros</h3>
+
+      <div class="filters-grid">
+        <div class="filter-box">
+          <label>Status:</label>
+          <div class="multi-select" id="msStatus">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msStatus')">
+              <span class="multi-select-text" id="msStatusText">Todos</span>
+              <i class="fas fa-chevron-down"></i>
             </button>
+            <div class="multi-select-panel" id="msStatusPanel"></div>
+          </div>
         </div>
 
-        <!-- ✅ 1º GRÁFICO: PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartDistritosPendentes"></canvas>
-            </div>
+        <div class="filter-box">
+          <label>Unidade Solicitante:</label>
+          <div class="multi-select" id="msUnidade">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msUnidade')">
+              <span class="multi-select-text" id="msUnidadeText">Todas</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="multi-select-panel" id="msUnidadePanel"></div>
+          </div>
         </div>
 
-        <!-- ✅ 2º GRÁFICO: PENDÊNCIAS POR DISTRITO (DESTAQUE - LINHA COMPLETA) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Registros Geral de Pendências por Distrito</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartDistritos"></canvas>
-            </div>
+        <div class="filter-box">
+          <label>CBO Especialidade:</label>
+          <div class="multi-select" id="msEspecialidade">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msEspecialidade')">
+              <span class="multi-select-text" id="msEspecialidadeText">Todas</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="multi-select-panel" id="msEspecialidadePanel"></div>
+          </div>
         </div>
 
-        <!-- ✅ 3º GRÁFICO: STATUS (BARRAS LARANJA VERTICAIS) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Registros Geral de Pendências por Status</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartStatus"></canvas>
-            </div>
+        <div class="filter-box">
+          <label>Prestador:</label>
+          <div class="multi-select" id="msPrestador">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msPrestador')">
+              <span class="multi-select-text" id="msPrestadorText">Todos</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="multi-select-panel" id="msPrestadorPanel"></div>
+          </div>
         </div>
 
-        <!-- ✅✅✅ (MUDANÇA #2) GRÁFICOS DE PRESTADOR AGORA ABAIXO DO GRÁFICO DE STATUS -->
-        <div class="charts-container">
-            <!-- ✅ GRÁFICO: PENDÊNCIAS POR PRESTADOR -->
-            <div class="chart-box">
-                <h3 class="chart-title">Registros Geral de Pendências por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartPrestadores"></canvas>
-                </div>
-            </div>
-
-            <!-- ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR -->
-            <div class="chart-box">
-                <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartPrestadoresPendentes"></canvas>
-                </div>
-            </div>
+        <div class="filter-box">
+          <label>Filtrar por Mês:</label>
+          <div class="multi-select" id="msMes">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msMes')">
+              <span class="multi-select-text" id="msMesText">Todos os Meses</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="multi-select-panel" id="msMesPanel"></div>
+          </div>
         </div>
 
-        <!-- ✅✅✅ GRÁFICOS DE RESOLUTIVIDADE LADO A LADO (DISTRITO E PRESTADOR) -->
-        <div class="charts-container-resolutividade">
-            <!-- RESOLUTIVIDADE POR DISTRITO -->
-            <div class="chart-box">
-                <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartResolutividadeDistrito"></canvas>
-                </div>
-            </div>
-
-            <!-- RESOLUTIVIDADE POR PRESTADOR -->
-            <div class="chart-box">
-                <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartResolutividadePrestador"></canvas>
-                </div>
-            </div>
+        <div class="filter-box">
+          <label>Filtrar por Distrito:</label>
+          <div class="multi-select" id="msDistrito">
+            <button type="button" class="multi-select-btn" onclick="toggleMultiSelect('msDistrito')">
+              <span class="multi-select-text" id="msDistritoText">Todos os Distritos</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="multi-select-panel" id="msDistritoPanel"></div>
+          </div>
         </div>
+      </div>
 
-        <!-- ✅✅✅ (MUDANÇA #3) PIZZA + TOTAL DE PENDÊNCIAS POR MÊS LADO A LADO -->
-        <div class="charts-container">
-            <!-- GRÁFICO DE PIZZA -->
-            <div class="chart-box">
-                <h3 class="chart-title">Distribuição Percentual por Status</h3>
-                <div class="chart-wrapper-pizza">
-                    <canvas id="chartPizzaStatus"></canvas>
-                </div>
-            </div>
-
-            <!-- NOVO GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS) -->
-            <div class="chart-box">
-                <h3 class="chart-title">Total de Pendências por Mês</h3>
-                <div class="chart-wrapper">
-                    <canvas id="chartPendenciasPorMes"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- ✅ 5º GRÁFICO: ESPECIALIDADES (BARRAS HORIZONTAIS - POR ÚLTIMO) -->
-        <div class="chart-box chart-box-full">
-            <h3 class="chart-title">Registros Geral de Pendências por Especialidade</h3>
-            <div class="chart-wrapper-distrito">
-                <canvas id="chartEspecialidades"></canvas>
-            </div>
-        </div>
-
+      <button class="btn btn-clear" onclick="clearFilters()">
+        <i class="fas fa-times-circle"></i> Limpar Filtros
+      </button>
     </div>
 
-    <!-- Rodapé -->
-    <footer class="footer">
-        <p>DIRETORIA DE REGULAÇÃO</p>
-        <p>CENTRAL DE MARCAÇÃO DE CONSULTAS</p>
-        <p>REFERÊNCIA GIOVANNA</p>
-        <p class="footer-credits">Página Criada por Ana P. A. Silva Matr:201704/Assistente Adm. Diretoria de Regulação - Ceaps</p>
-    </footer>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Carregando dados das planilhas...</p>
-        </div>
+    <!-- ✅ 1º GRÁFICO -->
+    <div class="chart-box chart-box-full">
+      <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
+      <div class="chart-wrapper-distrito">
+        <canvas id="chartDistritosPendentes"></canvas>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="script.js"></script>
+    <!-- ✅ 2º GRÁFICO -->
+    <div class="chart-box chart-box-full">
+      <h3 class="chart-title">Registros Geral de Pendências por Distrito</h3>
+      <div class="chart-wrapper-distrito">
+        <canvas id="chartDistritos"></canvas>
+      </div>
+    </div>
+
+    <!-- ✅ 3º GRÁFICO -->
+    <div class="chart-box chart-box-full">
+      <h3 class="chart-title">Registros Geral de Pendências por Status</h3>
+      <div class="chart-wrapper-distrito">
+        <canvas id="chartStatus"></canvas>
+      </div>
+    </div>
+
+    <!-- PRESTADOR -->
+    <div class="charts-container">
+      <div class="chart-box">
+        <h3 class="chart-title">Registros Geral de Pendências por Prestador</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartPrestadores"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3 class="chart-title">Pendências Não Resolvidas por Prestador</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartPrestadoresPendentes"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESOLUTIVIDADE -->
+    <div class="charts-container-resolutividade">
+      <div class="chart-box">
+        <h3 class="chart-title">Estatística de Resolutividade por Distrito</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartResolutividadeDistrito"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3 class="chart-title">Estatística de Resolutividade por Prestador</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartResolutividadePrestador"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIZZA + POR MÊS -->
+    <div class="charts-container">
+      <div class="chart-box">
+        <h3 class="chart-title">Distribuição Percentual por Status</h3>
+        <div class="chart-wrapper-pizza">
+          <canvas id="chartPizzaStatus"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3 class="chart-title">Total de Pendências por Mês</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartPendenciasPorMes"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅✅✅ NOVA TABELA -->
+    <div class="table-section">
+      <h3 class="section-title"><i class="fas fa-table"></i> Todas as Demandas</h3>
+
+      <div class="table-search">
+        <i class="fas fa-search"></i>
+        <input id="tableSearchInput" type="text" placeholder="Pesquisar na tabela..." oninput="onTableSearch()">
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table" id="demandasTable">
+          <thead id="demandasThead"></thead>
+          <tbody id="demandasTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <div class="table-info" id="tableInfo">0 registros</div>
+
+        <div class="table-pagination">
+          <button class="btn-page" onclick="tablePrevPage()">Anterior</button>
+          <span class="page-indicator" id="pageIndicator">Página 1</span>
+          <button class="btn-page" onclick="tableNextPage()">Próximo</button>
+        </div>
+
+        <div class="table-page-size">
+          <span>Exibindo:</span>
+          <strong>100</strong>
+          <span>por página</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <p>DIRETORIA DE REGULAÇÃO</p>
+    <p>CENTRAL DE MARCAÇÃO DE CONSULTAS</p>
+    <p>REFERÊNCIA GIOVANNA</p>
+    <p class="footer-credits">Página Criada por Ana P. A. Silva Matr:201704/Assistente Adm. Diretoria de Regulação - Ceaps</p>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Carregando dados das planilhas...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
