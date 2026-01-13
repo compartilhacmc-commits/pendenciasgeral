@@ -122,8 +122,6 @@ let chartPrestadoresPendentes = null;
 let chartPizzaStatus = null;
 let chartResolutividadeDistrito = null;
 let chartResolutividadePrestador = null;
-
-// ✅ NOVO: gráfico total por mês
 let chartPendenciasPorMes = null;
 
 // ===================================
@@ -236,7 +234,6 @@ async function loadData() {
     try {
         console.log(`Carregando dados de ${SHEETS.length} abas (8 distritos)...`);
 
-        // ✅ CARREGAR TODAS AS ABAS EM PARALELO
         const promises = SHEETS.map(sheet => 
             fetch(sheet.url)
                 .then(response => {
@@ -259,7 +256,6 @@ async function loadData() {
 
         const results = await Promise.all(promises);
 
-        // ✅ PROCESSAR CADA ABA
         results.forEach(result => {
             if (!result) return;
 
@@ -388,10 +384,7 @@ function populateFilters() {
     setMultiSelectText('msEspecialidadeText', [], 'Todas');
     setMultiSelectText('msPrestadorText', [], 'Todos');
 
-    // ✅ POPULAR FILTRO DE MÊS (MULTI-SELECT)
     populateMonthFilter();
-
-    // ✅ POPULAR FILTRO DE DISTRITO (MULTI-SELECT)
     populateDistritoFilter();
 }
 
@@ -460,7 +453,6 @@ function applyFilters() {
         const okEsp = (especialidadeSel.length === 0) || especialidadeSel.includes(item['Cbo Especialidade'] || '');
         const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
 
-        // ✅ FILTRO POR MÊS
         let okMes = true;
         if (mesSel.length > 0) {
             const dataInicio = parseDate(getColumnValue(item, [
@@ -479,7 +471,6 @@ function applyFilters() {
             }
         }
 
-        // ✅ FILTRO POR DISTRITO
         const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
 
         return okStatus && okUnidade && okEsp && okPrest && okMes && okDistrito;
@@ -521,7 +512,6 @@ function updateDashboard() {
 // ✅ ATUALIZAR CARDS - BASEADO EM "USUÁRIO" PREENCHIDO
 // ===================================
 function updateCards() {
-    // ✅ CONTA APENAS REGISTROS COM COLUNA "USUÁRIO" PREENCHIDA
     const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
     const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
 
@@ -530,7 +520,6 @@ function updateCards() {
     let pendencias30 = 0;
 
     filteredData.forEach(item => {
-        // ✅ SÓ CONTA SE USUÁRIO ESTIVER PREENCHIDO
         if (!hasUsuarioPreenchido(item)) return;
 
         const dataInicio = parseDate(getColumnValue(item, [
@@ -557,7 +546,7 @@ function updateCards() {
 }
 
 // ===================================
-// ✅ ATUALIZAR GRÁFICOS - BASEADO EM "USUÁRIO" PREENCHIDO
+// ✅✅✅ ATUALIZAR GRÁFICOS - CORREÇÃO NOS GRÁFICOS DE STATUS
 // ===================================
 function updateCharts() {
     // ✅ GRÁFICO PENDÊNCIAS POR DISTRITO (TODOS OS REGISTROS)
@@ -594,18 +583,23 @@ function updateCharts() {
     // ✅ GRÁFICO DE RESOLUTIVIDADE POR DISTRITO
     createResolutividadeDistritoChart();
 
-    // ✅ GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS)
+    // ✅✅✅ CORREÇÃO: GRÁFICO DE STATUS (BARRAS LARANJA VERTICAIS)
+    // Agora usando a coluna 'Status' corretamente
     const statusCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
 
-        const status = item['Status'] || 'Não informado';
+        // ✅ BUSCA O VALOR DA COLUNA STATUS
+        const status = getColumnValue(item, ['Status', 'STATUS', 'status'], 'Não informado');
         statusCount[status] = (statusCount[status] || 0) + 1;
     });
 
     const statusLabels = Object.keys(statusCount)
         .sort((a, b) => statusCount[b] - statusCount[a]);
     const statusValues = statusLabels.map(label => statusCount[label]);
+
+    console.log('✅ GRÁFICO STATUS - Labels:', statusLabels);
+    console.log('✅ GRÁFICO STATUS - Values:', statusValues);
 
     createStatusChart('chartStatus', statusLabels, statusValues);
 
@@ -661,10 +655,13 @@ function updateCharts() {
     // ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
     createResolutividadePrestadorChart();
 
-    // ✅ GRÁFICO DE PIZZA (TODOS OS REGISTROS)
+    // ✅✅✅ CORREÇÃO: GRÁFICO DE PIZZA (MESMOS DADOS DO STATUS)
+    console.log('✅ GRÁFICO PIZZA - Labels:', statusLabels);
+    console.log('✅ GRÁFICO PIZZA - Values:', statusValues);
+    
     createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
-    // ✅✅✅ NOVO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS)
+    // ✅ GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS)
     const mesCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -680,12 +677,12 @@ function updateCharts() {
 
         const y = dataInicio.getFullYear();
         const m = String(dataInicio.getMonth() + 1).padStart(2, '0');
-        const key = `${y}-${m}`; // ordenável
+        const key = `${y}-${m}`;
 
         mesCount[key] = (mesCount[key] || 0) + 1;
     });
 
-    const mesKeys = Object.keys(mesCount).sort(); // crescente no tempo
+    const mesKeys = Object.keys(mesCount).sort();
     const mesLabels = mesKeys.map(key => {
         const [ano, mes] = key.split('-');
         const nomeMes = new Date(Number(ano), Number(mes) - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
@@ -697,7 +694,7 @@ function updateCharts() {
 }
 
 // ===================================
-// ✅ NOVO GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS, MESMO ESTILO)
+// ✅ NOVO GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS (BARRAS AZUIS)
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -711,7 +708,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
             datasets: [{
                 label: 'Pendências por Mês',
                 data,
-                backgroundColor: '#1e3a8a', // ✅ azul
+                backgroundColor: '#1e3a8a',
                 borderWidth: 0,
                 borderRadius: 8,
                 barPercentage: 0.65,
@@ -958,12 +955,11 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (BARRA VERDE #059669)
+// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (BARRA VERDE)
 // ===================================
 function createResolutividadeDistritoChart() {
     const ctx = document.getElementById('chartResolutividadeDistrito');
 
-    // Calcular resolutividade por distrito
     const distritosStats = {};
 
     filteredData.forEach(item => {
@@ -982,7 +978,6 @@ function createResolutividadeDistritoChart() {
         }
     });
 
-    // Calcular porcentagens
     const labels = Object.keys(distritosStats).sort((a, b) => {
         const percA = (distritosStats[a].resolvidos / distritosStats[a].total) * 100;
         const percB = (distritosStats[b].resolvidos / distritosStats[b].total) * 100;
@@ -1573,7 +1568,7 @@ function createResolutividadePrestadorChart() {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO DE PIZZA
+// ✅✅✅ GRÁFICO DE PIZZA - CORRIGIDO PARA USAR COLUNA STATUS
 // ===================================
 function createPieChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1721,7 +1716,6 @@ function refreshData() {
 // ✅ DOWNLOAD EXCEL - MODIFICADO PARA PRIORIZAR AS 3 COLUNAS SOLICITADAS
 // ===================================
 function downloadExcel() {
-    // ✅ EXPORTA APENAS REGISTROS COM USUÁRIO PREENCHIDO
     const dataParaExportar = filteredData.filter(item => hasUsuarioPreenchido(item));
 
     if (dataParaExportar.length === 0) {
