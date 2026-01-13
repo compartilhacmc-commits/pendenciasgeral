@@ -365,7 +365,7 @@ function showLoading(show) {
 }
 
 // ===================================
-// ✅ POPULAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
+// ✅ POPULAR FILTROS (MULTISELECT + MÊS + DISTRITO)
 // ===================================
 function populateFilters() {
     const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
@@ -385,15 +385,17 @@ function populateFilters() {
     setMultiSelectText('msEspecialidadeText', [], 'Todas');
     setMultiSelectText('msPrestadorText', [], 'Todos');
 
-    // ✅ POPULAR FILTRO DE MÊS
+    // ✅ POPULAR FILTRO DE MÊS (MULTI-SELECT)
     populateMonthFilter();
+
+    // ✅ POPULAR FILTRO DE DISTRITO (MULTI-SELECT)
+    populateDistritoFilter();
 }
 
 // ===================================
-// ✅ POPULAR FILTRO DE MÊS (BASEADO EM "Data Início da Pendência")
+// ✅ POPULAR FILTRO DE MÊS (MULTI-SELECT)
 // ===================================
 function populateMonthFilter() {
-    const selectMes = document.getElementById('filterMes');
     const mesesSet = new Set();
 
     allData.forEach(item => {
@@ -411,33 +413,43 @@ function populateMonthFilter() {
     });
 
     const mesesOrdenados = Array.from(mesesSet).sort().reverse();
-
-    selectMes.innerHTML = '<option value="">Todos os Meses</option>';
     
-    mesesOrdenados.forEach(mesAno => {
+    const mesesFormatados = mesesOrdenados.map(mesAno => {
         const [ano, mes] = mesAno.split('-');
         const nomeMes = new Date(ano, mes - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        const option = document.createElement('option');
-        option.value = mesAno;
-        option.textContent = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
-        selectMes.appendChild(option);
+        return nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
     });
+
+    renderMultiSelect('msMesPanel', mesesFormatados, applyFilters);
+    setMultiSelectText('msMesText', [], 'Todos os Meses');
 }
 
 // ===================================
-// ✅ APLICAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
+// ✅ POPULAR FILTRO DE DISTRITO (MULTI-SELECT)
+// ===================================
+function populateDistritoFilter() {
+    const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
+    renderMultiSelect('msDistritoPanel', distritos, applyFilters);
+    setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
+}
+
+// ===================================
+// ✅ APLICAR FILTROS (INCLUINDO MÊS E DISTRITO)
 // ===================================
 function applyFilters() {
     const statusSel = getSelectedFromPanel('msStatusPanel');
     const unidadeSel = getSelectedFromPanel('msUnidadePanel');
     const especialidadeSel = getSelectedFromPanel('msEspecialidadePanel');
     const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
-    const mesSel = document.getElementById('filterMes').value;
+    const mesSel = getSelectedFromPanel('msMesPanel');
+    const distritoSel = getSelectedFromPanel('msDistritoPanel');
 
     setMultiSelectText('msStatusText', statusSel, 'Todos');
     setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
     setMultiSelectText('msEspecialidadeText', especialidadeSel, 'Todas');
     setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
+    setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
+    setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
 
     filteredData = allData.filter(item => {
         const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
@@ -447,7 +459,7 @@ function applyFilters() {
 
         // ✅ FILTRO POR MÊS
         let okMes = true;
-        if (mesSel) {
+        if (mesSel.length > 0) {
             const dataInicio = parseDate(getColumnValue(item, [
                 'Data Início da Pendência',
                 'Data Inicio da Pendencia',
@@ -455,24 +467,29 @@ function applyFilters() {
                 'Data Inicio Pendencia'
             ]));
             if (dataInicio) {
-                const mesAnoItem = `${dataInicio.getFullYear()}-${String(dataInicio.getMonth() + 1).padStart(2, '0')}`;
-                okMes = (mesAnoItem === mesSel);
+                const [ano, mes] = [dataInicio.getFullYear(), dataInicio.getMonth()];
+                const nomeMes = new Date(ano, mes).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                const mesFormatado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+                okMes = mesSel.includes(mesFormatado);
             } else {
                 okMes = false;
             }
         }
 
-        return okStatus && okUnidade && okEsp && okPrest && okMes;
+        // ✅ FILTRO POR DISTRITO
+        const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
+
+        return okStatus && okUnidade && okEsp && okPrest && okMes && okDistrito;
     });
 
     updateDashboard();
 }
 
 // ===================================
-// ✅ LIMPAR FILTROS (MULTISELECT + MÊS) - SEM ORIGEM
+// ✅ LIMPAR FILTROS (INCLUINDO MÊS E DISTRITO)
 // ===================================
 function clearFilters() {
-    ['msStatusPanel','msUnidadePanel','msEspecialidadePanel','msPrestadorPanel'].forEach(panelId => {
+    ['msStatusPanel','msUnidadePanel','msEspecialidadePanel','msPrestadorPanel','msMesPanel','msDistritoPanel'].forEach(panelId => {
         const panel = document.getElementById(panelId);
         if (!panel) return;
         panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -482,8 +499,8 @@ function clearFilters() {
     setMultiSelectText('msUnidadeText', [], 'Todas');
     setMultiSelectText('msEspecialidadeText', [], 'Todas');
     setMultiSelectText('msPrestadorText', [], 'Todos');
-
-    document.getElementById('filterMes').value = '';
+    setMultiSelectText('msMesText', [], 'Todos os Meses');
+    setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
 
     filteredData = [...allData];
     updateDashboard();
