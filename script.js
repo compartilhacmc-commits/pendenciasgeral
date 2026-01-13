@@ -622,7 +622,7 @@ function updateCharts() {
 
     createEspecialidadeChart('chartEspecialidades', especialidadesLabels, especialidadesValues);
 
-    // ✅ GRÁFICO PENDÊNCIAS POR PRESTADOR (TODOS OS REGISTROS)
+    // ✅✅✅ CORRIGIDO: GRÁFICO PENDÊNCIAS POR PRESTADOR (USANDO COLUNA "PRESTADOR")
     const prestadoresCount = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -638,7 +638,7 @@ function updateCharts() {
 
     createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
-    // ✅ GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO)
+    // ✅✅✅ CORRIGIDO: GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (USANDO COLUNA "PRESTADOR")
     const prestadoresCountPendentes = {};
     filteredData.forEach(item => {
         if (!hasUsuarioPreenchido(item)) return;
@@ -655,7 +655,7 @@ function updateCharts() {
 
     createPrestadorPendenteChart('chartPrestadoresPendentes', prestadoresLabelsPendentes, prestadoresValuesPendentes);
 
-    // ✅ GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+    // ✅✅✅ CORRIGIDO: GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR (USANDO COLUNA "PRESTADOR")
     createResolutividadePrestadorChart();
 
     // ✅ GRÁFICO DE PIZZA (TODOS OS REGISTROS)
@@ -837,7 +837,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (PORCENTAGEM DENTRO DA BARRA - BRANCO E NEGRITO)
+// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR DISTRITO (BARRA VERDE #059669)
 // ===================================
 function createResolutividadeDistritoChart() {
     const ctx = document.getElementById('chartResolutividadeDistrito');
@@ -882,7 +882,7 @@ function createResolutividadeDistritoChart() {
             datasets: [{
                 label: 'Taxa de Resolutividade (%)',
                 data: percentuais,
-                backgroundColor: '#059669',
+                backgroundColor: '#059669', // ✅ COR VERDE MANTIDA
                 borderWidth: 0,
                 borderRadius: 8,
                 barPercentage: 0.65,
@@ -1145,7 +1145,7 @@ function createEspecialidadeChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO PRESTADOR (ROXO - TODOS OS REGISTROS)
+// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO PRESTADOR (ROXO - USANDO COLUNA "PRESTADOR")
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1232,7 +1232,7 @@ function createPrestadorChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO)
+// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO PENDÊNCIAS NÃO RESOLVIDAS POR PRESTADOR (BARRAS VERDE ESCURO - USANDO COLUNA "PRESTADOR")
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
     const ctx = document.getElementById(canvasId);
@@ -1319,7 +1319,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR
+// ✅✅✅ CORRIGIDO: CRIAR GRÁFICO DE RESOLUTIVIDADE POR PRESTADOR (BARRA VERDE #059669 - USANDO COLUNA "PRESTADOR")
 // ===================================
 function createResolutividadePrestadorChart() {
     const ctx = document.getElementById('chartResolutividadePrestador');
@@ -1366,7 +1366,7 @@ function createResolutividadePrestadorChart() {
             datasets: [{
                 label: 'Taxa de Resolutividade (%)',
                 data: percentuais,
-                backgroundColor: '#0284c7',
+                backgroundColor: '#059669', // ✅ COR VERDE IGUAL AO DISTRITO
                 borderWidth: 0,
                 borderRadius: 8,
                 barPercentage: 0.65,
@@ -1374,6 +1374,7 @@ function createResolutividadePrestadorChart() {
             }]
         },
         options: {
+            indexAxis: 'y', // ✅ BARRAS HORIZONTAIS IGUAL AO DISTRITO
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -1381,12 +1382,12 @@ function createResolutividadePrestadorChart() {
                     display: true,
                     labels: {
                         font: { size: 14, weight: 'bold' },
-                        color: '#0284c7'
+                        color: '#059669'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: 'rgba(2, 132, 199, 0.9)',
+                    backgroundColor: 'rgba(5, 150, 105, 0.9)',
                     titleFont: { size: 16, weight: 'bold' },
                     bodyFont: { size: 14 },
                     padding: 14,
@@ -1396,7 +1397,7 @@ function createResolutividadePrestadorChart() {
                             const prestador = context.label;
                             const stats = prestadoresStats[prestador];
                             return [
-                                `Resolutividade: ${context.parsed.y}%`,
+                                `Resolutividade: ${context.parsed.x}%`,
                                 `Resolvidos: ${stats.resolvidos}`,
                                 `Total: ${stats.total}`
                             ];
@@ -1406,15 +1407,6 @@ function createResolutividadePrestadorChart() {
             },
             scales: {
                 x: {
-                    ticks: {
-                        font: { size: 12, weight: 'bold' },
-                        color: '#0284c7',
-                        maxRotation: 45,
-                        minRotation: 0
-                    },
-                    grid: { display: false }
-                },
-                y: {
                     beginAtZero: true,
                     max: 100,
                     ticks: {
@@ -1425,6 +1417,13 @@ function createResolutividadePrestadorChart() {
                         }
                     },
                     grid: { color: 'rgba(0,0,0,0.06)' }
+                },
+                y: {
+                    ticks: {
+                        font: { size: 13, weight: 'bold' },
+                        color: '#059669'
+                    },
+                    grid: { display: false }
                 }
             }
         },
@@ -1436,15 +1435,18 @@ function createResolutividadePrestadorChart() {
                 const dataset = chart.data.datasets[0];
 
                 ctx.save();
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
 
                 meta.data.forEach((bar, i) => {
-                    const value = dataset.data[i];
-                    const yPos = bar.y + (bar.height / 2);
-                    ctx.fillText(value + '%', bar.x, yPos);
+                    const percentValue = dataset.data[i];
+
+                    // ✅ VALOR PERCENTUAL FIXO DENTRO DA BARRA (BRANCO E NEGRITO)
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    const xPos = bar.x + (bar.width / 2);
+                    ctx.fillText(`${percentValue}%`, xPos, bar.y);
                 });
 
                 ctx.restore();
@@ -1540,14 +1542,13 @@ function createPieChart(canvasId, labels, data) {
             afterDatasetsDraw: function(chart) {
                 const ctx = chart.ctx;
                 const dataset = chart.data.datasets[0];
-                const meta = chart.getDatasetMeta(0);
                 
                 ctx.save();
                 ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 
-                meta.data.forEach(function(element, index) {
+                chart.getDatasetMeta(0).data.forEach(function(element, index) {
                     const value = dataset.data[index];
                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
                     
