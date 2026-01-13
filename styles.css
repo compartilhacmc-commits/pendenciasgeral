@@ -217,8 +217,8 @@ body {
 
 /* Cores diferentes para cada distrito */
 .painel-eldorado {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-sede {
@@ -227,33 +227,33 @@ body {
 }
 
 .painel-vargem {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    color: #065f46;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-nacional {
-    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-    color: #831843;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-ressaca {
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-    color: #3730a3;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-industrial {
-    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-    color: #9a3412;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-petrolandia {
-    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-    color: #6b21a8;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-riacho {
-    background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
-    color: #155e75;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e3a8a;
 }
 
 .painel-icon {
@@ -739,3 +739,4 @@ html {
 
 .ms-item input{ width: 16px; height: 16px; }
 .ms-item span{ font-size: 0.95rem; color: var(--cinza-800); }
+
