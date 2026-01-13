@@ -38,6 +38,49 @@
             </div>
         </div>
 
+        <!-- Cards de Métricas -->
+        <div class="cards-grid">
+            <div class="metric-card card-primary">
+                <div class="card-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Total de Registros Geral</h3>
+                    <p class="card-value" id="totalPendencias">0</p>
+                </div>
+            </div>
+
+            <div class="metric-card card-warning">
+                <div class="card-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Vencendo em 15 Dias</h3>
+                    <p class="card-value" id="pendencias15">0</p>
+                </div>
+            </div>
+
+            <div class="metric-card card-danger">
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Vencendo em 30 Dias</h3>
+                    <p class="card-value" id="pendencias30">0</p>
+                </div>
+            </div>
+
+            <div class="metric-card card-info">
+                <div class="card-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Porcentagem Filtrada</h3>
+                    <p class="card-value" id="percentFiltrados">100.0%</p>
+                </div>
+            </div>
+        </div>
+
         <!-- ✅ SEÇÃO PAINÉIS DISTRITO (TODOS NA COR AZUL) -->
         <div class="paineis-distrito-section">
             <h3 class="section-title">
@@ -219,49 +262,6 @@
             </button>
         </div>
 
-        <!-- Cards de Métricas -->
-        <div class="cards-grid">
-            <div class="metric-card card-primary">
-                <div class="card-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Total de Registros Geral</h3>
-                    <p class="card-value" id="totalPendencias">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-warning">
-                <div class="card-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Vencendo em 15 Dias</h3>
-                    <p class="card-value" id="pendencias15">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-danger">
-                <div class="card-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Vencendo em 30 Dias</h3>
-                    <p class="card-value" id="pendencias30">0</p>
-                </div>
-            </div>
-
-            <div class="metric-card card-info">
-                <div class="card-icon">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div class="card-info">
-                    <h3 class="card-title">Porcentagem Filtrada</h3>
-                    <p class="card-value" id="percentFiltrados">100.0%</p>
-                </div>
-            </div>
-        </div>
-
         <!-- ✅ 1º GRÁFICO: PENDÊNCIAS NÃO RESOLVIDAS POR DISTRITO (BARRAS VERMELHAS) -->
         <div class="chart-box chart-box-full">
             <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
@@ -374,3 +374,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
