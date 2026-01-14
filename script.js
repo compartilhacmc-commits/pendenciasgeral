@@ -8,7 +8,7 @@ function gvizCsvUrl(spreadsheetId, gid) {
 }
 
 const SHEETS = [
-  // DISTRITO ELDORADO  ✅ CORRIGIDO PARA CSV (GVIZ)
+  // DISTRITO ELDORADO ✅ CORRIGIDO PARA CSV (GVIZ)
   {
     name: 'PENDÊNCIAS ELDORADO',
     url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
@@ -512,7 +512,7 @@ function updateCards() {
 }
 
 // ===================================
-// ✅ PLUGIN (NÚMEROS BRANCOS EM NEGRITO) - ORIGINAL
+// ✅ PLUGIN (NÚMEROS BRANCOS EM NEGRITO) - ORIGINAL (mantido)
 // ===================================
 function addValueLabelsPlugin({
   id,
@@ -555,13 +555,13 @@ function addValueLabelsPlugin({
 
 // ===================================
 // ✅✅ NOVO PLUGIN: VALOR FORA DA BARRA (PRETO/NEGRITO)
-// (usado SOMENTE nos 3 gráficos que você pediu)
+// (usado SOMENTE onde você pediu)
 // ===================================
 function addOutsideValueLabelsPlugin({
   id,
   color = '#000000',
-  font = 'bold 14px Arial',
-  offset = 10,
+  font = 'bold 20px Arial', // ✅ MAIOR (ajuste fácil: 18/20/22/24)
+  offset = 14,              // ✅ distância (ajuste se necessário)
   suffix = ''
 } = {}) {
   return {
@@ -584,11 +584,9 @@ function addOutsideValueLabelsPlugin({
         const text = `${value}${suffix}`;
 
         if (isHorizontal) {
-          // barras horizontais: label à direita (fora)
           ctx.textAlign = 'left';
           ctx.fillText(text, elem.x + offset, elem.y);
         } else {
-          // barras verticais: label acima (fora)
           ctx.textAlign = 'center';
           ctx.fillText(text, elem.x, elem.y - offset);
         }
@@ -703,6 +701,7 @@ function updateCharts() {
 
 // ===================================
 // ✅ GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS
+// ✅ agora com número FORA, PRETO, NEGRITO e MAIOR
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -742,7 +741,10 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      addValueLabelsPlugin({ id: 'pendenciasMesLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
+      addOutsideValueLabelsPlugin({
+        id: 'pendenciasMesOutsideLabels',
+        color: '#000000'
+      })
     ]
   });
 }
@@ -930,7 +932,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ STATUS  ✅ (LABEL FORA EM PRETO/NEGRITO)
+// ✅ STATUS ✅ (FORA, PRETO, NEGRITO e MAIOR)
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -970,14 +972,13 @@ function createStatusChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      // ✅ pedido: fora da barra, preto, negrito
-      addOutsideValueLabelsPlugin({ id: 'statusOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
+      addOutsideValueLabelsPlugin({ id: 'statusOutsideLabels', color: '#000000' })
     ]
   });
 }
 
 // ===================================
-// ✅ PRESTADOR ✅ (LABEL FORA EM PRETO/NEGRITO)
+// ✅ PRESTADOR ✅ (FORA, PRETO, NEGRITO e MAIOR)
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1017,14 +1018,13 @@ function createPrestadorChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      // ✅ pedido: fora da barra, preto, negrito
-      addOutsideValueLabelsPlugin({ id: 'prestadorOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
+      addOutsideValueLabelsPlugin({ id: 'prestadorOutsideLabels', color: '#000000' })
     ]
   });
 }
 
 // ===================================
-// ✅ PRESTADOR PENDENTE ✅ (LABEL FORA EM PRETO/NEGRITO)
+// ✅ PRESTADOR PENDENTE ✅ (FORA, PRETO, NEGRITO e MAIOR)
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1064,8 +1064,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      // ✅ pedido: fora da barra, preto, negrito
-      addOutsideValueLabelsPlugin({ id: 'prestadorPendOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
+      addOutsideValueLabelsPlugin({ id: 'prestadorPendOutsideLabels', color: '#000000' })
     ]
   });
 }
