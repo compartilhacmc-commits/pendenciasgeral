@@ -1249,7 +1249,6 @@ function downloadExcel() {
 
   const exportData = dataParaExportar.map(item => ({
     'Nº Prontuário': getColumnValue(item, ['Nº Prontuário','N° Prontuário','Numero Prontuário','Prontuário','Prontuario'], ''),
-    'Nº Solicitação': getColumnValue(item, ['Solicitação','Solicitacao','N° Solicitação','Nº Solicitação'], ''),
     'Telefone': item['Telefone'] || '',
     'Distrito': item['_distrito'] || '',
     'Origem': item['_origem'] || '',
@@ -1308,7 +1307,6 @@ let tableColumnFilters = {}; // { key: Set(values) }
 
 const TABLE_COLUMNS = [
   { key: 'origem', label: 'Origem da planilha' },
-  { key: 'solicitacao', label: 'Solicitação' },
   { key: 'dataSolicitacao', label: 'Data Solicitação' },
   { key: 'prontuario', label: 'Nº Prontuário' },
   { key: 'telefone', label: 'Telefone' },
@@ -1348,7 +1346,6 @@ function normalizeText(s) {
 function getTableRowObject(item) {
   return {
     origem: item['_origem'] || '-',
-    solicitacao: getColumnValue(item, ['Solicitação','Solicitacao','N° Solicitação','Nº Solicitação'], '-'),
     dataSolicitacao: formatDate(getColumnValue(item, ['Data da Solicitação','Data Solicitação','Data da Solicitacao','Data Solicitacao'], '-')),
     prontuario: getColumnValue(item, ['Nº Prontuário','N° Prontuário','Numero Prontuário','Prontuário','Prontuario'], '-'),
     telefone: getColumnValue(item, ['Telefone','TELEFONE'], '-'),
@@ -1525,4 +1522,5 @@ function updateDemandasTable() {
 }
 
      
+
 
