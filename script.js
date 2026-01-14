@@ -350,24 +350,36 @@ function showLoading(show) {
 }
 
 // ===================================
-// ✅ POPULAR FILTROS (SEM CBO ESPECIALIDADE)
+// ✅ POPULAR FILTROS (COM CBO ESPECIALIDADE)
 // ===================================
 function populateFilters() {
-  const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
-  renderMultiSelect('msStatusPanel', statusList, applyFilters);
+  // Distrito
+  const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
+  renderMultiSelect('msDistritoPanel', distritos, applyFilters);
+  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
 
+  // Unidade Solicitante
   const unidades = [...new Set(allData.map(item => item['Unidade Solicitante']))].filter(Boolean).sort();
   renderMultiSelect('msUnidadePanel', unidades, applyFilters);
+  setMultiSelectText('msUnidadeText', [], 'Todas');
 
+  // Prestador
   const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
-
-  setMultiSelectText('msStatusText', [], 'Todos');
-  setMultiSelectText('msUnidadeText', [], 'Todas');
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
+  // ✅ CBO Especialidade (NOVO)
+  const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
+  renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
+  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
+
+  // Status
+  const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
+  renderMultiSelect('msStatusPanel', statusList, applyFilters);
+  setMultiSelectText('msStatusText', [], 'Todos');
+
+  // Mês
   populateMonthFilter();
-  populateDistritoFilter();
 }
 
 function populateMonthFilter() {
@@ -398,29 +410,31 @@ function populateMonthFilter() {
   setMultiSelectText('msMesText', [], 'Todos os Meses');
 }
 
-function populateDistritoFilter() {
-  const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
-  renderMultiSelect('msDistritoPanel', distritos, applyFilters);
-  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
-}
-
 function applyFilters() {
-  const statusSel = getSelectedFromPanel('msStatusPanel');
+  const distritoSel = getSelectedFromPanel('msDistritoPanel');
   const unidadeSel = getSelectedFromPanel('msUnidadePanel');
   const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
+  const cboEspecialidadeSel = getSelectedFromPanel('msCboEspecialidadePanel'); // ✅ NOVO
+  const statusSel = getSelectedFromPanel('msStatusPanel');
   const mesSel = getSelectedFromPanel('msMesPanel');
-  const distritoSel = getSelectedFromPanel('msDistritoPanel');
 
-  setMultiSelectText('msStatusText', statusSel, 'Todos');
+  setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
   setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
   setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
+  setMultiSelectText('msCboEspecialidadeText', cboEspecialidadeSel, 'Todas'); // ✅ NOVO
+  setMultiSelectText('msStatusText', statusSel, 'Todos');
   setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
-  setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
 
   filteredData = allData.filter(item => {
-    const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
+    const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
     const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
     const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
+    
+    // ✅ FILTRO CBO ESPECIALIDADE
+    const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
+    
+    const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
 
     let okMes = true;
     if (mesSel.length > 0) {
@@ -437,25 +451,25 @@ function applyFilters() {
       } else okMes = false;
     }
 
-    const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
-    return okStatus && okUnidade && okPrest && okMes && okDistrito;
+    return okDistrito && okUnidade && okPrest && okCbo && okStatus && okMes;
   });
 
   updateDashboard();
 }
 
 function clearFilters() {
-  ['msStatusPanel','msUnidadePanel','msPrestadorPanel','msMesPanel','msDistritoPanel'].forEach(panelId => {
+  ['msDistritoPanel','msUnidadePanel','msPrestadorPanel','msCboEspecialidadePanel','msStatusPanel','msMesPanel'].forEach(panelId => {
     const panel = document.getElementById(panelId);
     if (!panel) return;
     panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
   });
 
-  setMultiSelectText('msStatusText', [], 'Todos');
+  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
   setMultiSelectText('msUnidadeText', [], 'Todas');
   setMultiSelectText('msPrestadorText', [], 'Todos');
+  setMultiSelectText('msCboEspecialidadeText', [], 'Todas'); // ✅ NOVO
+  setMultiSelectText('msStatusText', [], 'Todos');
   setMultiSelectText('msMesText', [], 'Todos os Meses');
-  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
 
   filteredData = [...allData];
   updateDashboard();
