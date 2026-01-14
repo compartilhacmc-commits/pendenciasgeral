@@ -350,7 +350,7 @@ function showLoading(show) {
 }
 
 // ===================================
-// ✅ POPULAR FILTROS
+// ✅ POPULAR FILTROS (SEM CBO ESPECIALIDADE)
 // ===================================
 function populateFilters() {
   const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
@@ -359,15 +359,11 @@ function populateFilters() {
   const unidades = [...new Set(allData.map(item => item['Unidade Solicitante']))].filter(Boolean).sort();
   renderMultiSelect('msUnidadePanel', unidades, applyFilters);
 
-  const especialidades = [...new Set(allData.map(item => item['Cbo Especialidade']))].filter(Boolean).sort();
-  renderMultiSelect('msEspecialidadePanel', especialidades, applyFilters);
-
   const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
 
   setMultiSelectText('msStatusText', [], 'Todos');
   setMultiSelectText('msUnidadeText', [], 'Todas');
-  setMultiSelectText('msEspecialidadeText', [], 'Todas');
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
   populateMonthFilter();
@@ -411,14 +407,12 @@ function populateDistritoFilter() {
 function applyFilters() {
   const statusSel = getSelectedFromPanel('msStatusPanel');
   const unidadeSel = getSelectedFromPanel('msUnidadePanel');
-  const especialidadeSel = getSelectedFromPanel('msEspecialidadePanel');
   const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
   const mesSel = getSelectedFromPanel('msMesPanel');
   const distritoSel = getSelectedFromPanel('msDistritoPanel');
 
   setMultiSelectText('msStatusText', statusSel, 'Todos');
   setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
-  setMultiSelectText('msEspecialidadeText', especialidadeSel, 'Todas');
   setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
   setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
   setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
@@ -426,7 +420,6 @@ function applyFilters() {
   filteredData = allData.filter(item => {
     const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
     const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
-    const okEsp = (especialidadeSel.length === 0) || especialidadeSel.includes(item['Cbo Especialidade'] || '');
     const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
 
     let okMes = true;
@@ -445,14 +438,14 @@ function applyFilters() {
     }
 
     const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
-    return okStatus && okUnidade && okEsp && okPrest && okMes && okDistrito;
+    return okStatus && okUnidade && okPrest && okMes && okDistrito;
   });
 
   updateDashboard();
 }
 
 function clearFilters() {
-  ['msStatusPanel','msUnidadePanel','msEspecialidadePanel','msPrestadorPanel','msMesPanel','msDistritoPanel'].forEach(panelId => {
+  ['msStatusPanel','msUnidadePanel','msPrestadorPanel','msMesPanel','msDistritoPanel'].forEach(panelId => {
     const panel = document.getElementById(panelId);
     if (!panel) return;
     panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -460,7 +453,6 @@ function clearFilters() {
 
   setMultiSelectText('msStatusText', [], 'Todos');
   setMultiSelectText('msUnidadeText', [], 'Todas');
-  setMultiSelectText('msEspecialidadeText', [], 'Todas');
   setMultiSelectText('msPrestadorText', [], 'Todos');
   setMultiSelectText('msMesText', [], 'Todos os Meses');
   setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
@@ -1348,7 +1340,7 @@ function downloadExcel() {
 }
 
 /* =========================================================
-   ✅✅✅ TABELA "Todas as Demandas" (SEM COLUNA SOLICITAÇÃO)
+   ✅✅✅ TABELA "Todas as Demandas"
 ========================================================= */
 
 const TABLE_PAGE_SIZE = 100;
@@ -1356,7 +1348,6 @@ let tableCurrentPage = 1;
 let tableSearchQuery = '';
 let tableColumnFilters = {};
 
-// ✅ COLUNA "SOLICITAÇÃO" REMOVIDA
 const TABLE_COLUMNS = [
   { key: 'origem', label: 'Origem da planilha' },
   { key: 'dataSolicitacao', label: 'Data Solicitação' },
@@ -1572,4 +1563,3 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
-
