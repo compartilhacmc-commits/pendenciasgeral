@@ -1518,3 +1518,4 @@ function updateDemandasTable() {
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
 
+
