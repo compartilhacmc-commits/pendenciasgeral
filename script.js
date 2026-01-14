@@ -58,7 +58,7 @@ const SHEETS = [
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO RESSACA
+  // DISTRITO RESSACA ✅ CORRIGIDO
   {
     name: 'PENDÊNCIAS RESSACA',
     url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
@@ -67,7 +67,7 @@ const SHEETS = [
   },
   {
     name: 'RESOLVIDOS RESSACA',
-    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
+    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=2142054254', // ✅ GID CORRIGIDO (era 278071504, agora 2142054254)
     distrito: 'RESSACA',
     tipo: 'RESOLVIDO'
   },
@@ -469,7 +469,7 @@ function clearFilters() {
 function updateDashboard() {
   updateCards();
   updateCharts();
-  updateDemandasTable(); // ✅ tabela acompanha filtros do painel
+  updateDemandasTable();
 }
 
 function updateCards() {
@@ -512,7 +512,7 @@ function addValueLabelsPlugin({
   id,
   color = '#FFFFFF',
   font = 'bold 16px Arial',
-  mode = 'vertical', // 'vertical' | 'horizontal'
+  mode = 'vertical',
   suffix = ''
 } = {}) {
   return {
@@ -696,7 +696,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ GRÁFICO: REGISTROS POR DISTRITO (remove legenda "Pendências")
+// ✅ GRÁFICO: REGISTROS POR DISTRITO
 // ===================================
 function createDistritoChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -707,7 +707,7 @@ function createDistritoChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: '', // ✅ remove o texto "Pendências" da legenda
+        label: '',
         data,
         backgroundColor: '#1e3a8a',
         borderWidth: 0,
@@ -720,7 +720,7 @@ function createDistritoChart(canvasId, labels, data) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false }, // ✅ remove a legenda inteira (como na imagem) [Imagem](https://www.genspark.ai/api/files/s/hQc73fLt)
+        legend: { display: false },
         tooltip: {
           enabled: true,
           backgroundColor: 'rgba(30, 58, 138, 0.9)',
@@ -788,7 +788,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ RESOLUTIVIDADE POR DISTRITO (HORIZONTAL) — números com %
+// ✅ RESOLUTIVIDADE POR DISTRITO (HORIZONTAL)
 // ===================================
 function createResolutividadeDistritoChart() {
   const ctx = document.getElementById('chartResolutividadeDistrito');
@@ -878,7 +878,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ STATUS — números brancos
+// ✅ STATUS
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -924,7 +924,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ PRESTADOR — números brancos
+// ✅ PRESTADOR
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1013,7 +1013,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ RESOLUTIVIDADE POR PRESTADOR (HORIZONTAL) — números com %
+// ✅ RESOLUTIVIDADE POR PRESTADOR (HORIZONTAL)
 // ===================================
 function createResolutividadePrestadorChart() {
   const ctx = document.getElementById('chartResolutividadePrestador');
@@ -1237,7 +1237,7 @@ function refreshData() {
 }
 
 // ===================================
-// DOWNLOAD EXCEL (mantido como estava)
+// DOWNLOAD EXCEL
 // ===================================
 function downloadExcel() {
   const dataParaExportar = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1255,56 +1255,53 @@ function downloadExcel() {
     'Data Solicitação': getColumnValue(item, ['Data da Solicitação','Data Solicitação','Data da Solicitacao','Data Solicitacao'], ''),
     'Unidade Solicitante': item['Unidade Solicitante'] || '',
     'CBO Especialidade': item['Cbo Especialidade'] || '',
-            'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
-        'Status': item['Status'] || '',
-        'Prestador': item['Prestador'] || '',
-        'Usuário': getColumnValue(item, ['Usuário','Usuario'], ''),
-        'Data Final Prazo 15d': getColumnValue(item, ['Data Final do Prazo (Pendência com 15 dias)','Data Final do Prazo (Pendencia com 15 dias)','Data Final Prazo 15d','Prazo 15 dias'], ''),
-        'Data Envio Email 15d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 15 dias)','Data do envio do Email (Prazo: Pendencia com 15 dias)','Data Envio Email 15d','Email 15 dias'], ''),
-        'Data Final Prazo 30d': getColumnValue(item, ['Data Final do Prazo (Pendência com 30 dias)','Data Final do Prazo (Pendencia com 30 dias)','Data Final Prazo 30d','Prazo 30 dias'], ''),
-        'Data Envio Email 30d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 30 dias)','Data do envio do Email (Prazo: Pendencia com 30 dias)','Data Envio Email 30d','Email 30 dias'], '')
-    }));
+    'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
+    'Status': item['Status'] || '',
+    'Prestador': item['Prestador'] || '',
+    'Usuário': getColumnValue(item, ['Usuário','Usuario'], ''),
+    'Data Final Prazo 15d': getColumnValue(item, ['Data Final do Prazo (Pendência com 15 dias)','Data Final do Prazo (Pendencia com 15 dias)','Data Final Prazo 15d','Prazo 15 dias'], ''),
+    'Data Envio Email 15d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 15 dias)','Data do envio do Email (Prazo: Pendencia com 15 dias)','Data Envio Email 15d','Email 15 dias'], ''),
+    'Data Final Prazo 30d': getColumnValue(item, ['Data Final do Prazo (Pendência com 30 dias)','Data Final do Prazo (Pendencia com 30 dias)','Data Final Prazo 30d','Prazo 30 dias'], ''),
+    'Data Envio Email 30d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 30 dias)','Data do envio do Email (Prazo: Pendencia com 30 dias)','Data Envio Email 30d','Email 30 dias'], '')
+  }));
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Dados Completos');
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Dados Completos');
 
-    ws['!cols'] = [
-        { wch: 18 },
-        { wch: 18 },
-        { wch: 16 },
-        { wch: 20 },
-        { wch: 30 },
-        { wch: 18 },
-        { wch: 30 },
-        { wch: 30 },
-        { wch: 18 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 20 },
-        { wch: 18 },
-        { wch: 20 },
-        { wch: 18 },
-        { wch: 20 }
-    ];
+  ws['!cols'] = [
+    { wch: 18 },
+    { wch: 18 },
+    { wch: 16 },
+    { wch: 20 },
+    { wch: 30 },
+    { wch: 18 },
+    { wch: 30 },
+    { wch: 30 },
+    { wch: 18 },
+    { wch: 20 },
+    { wch: 25 },
+    { wch: 20 },
+    { wch: 18 },
+    { wch: 20 },
+    { wch: 18 },
+    { wch: 20 }
+  ];
 
-    const hoje = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Dados_Todos_Distritos_${hoje}.xlsx`);
+  const hoje = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `Dados_Todos_Distritos_${hoje}.xlsx`);
 }
 
 /* =========================================================
-   ✅✅✅ TABELA "Todas as Demandas"
-   - Busca acima
-   - Filtro por coluna com seleções múltiplas
-   - 100 por página
-   - Só conta/mostra registros com Usuário preenchido
+   ✅✅✅ TABELA "Todas as Demandas" (SEM COLUNA SOLICITAÇÃO)
 ========================================================= */
 
 const TABLE_PAGE_SIZE = 100;
 let tableCurrentPage = 1;
 let tableSearchQuery = '';
-let tableColumnFilters = {}; // { key: Set(values) }
+let tableColumnFilters = {};
 
+// ✅ COLUNA "SOLICITAÇÃO" REMOVIDA
 const TABLE_COLUMNS = [
   { key: 'origem', label: 'Origem da planilha' },
   { key: 'dataSolicitacao', label: 'Data Solicitação' },
@@ -1520,7 +1517,3 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
-
-     
-
-
