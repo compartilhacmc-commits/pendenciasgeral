@@ -987,7 +987,7 @@ function createStatusChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      addOutsideValueLabelsPlugin({ id: 'statusOutsideLabels', color: '#000000' })
+      addValueLabelsPlugin({ id: 'statusValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
     ]
   });
 }
