@@ -2,9 +2,10 @@
 // CONFIGURAÇÃO DAS PLANILHAS (8 DISTRITOS)
 // ===================================
 
-// helper para padronizar URL CSV do Google Sheets
+// helper para padronizar URL CSV do Google Sheets COM CACHE BUSTING
 function gvizCsvUrl(spreadsheetId, gid) {
-  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+  const timestamp = new Date().getTime();
+  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_=${timestamp}`;
 }
 
 const SHEETS = [
@@ -39,13 +40,13 @@ const SHEETS = [
   // DISTRITO NACIONAL
   {
     name: 'PENDÊNCIAS NACIONAL',
-    url: 'https://docs.google.com/spreadsheets/d/1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '278071504'),
     distrito: 'NACIONAL',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS NACIONAL',
-    url: 'https://docs.google.com/spreadsheets/d/1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA/gviz/tq?tqx=out:csv&gid=150768142',
+    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '150768142'),
     distrito: 'NACIONAL',
     tipo: 'RESOLVIDO'
   },
@@ -53,13 +54,13 @@ const SHEETS = [
   // DISTRITO PETROLÂNDIA
   {
     name: 'PENDÊNCIAS PETROLÂNDIA',
-    url: 'https://docs.google.com/spreadsheets/d/1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '278071504'),
     distrito: 'PETROLÂNDIA',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS PETROLÂNDIA',
-    url: 'https://docs.google.com/spreadsheets/d/1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s/gviz/tq?tqx=out:csv&gid=1067061018',
+    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '1067061018'),
     distrito: 'PETROLÂNDIA',
     tipo: 'RESOLVIDO'
   },
@@ -67,13 +68,13 @@ const SHEETS = [
   // DISTRITO RESSACA 
   {
     name: 'PENDÊNCIAS RESSACA',
-    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '278071504'),
     distrito: 'RESSACA',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS RESSACA',
-    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/edit?gid=699447584#gid=699447584',
+    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '699447584'),
     distrito: 'RESSACA',
     tipo: 'RESOLVIDO'
   },
@@ -81,13 +82,13 @@ const SHEETS = [
   // DISTRITO RIACHO
   {
     name: 'PENDÊNCIAS RIACHO',
-    url: 'https://docs.google.com/spreadsheets/d/1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '278071504'),
     distrito: 'RIACHO',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS RIACHO',
-    url: 'https://docs.google.com/spreadsheets/d/1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc/gviz/tq?tqx=out:csv&gid=1996983614',
+    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '1996983614'),
     distrito: 'RIACHO',
     tipo: 'RESOLVIDO'
   },
@@ -95,13 +96,13 @@ const SHEETS = [
   // DISTRITO SEDE
   {
     name: 'PENDÊNCIAS SEDE',
-    url: 'https://docs.google.com/spreadsheets/d/1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '278071504'),
     distrito: 'SEDE',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS SEDE',
-    url: 'https://docs.google.com/spreadsheets/d/1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc/gviz/tq?tqx=out:csv&gid=626867102',
+    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '626867102'),
     distrito: 'SEDE',
     tipo: 'RESOLVIDO'
   },
@@ -109,13 +110,13 @@ const SHEETS = [
   // DISTRITO VARGEM DAS FLORES
   {
     name: 'PENDÊNCIAS VARGEM DAS FLORES',
-    url: 'https://docs.google.com/spreadsheets/d/1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk/gviz/tq?tqx=out:csv&gid=278071504',
+    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '278071504'),
     distrito: 'VARGEM DAS FLORES',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS VARGEM DAS FLORES',
-    url: 'https://docs.google.com/spreadsheets/d/1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk/gviz/tq?tqx=out:csv&gid=451254610',
+    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '451254610'),
     distrito: 'VARGEM DAS FLORES',
     tipo: 'RESOLVIDO'
   }
@@ -146,11 +147,21 @@ function hasUsuarioPreenchido(item) {
 }
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA
+// ✅ FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
   for (let name of possibleNames) {
+    // Busca exata
     if (item.hasOwnProperty(name) && item[name]) return item[name];
+    
+    // Busca com trim (remove espaços)
+    const trimmedName = name.trim();
+    if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
+    
+    // Busca case-insensitive
+    const keys = Object.keys(item);
+    const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
+    if (foundKey && item[foundKey]) return item[foundKey];
   }
   return defaultValue;
 }
@@ -247,7 +258,13 @@ async function loadData() {
 
   try {
     const promises = SHEETS.map(sheet =>
-      fetch(sheet.url)
+      fetch(sheet.url, {
+        cache: 'no-store', // Força não usar cache
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
         .then(response => response.ok ? response.text() : null)
         .then(csvText => {
           if (!csvText) return null;
@@ -265,6 +282,10 @@ async function loadData() {
       if (rows.length < 2) return;
 
       const headers = rows[0];
+      
+      // ✅ DEBUG: Mostrar todas as colunas disponíveis
+      console.log(`📋 Planilha: ${result.name}`);
+      console.log('Colunas disponíveis:', headers);
 
       const sheetData = rows.slice(1)
         .filter(row => row.length > 1 && row[0])
@@ -284,6 +305,12 @@ async function loadData() {
     });
 
     if (allData.length === 0) throw new Error('Nenhum dado foi carregado das planilhas');
+
+    // ✅ DEBUG: Mostrar exemplo de CBO Especialidade
+    if (allData.length > 0) {
+      console.log('🔍 Exemplo de registro completo:', allData[0]);
+      console.log('🔍 CBO Especialidade encontrado:', getColumnValue(allData[0], ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']));
+    }
 
     filteredData = [...allData];
     populateFilters();
@@ -368,8 +395,11 @@ function populateFilters() {
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
-  // ✅ CBO Especialidade (NOVO)
+  // ✅ CBO Especialidade
   const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
+  
+  console.log('✅ Especialidades encontradas:', cboEspecialidades);
+  
   renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
   setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
 
@@ -414,14 +444,14 @@ function applyFilters() {
   const distritoSel = getSelectedFromPanel('msDistritoPanel');
   const unidadeSel = getSelectedFromPanel('msUnidadePanel');
   const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
-  const cboEspecialidadeSel = getSelectedFromPanel('msCboEspecialidadePanel'); // ✅ NOVO
+  const cboEspecialidadeSel = getSelectedFromPanel('msCboEspecialidadePanel');
   const statusSel = getSelectedFromPanel('msStatusPanel');
   const mesSel = getSelectedFromPanel('msMesPanel');
 
   setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
   setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
   setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
-  setMultiSelectText('msCboEspecialidadeText', cboEspecialidadeSel, 'Todas'); // ✅ NOVO
+  setMultiSelectText('msCboEspecialidadeText', cboEspecialidadeSel, 'Todas');
   setMultiSelectText('msStatusText', statusSel, 'Todos');
   setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
 
@@ -430,7 +460,6 @@ function applyFilters() {
     const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
     const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
     
-    // ✅ FILTRO CBO ESPECIALIDADE
     const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
     const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
     
@@ -467,7 +496,7 @@ function clearFilters() {
   setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
   setMultiSelectText('msUnidadeText', [], 'Todas');
   setMultiSelectText('msPrestadorText', [], 'Todos');
-  setMultiSelectText('msCboEspecialidadeText', [], 'Todas'); // ✅ NOVO
+  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
   setMultiSelectText('msStatusText', [], 'Todos');
   setMultiSelectText('msMesText', [], 'Todos os Meses');
 
@@ -559,9 +588,6 @@ function addValueLabelsPlugin({
   };
 }
 
-// ===================================
-// ✅✅ NOVO PLUGIN: VALOR FORA DA BARRA (LEGENDA PRETO/NEGRITO)
-// ===================================
 function addOutsideValueLabelsPlugin({
   id,
   color = '#000000',
@@ -603,7 +629,7 @@ function addOutsideValueLabelsPlugin({
 }
 
 // ===================================
-// ✅✅✅ ATUALIZAR GRÁFICOS
+// ✅ ATUALIZAR GRÁFICOS
 // ===================================
 function updateCharts() {
   // DISTRITOS - todos
@@ -704,9 +730,6 @@ function updateCharts() {
   createPendenciasPorMesChart('chartPendenciasPorMes', mesLabels, mesValues);
 }
 
-// ===================================
-// ✅ GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS
-// ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPendenciasPorMes) chartPendenciasPorMes.destroy();
@@ -753,9 +776,6 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ GRÁFICO: REGISTROS POR DISTRITO
-// ===================================
 function createDistritoChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartDistritos) chartDistritos.destroy();
@@ -799,9 +819,6 @@ function createDistritoChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ GRÁFICO: NÃO RESOLVIDAS POR DISTRITO
-// ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartDistritosPendentes) chartDistritosPendentes.destroy();
@@ -845,9 +862,6 @@ function createDistritoPendenteChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ RESOLUTIVIDADE POR DISTRITO (HORIZONTAL)
-// ===================================
 function createResolutividadeDistritoChart() {
   const ctx = document.getElementById('chartResolutividadeDistrito');
 
@@ -935,9 +949,6 @@ function createResolutividadeDistritoChart() {
   });
 }
 
-// ===================================
-// ✅ STATUS
-// ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartStatus) chartStatus.destroy();
@@ -981,9 +992,6 @@ function createStatusChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ PRESTADOR
-// ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadores) chartPrestadores.destroy();
@@ -1027,9 +1035,6 @@ function createPrestadorChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ PRESTADOR PENDENTE
-// ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadoresPendentes) chartPrestadoresPendentes.destroy();
@@ -1073,9 +1078,6 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// ✅ RESOLUTIVIDADE POR PRESTADOR (HORIZONTAL)
-// ===================================
 function createResolutividadePrestadorChart() {
   const ctx = document.getElementById('chartResolutividadePrestador');
 
@@ -1165,9 +1167,6 @@ function createResolutividadePrestadorChart() {
   });
 }
 
-// ===================================
-// ✅ PIZZA
-// ===================================
 function createPieChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPizzaStatus) chartPizzaStatus.destroy();
@@ -1262,9 +1261,6 @@ function createPieChart(canvasId, labels, data) {
   });
 }
 
-// ===================================
-// FUNÇÕES AUXILIARES
-// ===================================
 function parseDate(dateString) {
   if (!dateString || dateString === '-') return null;
 
@@ -1290,16 +1286,10 @@ function formatDate(dateString) {
   return `${day}/${month}/${year}`;
 }
 
-// ===================================
-// ATUALIZAR DADOS
-// ===================================
 function refreshData() {
   loadData();
 }
 
-// ===================================
-// DOWNLOAD EXCEL
-// ===================================
 function downloadExcel() {
   const dataParaExportar = filteredData.filter(item => hasUsuarioPreenchido(item));
 
@@ -1315,7 +1305,7 @@ function downloadExcel() {
     'Origem': item['_origem'] || '',
     'Data Solicitação': getColumnValue(item, ['Data da Solicitação','Data Solicitação','Data da Solicitacao','Data Solicitacao'], ''),
     'Unidade Solicitante': item['Unidade Solicitante'] || '',
-    'CBO Especialidade': item['Cbo Especialidade'] || '',
+    'CBO Especialidade': getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'], ''),
     'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
     'Status': item['Status'] || '',
     'Prestador': item['Prestador'] || '',
@@ -1354,7 +1344,7 @@ function downloadExcel() {
 }
 
 /* =========================================================
-   ✅✅✅ TABELA "Todas as Demandas"
+   TABELA "Todas as Demandas"
 ========================================================= */
 
 const TABLE_PAGE_SIZE = 100;
