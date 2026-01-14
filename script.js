@@ -8,7 +8,7 @@ function gvizCsvUrl(spreadsheetId, gid) {
 }
 
 const SHEETS = [
-  // DISTRITO ELDORADO ✅ CORRIGIDO PARA CSV (GVIZ)
+  // DISTRITO ELDORADO 
   {
     name: 'PENDÊNCIAS ELDORADO',
     url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
@@ -22,7 +22,7 @@ const SHEETS = [
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO INDUSTRIAL ✅ CORRIGIDO PARA CSV (GVIZ)
+  // DISTRITO INDUSTRIAL 
   {
     name: 'PENDÊNCIAS INDUSTRIAL',
     url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '278071504'),
@@ -64,7 +64,7 @@ const SHEETS = [
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO RESSACA ✅ CORRIGIDO
+  // DISTRITO RESSACA 
   {
     name: 'PENDÊNCIAS RESSACA',
     url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=278071504',
@@ -512,7 +512,7 @@ function updateCards() {
 }
 
 // ===================================
-// ✅ PLUGIN (NÚMEROS BRANCOS EM NEGRITO) - ORIGINAL (mantido)
+// PLUGIN (NÚMEROS BRANCOS EM NEGRITO)
 // ===================================
 function addValueLabelsPlugin({
   id,
@@ -554,14 +554,13 @@ function addValueLabelsPlugin({
 }
 
 // ===================================
-// ✅✅ NOVO PLUGIN: VALOR FORA DA BARRA (PRETO/NEGRITO)
-// (usado SOMENTE onde você pediu)
+// ✅✅ NOVO PLUGIN: VALOR FORA DA BARRA (LEGENDA PRETO/NEGRITO)
 // ===================================
 function addOutsideValueLabelsPlugin({
   id,
   color = '#000000',
-  font = 'bold 20px Arial', // ✅ MAIOR (ajuste fácil: 18/20/22/24)
-  offset = 14,              // ✅ distância (ajuste se necessário)
+  font = 'bold 20px Arial',
+  offset = 14,
   suffix = ''
 } = {}) {
   return {
@@ -701,7 +700,6 @@ function updateCharts() {
 
 // ===================================
 // ✅ GRÁFICO: TOTAL DE PENDÊNCIAS POR MÊS
-// ✅ agora com número FORA, PRETO, NEGRITO e MAIOR
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -932,7 +930,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ STATUS ✅ (FORA, PRETO, NEGRITO e MAIOR)
+// ✅ STATUS
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -978,7 +976,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ PRESTADOR ✅ (FORA, PRETO, NEGRITO e MAIOR)
+// ✅ PRESTADOR
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1024,7 +1022,7 @@ function createPrestadorChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ PRESTADOR PENDENTE ✅ (FORA, PRETO, NEGRITO e MAIOR)
+// ✅ PRESTADOR PENDENTE
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1574,3 +1572,4 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
