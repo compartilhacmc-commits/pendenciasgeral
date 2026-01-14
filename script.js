@@ -5,13 +5,13 @@ const SHEETS = [
   // DISTRITO ELDORADO
   {
     name: 'PENDÊNCIAS ELDORADO',
-    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/gviz/tq?tqx=out:csv&gid=278071504',
+    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/edit?gid=278071504#gid=278071504',
     distrito: 'ELDORADO',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS ELDORADO',
-    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/gviz/tq?tqx=out:csv&gid=2142054254',
+    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/edit?gid=2142054254#gid=2142054254',
     distrito: 'ELDORADO',
     tipo: 'RESOLVIDO'
   },
@@ -19,13 +19,13 @@ const SHEETS = [
   // DISTRITO INDUSTRIAL
   {
     name: 'PENDÊNCIAS INDUSTRIAL',
-    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/gviz/tq?tqx=out:csv&gid=278071504',
+    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/edit?gid=278071504#gid=278071504',
     distrito: 'INDUSTRIAL',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS INDUSTRIAL',
-    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/gviz/tq?tqx=out:csv&gid=1086207100',
+    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/edit?gid=1086207100#gid=1086207100',
     distrito: 'INDUSTRIAL',
     tipo: 'RESOLVIDO'
   },
@@ -67,7 +67,7 @@ const SHEETS = [
   },
   {
     name: 'RESOLVIDOS RESSACA',
-    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/gviz/tq?tqx=out:csv&gid=2142054254', // ✅ GID CORRIGIDO (era 278071504, agora 2142054254)
+    url: 'https://docs.google.com/spreadsheets/d/1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8/edit?gid=699447584#gid=699447584',
     distrito: 'RESSACA',
     tipo: 'RESOLVIDO'
   },
@@ -1517,5 +1517,6 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
 
 
