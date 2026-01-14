@@ -1,31 +1,37 @@
 // ===================================
 // CONFIGURAÇÃO DAS PLANILHAS (8 DISTRITOS)
 // ===================================
+
+// helper para padronizar URL CSV do Google Sheets
+function gvizCsvUrl(spreadsheetId, gid) {
+  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+}
+
 const SHEETS = [
-  // DISTRITO ELDORADO
+  // DISTRITO ELDORADO  ✅ CORRIGIDO PARA CSV (GVIZ)
   {
     name: 'PENDÊNCIAS ELDORADO',
-    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/edit?gid=278071504#gid=278071504',
+    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
     distrito: 'ELDORADO',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS ELDORADO',
-    url: 'https://docs.google.com/spreadsheets/d/1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4/edit?gid=2142054254#gid=2142054254',
+    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '2142054254'),
     distrito: 'ELDORADO',
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO INDUSTRIAL
+  // DISTRITO INDUSTRIAL ✅ CORRIGIDO PARA CSV (GVIZ)
   {
     name: 'PENDÊNCIAS INDUSTRIAL',
-    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/edit?gid=278071504#gid=278071504',
+    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '278071504'),
     distrito: 'INDUSTRIAL',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS INDUSTRIAL',
-    url: 'https://docs.google.com/spreadsheets/d/14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg/edit?gid=1086207100#gid=1086207100',
+    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '1086207100'),
     distrito: 'INDUSTRIAL',
     tipo: 'RESOLVIDO'
   },
@@ -506,7 +512,7 @@ function updateCards() {
 }
 
 // ===================================
-// ✅ PLUGIN (NÚMEROS BRANCOS EM NEGRITO)
+// ✅ PLUGIN (NÚMEROS BRANCOS EM NEGRITO) - ORIGINAL
 // ===================================
 function addValueLabelsPlugin({
   id,
@@ -539,6 +545,52 @@ function addValueLabelsPlugin({
         } else {
           const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, bar.x, yPos);
+        }
+      });
+
+      ctx.restore();
+    }
+  };
+}
+
+// ===================================
+// ✅✅ NOVO PLUGIN: VALOR FORA DA BARRA (PRETO/NEGRITO)
+// (usado SOMENTE nos 3 gráficos que você pediu)
+// ===================================
+function addOutsideValueLabelsPlugin({
+  id,
+  color = '#000000',
+  font = 'bold 14px Arial',
+  offset = 10,
+  suffix = ''
+} = {}) {
+  return {
+    id,
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      const dataset = chart.data.datasets[0];
+      if (!meta || !meta.data) return;
+
+      const isHorizontal = chart.options?.indexAxis === 'y';
+
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.font = font;
+      ctx.textBaseline = 'middle';
+
+      meta.data.forEach((elem, i) => {
+        const value = dataset.data[i];
+        const text = `${value}${suffix}`;
+
+        if (isHorizontal) {
+          // barras horizontais: label à direita (fora)
+          ctx.textAlign = 'left';
+          ctx.fillText(text, elem.x + offset, elem.y);
+        } else {
+          // barras verticais: label acima (fora)
+          ctx.textAlign = 'center';
+          ctx.fillText(text, elem.x, elem.y - offset);
         }
       });
 
@@ -878,7 +930,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ STATUS
+// ✅ STATUS  ✅ (LABEL FORA EM PRETO/NEGRITO)
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -918,13 +970,14 @@ function createStatusChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      addValueLabelsPlugin({ id: 'statusValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
+      // ✅ pedido: fora da barra, preto, negrito
+      addOutsideValueLabelsPlugin({ id: 'statusOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
     ]
   });
 }
 
 // ===================================
-// ✅ PRESTADOR
+// ✅ PRESTADOR ✅ (LABEL FORA EM PRETO/NEGRITO)
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -964,11 +1017,15 @@ function createPrestadorChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      addValueLabelsPlugin({ id: 'prestadorValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
+      // ✅ pedido: fora da barra, preto, negrito
+      addOutsideValueLabelsPlugin({ id: 'prestadorOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
     ]
   });
 }
 
+// ===================================
+// ✅ PRESTADOR PENDENTE ✅ (LABEL FORA EM PRETO/NEGRITO)
+// ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadoresPendentes) chartPrestadoresPendentes.destroy();
@@ -1007,7 +1064,8 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
       }
     },
     plugins: [
-      addValueLabelsPlugin({ id: 'prestadorPendValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
+      // ✅ pedido: fora da barra, preto, negrito
+      addOutsideValueLabelsPlugin({ id: 'prestadorPendOutsideLabels', color: '#000000', font: 'bold 14px Arial', offset: 10 })
     ]
   });
 }
@@ -1517,9 +1575,3 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
-
-
-
-
-
-
