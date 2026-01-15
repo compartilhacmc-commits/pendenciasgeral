@@ -283,10 +283,6 @@ async function loadData() {
 
       const headers = rows[0];
       
-      // ✅ DEBUG: Mostrar todas as colunas disponíveis
-      console.log(`📋 Planilha: ${result.name}`);
-      console.log('Colunas disponíveis:', headers);
-
       const sheetData = rows.slice(1)
         .filter(row => row.length > 1 && row[0])
         .map(row => {
@@ -305,12 +301,6 @@ async function loadData() {
     });
 
     if (allData.length === 0) throw new Error('Nenhum dado foi carregado das planilhas');
-
-    // ✅ DEBUG: Mostrar exemplo de CBO Especialidade
-    if (allData.length > 0) {
-      console.log('🔍 Exemplo de registro completo:', allData[0]);
-      console.log('🔍 CBO Especialidade encontrado:', getColumnValue(allData[0], ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']));
-    }
 
     filteredData = [...allData];
     populateFilters();
@@ -397,9 +387,6 @@ function populateFilters() {
 
   // ✅ CBO Especialidade
   const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
-  
-  console.log('✅ Especialidades encontradas:', cboEspecialidades);
-  
   renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
   setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
 
@@ -547,89 +534,7 @@ function updateCards() {
 }
 
 // ===================================
-// PLUGIN (NÚMEROS BRANCOS EM NEGRITO)
-// ===================================
-function addValueLabelsPlugin({
-  id,
-  color = '#FFFFFF',
-  font = 'bold 16px Arial',
-  mode = 'vertical',
-  suffix = ''
-} = {}) {
-  return {
-    id,
-    afterDatasetsDraw(chart) {
-      const { ctx } = chart;
-      const meta = chart.getDatasetMeta(0);
-      const dataset = chart.data.datasets[0];
-      if (!meta || !meta.data) return;
-
-      ctx.save();
-      ctx.fillStyle = color;
-      ctx.font = font;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      meta.data.forEach((bar, i) => {
-        const value = dataset.data[i];
-        const text = `${value}${suffix}`;
-
-        if (mode === 'horizontal') {
-          const xPos = bar.x + (bar.width / 2);
-          ctx.fillText(text, xPos, bar.y);
-        } else {
-          const yPos = bar.y + (bar.height / 2);
-          ctx.fillText(text, bar.x, yPos);
-        }
-      });
-
-      ctx.restore();
-    }
-  };
-}
-
-function addOutsideValueLabelsPlugin({
-  id,
-  color = '#000000',
-  font = 'bold 20px Arial',
-  offset = 14,
-  suffix = ''
-} = {}) {
-  return {
-    id,
-    afterDatasetsDraw(chart) {
-      const { ctx } = chart;
-      const meta = chart.getDatasetMeta(0);
-      const dataset = chart.data.datasets[0];
-      if (!meta || !meta.data) return;
-
-      const isHorizontal = chart.options?.indexAxis === 'y';
-
-      ctx.save();
-      ctx.fillStyle = color;
-      ctx.font = font;
-      ctx.textBaseline = 'middle';
-
-      meta.data.forEach((elem, i) => {
-        const value = dataset.data[i];
-        const text = `${value}${suffix}`;
-
-        if (isHorizontal) {
-          ctx.textAlign = 'left';
-          ctx.fillText(text, elem.x + offset, elem.y);
-        } else {
-          ctx.textAlign = 'center';
-          ctx.fillText(text, elem.x, elem.y - offset);
-        }
-      });
-
-      ctx.restore();
-    }
-  };
-}
-
-// ===================================
-// ✅ ATUALIZAR GRÁFICOS
+// ✅ ATUALIZAR GRÁFICOS (COM LEGENDAS DENTRO DAS BARRAS - NO MEIO)
 // ===================================
 function updateCharts() {
   // DISTRITOS - todos
@@ -730,6 +635,9 @@ function updateCharts() {
   createPendenciasPorMesChart('chartPendenciasPorMes', mesLabels, mesValues);
 }
 
+// ===================================
+// ✅ GRÁFICO: Total de Pendências por Mês (BARRAS HORIZONTAIS)
+// ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPendenciasPorMes) chartPendenciasPorMes.destroy();
@@ -739,43 +647,70 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: 'Pendências por Mês',
+        label: '',
         data,
         backgroundColor: '#1e3a8a',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 6,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#1e3a8a' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(30, 58, 138, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        legend: { display: false },
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 12, weight: 'bold' }, color: '#1e3a8a', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: {
+          beginAtZero: true,
+          ticks: { display: false },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#1e3a8a'
+          },
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addOutsideValueLabelsPlugin({
-        id: 'pendenciasMesOutsideLabels',
-        color: '#000000'
-      })
-    ]
+    plugins: [{
+      id: 'pendenciasMesInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x - 8;
+          ctx.fillText(text, xPos, bar.y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
+// ===================================
+// ✅ GRÁFICO: Registros Geral de Pendências por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// ===================================
 function createDistritoChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartDistritos) chartDistritos.destroy();
@@ -799,26 +734,58 @@ function createDistritoChart(canvasId, labels, data) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(30, 58, 138, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#1e3a8a', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: { 
+          ticks: { 
+            font: { size: 13, weight: 'bold' }, 
+            color: '#1e3a8a', 
+            maxRotation: 45, 
+            minRotation: 0 
+          }, 
+          grid: { display: false } 
+        },
+        y: { 
+          beginAtZero: true, 
+          ticks: { display: false }, 
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addValueLabelsPlugin({ id: 'distritoValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
-    ]
+    plugins: [{
+      id: 'distritosInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x;
+          // ✅ AJUSTE: Posição Y no meio da barra
+          const yPos = bar.y + (bar.height / 2);
+          ctx.fillText(text, xPos, yPos);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
+// ===================================
+// ✅ GRÁFICO: Pendências Não Resolvidas por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartDistritosPendentes) chartDistritosPendentes.destroy();
@@ -828,7 +795,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: 'Pendências Não Resolvidas',
+        label: '',
         data,
         backgroundColor: '#dc2626',
         borderWidth: 0,
@@ -841,24 +808,53 @@ function createDistritoPendenteChart(canvasId, labels, data) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#dc2626' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(220, 38, 38, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        legend: { display: false },
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#dc2626', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: { 
+          ticks: { 
+            font: { size: 13, weight: 'bold' }, 
+            color: '#dc2626', 
+            maxRotation: 45, 
+            minRotation: 0 
+          }, 
+          grid: { display: false } 
+        },
+        y: { 
+          beginAtZero: true, 
+          ticks: { display: false }, 
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addValueLabelsPlugin({ id: 'distritoPendValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
-    ]
+    plugins: [{
+      id: 'distritoPendenteInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x;
+          // ✅ AJUSTE: Posição Y no meio da barra
+          const yPos = bar.y + (bar.height / 2);
+          ctx.fillText(text, xPos, yPos);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
@@ -942,13 +938,13 @@ function createResolutividadeDistritoChart() {
         },
         y: { ticks: { font: { size: 13, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
       }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'resDistLabels', mode: 'horizontal', font: 'bold 16px Arial', color: '#FFFFFF', suffix: '%' })
-    ]
+    }
   });
 }
 
+// ===================================
+// ✅ GRÁFICO: Registros Geral de Pendências por Status (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartStatus) chartStatus.destroy();
@@ -958,7 +954,7 @@ function createStatusChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: 'Registros',
+        label: '',
         data,
         backgroundColor: '#f97316',
         borderWidth: 0,
@@ -971,27 +967,59 @@ function createStatusChart(canvasId, labels, data) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#f97316' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(249, 115, 22, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        legend: { display: false },
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#f97316', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: { 
+          ticks: { 
+            font: { size: 13, weight: 'bold' }, 
+            color: '#f97316', 
+            maxRotation: 45, 
+            minRotation: 0 
+          }, 
+          grid: { display: false } 
+        },
+        y: { 
+          beginAtZero: true, 
+          ticks: { display: false }, 
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addValueLabelsPlugin({ id: 'statusValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
-    ]
+    plugins: [{
+      id: 'statusInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x;
+          // ✅ AJUSTE: Posição Y no meio da barra
+          const yPos = bar.y + (bar.height / 2);
+          ctx.fillText(text, xPos, yPos);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
+// ===================================
+// ✅ GRÁFICO: Registros Geral de Pendências por Prestador (BARRAS HORIZONTAIS)
+// ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadores) chartPrestadores.destroy();
@@ -1001,40 +1029,70 @@ function createPrestadorChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: 'Pendências',
+        label: '',
         data,
         backgroundColor: '#8b5cf6',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 6,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#8b5cf6' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(139, 92, 246, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        legend: { display: false },
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#8b5cf6', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: {
+          beginAtZero: true,
+          ticks: { display: false },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#8b5cf6'
+          },
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addOutsideValueLabelsPlugin({ id: 'prestadorOutsideLabels', color: '#000000' })
-    ]
+    plugins: [{
+      id: 'prestadorInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x - 8;
+          ctx.fillText(text, xPos, bar.y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
+// ===================================
+// ✅ GRÁFICO: Pendências Não Resolvidas por Prestador (BARRAS HORIZONTAIS)
+// ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadoresPendentes) chartPrestadoresPendentes.destroy();
@@ -1044,37 +1102,64 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
     data: {
       labels,
       datasets: [{
-        label: 'Pendências Não Resolvidas',
+        label: '',
         data,
         backgroundColor: '#065f46',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 6,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#065f46' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(6, 95, 70, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
+        legend: { display: false },
+        tooltip: { enabled: false }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#065f46', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        x: {
+          beginAtZero: true,
+          ticks: { display: false },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#065f46'
+          },
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
-    plugins: [
-      addOutsideValueLabelsPlugin({ id: 'prestadorPendOutsideLabels', color: '#000000' })
-    ]
+    plugins: [{
+      id: 'prestadorPendInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          const text = `${value}`;
+          const xPos = bar.x - 8;
+          ctx.fillText(text, xPos, bar.y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
@@ -1160,10 +1245,7 @@ function createResolutividadePrestadorChart() {
         },
         y: { ticks: { font: { size: 13, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
       }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'resPrestLabels', mode: 'horizontal', font: 'bold 16px Arial', color: '#FFFFFF', suffix: '%' })
-    ]
+    }
   });
 }
 
@@ -1567,4 +1649,3 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
-
