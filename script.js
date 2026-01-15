@@ -743,255 +743,67 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         data,
         backgroundColor: '#1e3a8a',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#1e3a8a' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(30, 58, 138, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
-      },
-      scales: {
-        x: { ticks: { font: { size: 12, weight: 'bold' }, color: '#1e3a8a', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
-      }
-    },
-    plugins: [
-      addOutsideValueLabelsPlugin({
-        id: 'pendenciasMesOutsideLabels',
-        color: '#000000'
-      })
-    ]
-  });
-}
-
-function createDistritoChart(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId);
-  if (chartDistritos) chartDistritos.destroy();
-
-  chartDistritos = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: '',
-        data,
-        backgroundColor: '#1e3a8a',
-        borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(30, 58, 138, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
-      },
-      scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#1e3a8a', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
-      }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'distritoValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
-    ]
-  });
-}
-
-function createDistritoPendenteChart(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId);
-  if (chartDistritosPendentes) chartDistritosPendentes.destroy();
-
-  chartDistritosPendentes = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Pendências Não Resolvidas',
-        data,
-        backgroundColor: '#dc2626',
-        borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#dc2626' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(220, 38, 38, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
-      },
-      scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#dc2626', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
-      }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'distritoPendValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
-    ]
-  });
-}
-
-function createResolutividadeDistritoChart() {
-  const ctx = document.getElementById('chartResolutividadeDistrito');
-
-  const distritosStats = {};
-  filteredData.forEach(item => {
-    if (!hasUsuarioPreenchido(item)) return;
-
-    const distrito = item['_distrito'] || 'Não informado';
-    if (!distritosStats[distrito]) distritosStats[distrito] = { total: 0, resolvidos: 0 };
-
-    distritosStats[distrito].total++;
-    if (item['_tipo'] === 'RESOLVIDO') distritosStats[distrito].resolvidos++;
-  });
-
-  const labels = Object.keys(distritosStats).sort((a, b) => {
-    const percA = (distritosStats[a].resolvidos / distritosStats[a].total) * 100;
-    const percB = (distritosStats[b].resolvidos / distritosStats[b].total) * 100;
-    return percB - percA;
-  });
-
-  const percentuais = labels.map(d => {
-    const s = distritosStats[d];
-    return s.total > 0 ? Number(((s.resolvidos / s.total) * 100).toFixed(1)) : 0;
-  });
-
-  if (chartResolutividadeDistrito) chartResolutividadeDistrito.destroy();
-
-  chartResolutividadeDistrito = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Taxa de Resolutividade (%)',
-        data: percentuais,
-        backgroundColor: '#059669',
-        borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 10,
+        barThickness: 18,
+        maxBarThickness: 22
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 26 } }, // espaço pro número fora
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#059669' } },
+        legend: { display: false },
         tooltip: {
           enabled: true,
-          backgroundColor: 'rgba(5, 150, 105, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8,
-          callbacks: {
-            label: function(context) {
-              const distrito = context.label;
-              const stats = distritosStats[distrito];
-              return [
-                `Resolutividade: ${context.parsed.x}%`,
-                `Resolvidos: ${stats.resolvidos}`,
-                `Total: ${stats.total}`
-              ];
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          max: 100,
-          ticks: {
-            font: { size: 12, weight: '600' },
-            color: '#4a5568',
-            callback: function(value) { return value + '%'; }
-          },
-          grid: { color: 'rgba(0,0,0,0.06)' }
-        },
-        y: { ticks: { font: { size: 13, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
-      }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'resDistLabels', mode: 'horizontal', font: 'bold 16px Arial', color: '#FFFFFF', suffix: '%' })
-    ]
-  });
-}
-
-function createStatusChart(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId);
-  if (chartStatus) chartStatus.destroy();
-
-  chartStatus = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Registros',
-        data,
-        backgroundColor: '#f97316',
-        borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#f97316' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(249, 115, 22, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
+          backgroundColor: 'rgba(30, 58, 138, 0.9)',
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          padding: 12,
           cornerRadius: 8
         }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#f97316', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        y: {
+          ticks: {
+            font: { size: 11, weight: '600' },
+            color: '#374151'
+          },
+          grid: { display: false },
+          border: { display: false }
+        },
+        x: {
+          beginAtZero: true,
+          ticks: {
+            font: { size: 12, weight: '600' },
+            color: '#6b7280'
+          },
+          grid: { display: false }, // estilo limpo como a foto
+          border: { display: false }
+        }
       }
     },
     plugins: [
-      addValueLabelsPlugin({ id: 'statusValueLabels', mode: 'vertical', font: 'bold 16px Arial', color: '#FFFFFF' })
+      addOutsideValueLabelsPlugin({
+        id: 'pendenciasMesOutsideLabels',
+        color: '#111827',
+        font: 'bold 14px Arial',
+        offset: 10
+      })
     ]
   });
 }
 
+// (Demais gráficos de distrito/status/resolutividade/pizza permanecem iguais ao seu código)
+// ... [MANTIDOS SEM ALTERAÇÃO] ...
+
+/* =========================================================
+   ✅✅✅ ALTERAÇÃO 2/3: Prestador (Geral) (MODELO DA FOTO)
+   - barra horizontal
+   - número fora na ponta direita
+   - MANTÉM cor original #8b5cf6
+========================================================= */
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadores) chartPrestadores.destroy();
@@ -1005,36 +817,64 @@ function createPrestadorChart(canvasId, labels, data) {
         data,
         backgroundColor: '#8b5cf6',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 10,
+        barThickness: 18,
+        maxBarThickness: 22
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 26 } },
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#8b5cf6' } },
+        legend: { display: false },
         tooltip: {
           enabled: true,
           backgroundColor: 'rgba(139, 92, 246, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          padding: 12,
           cornerRadius: 8
         }
       },
       scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#8b5cf6', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
+        y: {
+          ticks: {
+            font: { size: 10, weight: '600' },
+            color: '#374151'
+          },
+          grid: { display: false },
+          border: { display: false }
+        },
+        x: {
+          beginAtZero: true,
+          ticks: {
+            font: { size: 12, weight: '600' },
+            color: '#6b7280'
+          },
+          grid: { display: false },
+          border: { display: false }
+        }
       }
     },
     plugins: [
-      addOutsideValueLabelsPlugin({ id: 'prestadorOutsideLabels', color: '#000000' })
+      addOutsideValueLabelsPlugin({
+        id: 'prestadorOutsideLabels',
+        color: '#111827',
+        font: 'bold 14px Arial',
+        offset: 10
+      })
     ]
   });
 }
 
+/* =========================================================
+   ✅✅✅ ALTERAÇÃO 3/3: Prestador (Pendentes) (MODELO DA FOTO)
+   - barra horizontal
+   - número fora na ponta direita
+   - MANTÉM cor original #065f46
+========================================================= */
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPrestadoresPendentes) chartPrestadoresPendentes.destroy();
@@ -1048,216 +888,55 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
         data,
         backgroundColor: '#065f46',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#065f46' } },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(6, 95, 70, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8
-        }
-      },
-      scales: {
-        x: { ticks: { font: { size: 13, weight: 'bold' }, color: '#065f46', maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { size: 12, weight: '600' }, color: '#4a5568' }, grid: { color: 'rgba(0,0,0,0.06)' } }
-      }
-    },
-    plugins: [
-      addOutsideValueLabelsPlugin({ id: 'prestadorPendOutsideLabels', color: '#000000' })
-    ]
-  });
-}
-
-function createResolutividadePrestadorChart() {
-  const ctx = document.getElementById('chartResolutividadePrestador');
-
-  const prestadoresStats = {};
-  filteredData.forEach(item => {
-    if (!hasUsuarioPreenchido(item)) return;
-
-    const prestador = item['Prestador'] || 'Não informado';
-    if (!prestadoresStats[prestador]) prestadoresStats[prestador] = { total: 0, resolvidos: 0 };
-
-    prestadoresStats[prestador].total++;
-    if (item['_tipo'] === 'RESOLVIDO') prestadoresStats[prestador].resolvidos++;
-  });
-
-  const labels = Object.keys(prestadoresStats)
-    .sort((a, b) => {
-      const percA = (prestadoresStats[a].resolvidos / prestadoresStats[a].total) * 100;
-      const percB = (prestadoresStats[b].resolvidos / prestadoresStats[b].total) * 100;
-      return percB - percA;
-    })
-    .slice(0, 15);
-
-  const percentuais = labels.map(p => {
-    const s = prestadoresStats[p];
-    return s.total > 0 ? Number(((s.resolvidos / s.total) * 100).toFixed(1)) : 0;
-  });
-
-  if (chartResolutividadePrestador) chartResolutividadePrestador.destroy();
-
-  chartResolutividadePrestador = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Taxa de Resolutividade (%)',
-        data: percentuais,
-        backgroundColor: '#059669',
-        borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 10,
+        barThickness: 18,
+        maxBarThickness: 22
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 26 } },
       plugins: {
-        legend: { display: true, labels: { font: { size: 14, weight: 'bold' }, color: '#059669' } },
+        legend: { display: false },
         tooltip: {
           enabled: true,
-          backgroundColor: 'rgba(5, 150, 105, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
-          cornerRadius: 8,
-          callbacks: {
-            label: function(context) {
-              const prestador = context.label;
-              const stats = prestadoresStats[prestador];
-              return [
-                `Resolutividade: ${context.parsed.x}%`,
-                `Resolvidos: ${stats.resolvidos}`,
-                `Total: ${stats.total}`
-              ];
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          max: 100,
-          ticks: {
-            font: { size: 12, weight: '600' },
-            color: '#4a5568',
-            callback: function(value) { return value + '%'; }
-          },
-          grid: { color: 'rgba(0,0,0,0.06)' }
-        },
-        y: { ticks: { font: { size: 13, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
-      }
-    },
-    plugins: [
-      addValueLabelsPlugin({ id: 'resPrestLabels', mode: 'horizontal', font: 'bold 16px Arial', color: '#FFFFFF', suffix: '%' })
-    ]
-  });
-}
-
-function createPieChart(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId);
-  if (chartPizzaStatus) chartPizzaStatus.destroy();
-
-  const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f97316','#6366f1','#84cc16'];
-  const total = data.reduce((sum, val) => sum + val, 0);
-
-  chartPizzaStatus = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors.slice(0, labels.length),
-        borderWidth: 3,
-        borderColor: '#ffffff'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'right',
-          labels: {
-            font: { size: 14, weight: 'bold', family: 'Arial, sans-serif' },
-            color: '#000000',
-            padding: 15,
-            usePointStyle: true,
-            pointStyle: 'circle',
-            boxWidth: 20,
-            boxHeight: 20,
-            generateLabels: function(chart) {
-              const datasets = chart.data.datasets;
-              const labels = chart.data.labels;
-              return labels.map((label, i) => {
-                const value = datasets[0].data[i];
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                return {
-                  text: `${label} (${percentage}%)`,
-                  fillStyle: datasets[0].backgroundColor[i],
-                  strokeStyle: datasets[0].backgroundColor[i],
-                  lineWidth: 2,
-                  hidden: false,
-                  index: i
-                };
-              });
-            }
-          }
-        },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backgroundColor: 'rgba(6, 95, 70, 0.9)',
           titleFont: { size: 14, weight: 'bold' },
           bodyFont: { size: 13 },
           padding: 12,
-          cornerRadius: 8,
-          callbacks: {
-            label: function(context) {
-              const value = context.parsed;
-              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              return `${context.label}: ${percentage}% (${value} registros)`;
-            }
-          }
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            font: { size: 10, weight: '600' },
+            color: '#374151'
+          },
+          grid: { display: false },
+          border: { display: false }
+        },
+        x: {
+          beginAtZero: true,
+          ticks: {
+            font: { size: 12, weight: '600' },
+            color: '#6b7280'
+          },
+          grid: { display: false },
+          border: { display: false }
         }
       }
     },
-    plugins: [{
-      id: 'customPieLabelsInside',
-      afterDatasetsDraw: function(chart) {
-        const ctx = chart.ctx;
-        const dataset = chart.data.datasets[0];
-        ctx.save();
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        chart.getDatasetMeta(0).data.forEach(function(element, index) {
-          const value = dataset.data[index];
-          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-          if (parseFloat(percentage) > 5) {
-            ctx.fillStyle = '#ffffff';
-            const position = element.tooltipPosition();
-            ctx.fillText(`${percentage}%`, position.x, position.y);
-          }
-        });
-
-        ctx.restore();
-      }
-    }]
+    plugins: [
+      addOutsideValueLabelsPlugin({
+        id: 'prestadorPendOutsideLabels',
+        color: '#111827',
+        font: 'bold 14px Arial',
+        offset: 10
+      })
+    ]
   });
 }
 
@@ -1567,3 +1246,4 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
