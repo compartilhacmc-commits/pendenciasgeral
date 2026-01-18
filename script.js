@@ -1,16 +1,15 @@
 // ===================================
-// CONFIGURAÇÃO DOS ARQUIVOS JSON (8 DISTRITOS + GERAL)
+// CONFIGURAÇÃO DOS JSONs (8 DISTRITOS) - GitHub RAW
 // ===================================
-const JSON_FILES = [
-  { name: "ELDORADO", url: "https://drive.google.com/uc?export=download&id=1pR0QEFtaTMvzgHS-qEn0H_6QeScXQjs6" },
-  { name: "INDUSTRIAL", url: "https://drive.google.com/uc?export=download&id=1rReToKmJZg7Cnh0o_TKKRXjJPNYSONo8" },
-  { name: "NACIONAL", url: "https://drive.google.com/uc?export=download&id=1eJ8F1ThPv8blLvKCFW4zHOXhTTtlJD8U" },
-  { name: "PETROLÂNDIA", url: "https://drive.google.com/uc?export=download&id=1IKjh8GiopU98jXp7cZRgXqgt99Nus5qP" },
-  { name: "RESSACA", url: "https://drive.google.com/uc?export=download&id=1NFIpWvcpWXthLJ7ZqfNJQ6C8vt4GLMLR" },
-  { name: "RIACHO", url: "https://drive.google.com/uc?export=download&id=1w2ucxe4y0K7r0Bmz87ZrtlDrE_K-dZc8" },
-  { name: "SEDE", url: "https://drive.google.com/uc?export=download&id=18rsXxI9UqXC9-Er1-atHPqwzmWIqgqCo" },
-  { name: "VARGEM DAS FLORES", url: "https://drive.google.com/uc?export=download&id=1aulSvodY2qV4F4IfauEXyFrtF6yplbvP" },
-  { name: "GERAL", url: "https://drive.google.com/uc?export=download&id=1LR69xX9hmEQKG85GSPkVld6JFrvmEOSN" }
+const JSON_SOURCES = [
+  { distrito: 'ELDORADO', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/eldorado.json' },
+  { distrito: 'INDUSTRIAL', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/industrial.json' },
+  { distrito: 'NACIONAL', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/nacional.json' },
+  { distrito: 'PETROLÂNDIA', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/petrolandia.json' },
+  { distrito: 'RESSACA', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/ressaca.json' },
+  { distrito: 'RIACHO', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/riacho.json' },
+  { distrito: 'SEDE', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/sede.json' },
+  { distrito: 'VARGEM DAS FLORES', url: 'https://raw.githubusercontent.com/compartilhacmc-commits/pendenciasgeral/main/data/vargemdasflores.json' }
 ];
 
 // ===================================
@@ -19,167 +18,381 @@ const JSON_FILES = [
 let allData = [];
 let filteredData = [];
 
+let chartDistritos = null;
+let chartDistritosPendentes = null;
+let chartStatus = null;
+let chartPrestadores = null;
+let chartPrestadoresPendentes = null;
+let chartPizzaStatus = null;
+let chartResolutividadeDistrito = null;
+let chartResolutividadePrestador = null;
+let chartPendenciasPorMes = null;
+
 // ===================================
-// FUNÇÃO AUXILIAR PARA VERIFICAR USUÁRIO
+// ✅ FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
+// (mantida)
+// ===================================
+function getColumnValue(item, possibleNames, defaultValue = '-') {
+  for (let name of possibleNames) {
+    if (item.hasOwnProperty(name) && item[name]) return item[name];
+
+    const trimmedName = name.trim();
+    if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
+
+    const keys = Object.keys(item);
+    const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
+    if (foundKey && item[foundKey]) return item[foundKey];
+  }
+  return defaultValue;
+}
+
+// ===================================
+// ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// (mantida, mas agora funciona com JSON também)
 // ===================================
 function hasUsuarioPreenchido(item) {
-  return item['usuario'] && item['usuario'].trim() !== '';
+  const usuario = getColumnValue(item, ['Usuário', 'Usuario', 'USUÁRIO', 'USUARIO', 'usuario']);
+  return usuario && usuario !== '-' && String(usuario).trim() !== '';
 }
 
 // ===================================
-// INICIALIZAÇÃO
+// MULTISELECT (CHECKBOX) HELPERS (mantidos)
 // ===================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadData();
+function toggleMultiSelect(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.multi-select').forEach(ms => {
+    if (!ms.contains(e.target)) ms.classList.remove('open');
+  });
+
+  document.querySelectorAll('.th-filter').forEach(box => {
+    if (!box.contains(e.target)) box.classList.remove('open');
+  });
 });
 
-// ===================================
-// CARREGAR DADOS DE TODOS OS JSONS
-// ===================================
-async function loadData() {
-  showLoading(true);
-  allData = [];
-
-  try {
-    const promises = JSON_FILES.map(file =>
-      fetch(file.url)
-        .then(resp => resp.ok ? resp.json() : [])
-        .then(jsonData => jsonData.map(item => ({ ...item, _distrito: file.name })))
-        .catch(() => [])
-    );
-
-    const results = await Promise.all(promises);
-    results.forEach(arr => allData.push(...arr));
-
-    if (allData.length === 0) throw new Error("Nenhum dado foi carregado dos JSONs");
-
-    filteredData = [...allData];
-    populateFilters();
-    updateDashboard();
-
-  } catch (error) {
-    alert(`Erro ao carregar os dados: ${error.message}`);
-  } finally {
-    showLoading(false);
-  }
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
-// ===================================
-// MOSTRAR/OCULTAR LOADING
-// ===================================
-function showLoading(show) {
-  const overlay = document.getElementById('loadingOverlay');
-  if (!overlay) return;
-  overlay.style.display = show ? 'flex' : 'none';
-}
-
-// ===================================
-// POPULAR FILTROS
-// ===================================
-function populateFilters() {
-  populateMultiSelect('msDistritoPanel', 'msDistritoText', [...new Set(allData.map(item => item._distrito))].sort(), applyFilters, 'Todos os Distritos');
-  populateMultiSelect('msStatusPanel', 'msStatusText', [...new Set(allData.map(item => item.status))].sort(), applyFilters, 'Todos');
-  populateMultiSelect('msPrestadorPanel', 'msPrestadorText', [...new Set(allData.map(item => item.prestador))].sort(), applyFilters, 'Todos Prestadores');
-  populateMultiSelect('msTipoServicoPanel', 'msTipoServicoText', [...new Set(allData.map(item => item.tipo_servico))].sort(), applyFilters, 'Todos Tipos');
-}
-
-function populateMultiSelect(panelId, textId, values, onChange, fallbackLabel) {
+function renderMultiSelect(panelId, values, onChange) {
   const panel = document.getElementById(panelId);
-  if (!panel) return;
   panel.innerHTML = '';
+
+  const actions = document.createElement('div');
+  actions.className = 'ms-actions';
+  actions.innerHTML = `
+    <button type="button" class="ms-all">Marcar todos</button>
+    <button type="button" class="ms-none">Limpar</button>
+  `;
+  panel.appendChild(actions);
+
+  const btnAll = actions.querySelector('.ms-all');
+  const btnNone = actions.querySelector('.ms-none');
+
+  btnAll.addEventListener('click', () => {
+    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+    onChange();
+  });
+
+  btnNone.addEventListener('click', () => {
+    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    onChange();
+  });
+
   values.forEach(v => {
     const item = document.createElement('label');
-    item.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+    item.className = 'ms-item';
+    item.innerHTML = `
+      <input type="checkbox" value="${escapeHtml(v)}">
+      <span>${escapeHtml(v)}</span>
+    `;
     item.querySelector('input').addEventListener('change', onChange);
     panel.appendChild(item);
   });
-  setMultiSelectText(textId, [], fallbackLabel);
 }
 
 function getSelectedFromPanel(panelId) {
   const panel = document.getElementById(panelId);
-  if (!panel) return [];
   return [...panel.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 }
 
 function setMultiSelectText(textId, selected, fallbackLabel) {
   const el = document.getElementById(textId);
-  if (!el) return;
   if (!selected || selected.length === 0) el.textContent = fallbackLabel;
   else if (selected.length === 1) el.textContent = selected[0];
   else el.textContent = `${selected.length} selecionados`;
 }
 
 // ===================================
-// FILTRAR DADOS
+// INICIALIZAÇÃO
 // ===================================
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
+});
+
+// ===================================
+// MOSTRAR/OCULTAR LOADING (mantida)
+// ===================================
+function showLoading(show) {
+  const overlay = document.getElementById('loadingOverlay');
+  if (show) overlay.classList.add('active');
+  else overlay.classList.remove('active');
+}
+
+// ===================================
+// ✅ NORMALIZA um registro do JSON para o formato usado no painel
+// (Aqui é a principal correção)
+// ===================================
+function normalizeJsonItem(item, distrito) {
+  const statusRaw = getColumnValue(item, ['status', 'Status', 'STATUS'], '');
+  const statusNorm = String(statusRaw || '').trim();
+
+  // _tipo precisa existir porque o painel usa em gráficos de pendente/resolvido
+  let tipo = 'PENDENTE';
+  if (statusNorm.toLowerCase().includes('resol')) tipo = 'RESOLVIDO';
+  if (statusNorm.toLowerCase().includes('pend')) tipo = 'PENDENTE';
+
+  // Cria aliases com as chaves no formato "antigo" (planilha CSV),
+  // para o restante do seu script continuar funcionando sem mudar mais nada.
+  const aliased = {
+    ...item,
+
+    _origem: `${tipo} ${distrito}`,
+    _distrito: distrito,
+    _tipo: tipo,
+
+    // Aliases principais
+    'Prestador': getColumnValue(item, ['prestador', 'Prestador'], '-'),
+    'Status': statusNorm || '-',
+    'Unidade Solicitante': getColumnValue(item, ['unidade_solicitante', 'Unidade Solicitante'], '-'),
+    'Usuário': getColumnValue(item, ['usuario', 'Usuário', 'Usuario'], '-'),
+    'Telefone': getColumnValue(item, ['telefone', 'Telefone'], '-'),
+
+    // Datas (mantém os nomes que o painel procura)
+    'Data da Solicitação': getColumnValue(item, ['data_da_solicitacao', 'Data da Solicitação', 'Data Solicitação'], '-'),
+    'Data Início da Pendência': getColumnValue(item, ['data_inicio_da_pendencia', 'Data Início da Pendência'], '-'),
+    'Data Final do Prazo (Pendência com 15 dias)': getColumnValue(item, ['data_final_do_prazo_(pendencia_com_15_dias)', 'Data Final do Prazo (Pendência com 15 dias)'], '-'),
+    'Data do envio do Email (Prazo: Pendência com 15 dias)': getColumnValue(item, ['data_do_envio_do_email_(prazo:_pendencia_com_15_dias)', 'Data do envio do Email (Prazo: Pendência com 15 dias)'], '-'),
+    'Data Final do Prazo (Pendência com 30 dias)': getColumnValue(item, ['data_final_do_prazo_(pendencia_com_30_dias)', 'Data Final do Prazo (Pendência com 30 dias)'], '-'),
+    'Data do envio do Email (Prazo: Pendência com 30 dias)': getColumnValue(item, ['data_do_envio_do_email_(prazo:_pendencia_com_30_dias)', 'Data do envio do Email (Prazo: Pendência com 30 dias)'], '-'),
+
+    // CBO
+    'Cbo Especialidade': getColumnValue(item, ['cbo_especialidade', 'Cbo Especialidade', 'CBO Especialidade', 'Especialidade', 'CBO'], '-'),
+
+    // Prontuário (seu JSON está com "n?_prontuario")
+    'Nº Prontuário': getColumnValue(item, ['n?_prontuario', 'nº_prontuario', 'n_prontuario', 'prontuario', 'Nº Prontuário', 'Prontuário', 'Prontuario'], '-')
+  };
+
+  return aliased;
+}
+
+// ===================================
+// ✅ CARREGAR DADOS DOS 8 JSONs
+// ===================================
+async function loadData() {
+  showLoading(true);
+  allData = [];
+
+  try {
+    const promises = JSON_SOURCES.map(src =>
+      fetch(src.url, { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : [])
+        .then(arr => Array.isArray(arr) ? arr.map(item => normalizeJsonItem(item, src.distrito)) : [])
+        .catch(() => [])
+    );
+
+    const results = await Promise.all(promises);
+    results.forEach(list => allData.push(...list));
+
+    if (allData.length === 0) throw new Error('Nenhum dado foi carregado dos JSONs');
+
+    filteredData = [...allData];
+    populateFilters();
+    updateDashboard();
+
+  } catch (error) {
+    alert(`Erro ao carregar dados dos JSONs: ${error.message}`);
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ===================================
+// ✅ POPULAR FILTROS (mantida, só ajusta as chaves)
+// ===================================
+function populateFilters() {
+  const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
+  renderMultiSelect('msDistritoPanel', distritos, applyFilters);
+  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
+
+  const unidades = [...new Set(allData.map(item => item['Unidade Solicitante']))].filter(Boolean).sort();
+  renderMultiSelect('msUnidadePanel', unidades, applyFilters);
+  setMultiSelectText('msUnidadeText', [], 'Todas');
+
+  const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
+  renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
+  setMultiSelectText('msPrestadorText', [], 'Todos');
+
+  const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'cbo_especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
+  renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
+  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
+
+  const statusList = [...new Set(allData.map(item => getColumnValue(item, ['Status','status','STATUS'], '-')))].filter(v => v && v !== '-').sort();
+  renderMultiSelect('msStatusPanel', statusList, applyFilters);
+  setMultiSelectText('msStatusText', [], 'Todos');
+
+  populateMonthFilter();
+}
+
+function populateMonthFilter() {
+  const mesesSet = new Set();
+
+  allData.forEach(item => {
+    const dataInicio = parseDate(getColumnValue(item, [
+      'Data Início da Pendência',
+      'data_inicio_da_pendencia',
+      'Data Inicio da Pendencia',
+      'Data Início Pendência',
+      'Data Inicio Pendencia'
+    ]));
+
+    if (dataInicio) {
+      const mesAno = `${dataInicio.getFullYear()}-${String(dataInicio.getMonth() + 1).padStart(2, '0')}`;
+      mesesSet.add(mesAno);
+    }
+  });
+
+  const mesesOrdenados = Array.from(mesesSet).sort().reverse();
+  const mesesFormatados = mesesOrdenados.map(mesAno => {
+    const [ano, mes] = mesAno.split('-');
+    const nomeMes = new Date(ano, mes - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    return nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+  });
+
+  renderMultiSelect('msMesPanel', mesesFormatados, applyFilters);
+  setMultiSelectText('msMesText', [], 'Todos os Meses');
+}
+
 function applyFilters() {
   const distritoSel = getSelectedFromPanel('msDistritoPanel');
-  const statusSel = getSelectedFromPanel('msStatusPanel');
+  const unidadeSel = getSelectedFromPanel('msUnidadePanel');
   const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
-  const tipoSel = getSelectedFromPanel('msTipoServicoPanel');
+  const cboEspecialidadeSel = getSelectedFromPanel('msCboEspecialidadePanel');
+  const statusSel = getSelectedFromPanel('msStatusPanel');
+  const mesSel = getSelectedFromPanel('msMesPanel');
 
   setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
+  setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
+  setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
+  setMultiSelectText('msCboEspecialidadeText', cboEspecialidadeSel, 'Todas');
   setMultiSelectText('msStatusText', statusSel, 'Todos');
-  setMultiSelectText('msPrestadorText', prestadorSel, 'Todos Prestadores');
-  setMultiSelectText('msTipoServicoText', tipoSel, 'Todos Tipos');
+  setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
 
   filteredData = allData.filter(item => {
-    const okDistrito = distritoSel.length === 0 || distritoSel.includes(item._distrito);
-    const okStatus = statusSel.length === 0 || statusSel.includes(item.status);
-    const okPrestador = prestadorSel.length === 0 || prestadorSel.includes(item.prestador);
-    const okTipo = tipoSel.length === 0 || tipoSel.includes(item.tipo_servico);
-    return okDistrito && okStatus && okPrestador && okTipo;
+    const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
+    const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
+    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
+
+    const cboValue = getColumnValue(item, ['Cbo Especialidade', 'cbo_especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
+
+    const statusValue = getColumnValue(item, ['Status','status','STATUS'], '');
+    const okStatus = (statusSel.length === 0) || statusSel.includes(statusValue || '');
+
+    let okMes = true;
+    if (mesSel.length > 0) {
+      const dataInicio = parseDate(getColumnValue(item, [
+        'Data Início da Pendência',
+        'data_inicio_da_pendencia',
+        'Data Inicio da Pendencia',
+        'Data Início Pendência',
+        'Data Inicio Pendencia'
+      ]));
+      if (dataInicio) {
+        const nomeMes = new Date(dataInicio.getFullYear(), dataInicio.getMonth()).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        const mesFormatado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+        okMes = mesSel.includes(mesFormatado);
+      } else okMes = false;
+    }
+
+    return okDistrito && okUnidade && okPrest && okCbo && okStatus && okMes;
   });
 
   updateDashboard();
 }
 
+function clearFilters() {
+  ['msDistritoPanel','msUnidadePanel','msPrestadorPanel','msCboEspecialidadePanel','msStatusPanel','msMesPanel'].forEach(panelId => {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
+
+  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
+  setMultiSelectText('msUnidadeText', [], 'Todas');
+  setMultiSelectText('msPrestadorText', [], 'Todos');
+  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
+  setMultiSelectText('msStatusText', [], 'Todos');
+  setMultiSelectText('msMesText', [], 'Todos os Meses');
+
+  filteredData = [...allData];
+  updateDashboard();
+}
+
 // ===================================
-// ATUALIZAR DASHBOARD
+// ATUALIZAR DASHBOARD (mantido)
 // ===================================
 function updateDashboard() {
   updateCards();
   updateCharts();
+  updateDemandasTable();
 }
 
 function updateCards() {
-  const total = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
-  document.getElementById('totalPendencias').textContent = total;
-}
+  const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
+  const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
 
-function updateCharts() {
-  updateChart('chartStatus', 'status');
-  updateChart('chartPrestador', 'prestador');
-  updateChart('chartTipoServico', 'tipo_servico');
-}
+  const hoje = new Date();
+  let pendencias15 = 0;
+  let pendencias30 = 0;
 
-function updateChart(canvasId, campo) {
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
-
-  const counts = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    const key = item[campo] || 'Não informado';
-    counts[key] = (counts[key] || 0) + 1;
+
+    const dataInicio = parseDate(getColumnValue(item, [
+      'Data Início da Pendência',
+      'data_inicio_da_pendencia',
+      'Data Inicio da Pendencia',
+      'Data Início Pendência',
+      'Data Inicio Pendencia'
+    ]));
+
+    if (dataInicio) {
+      const diasDecorridos = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
+      if (diasDecorridos >= 15 && diasDecorridos < 30) pendencias15++;
+      if (diasDecorridos >= 30) pendencias30++;
+    }
   });
 
-  const labels = Object.keys(counts);
-  const data = labels.map(l => counts[l]);
+  document.getElementById('totalPendencias').textContent = totalComUsuario;
+  document.getElementById('pendencias15').textContent = pendencias15;
+  document.getElementById('pendencias30').textContent = pendencias30;
 
-  new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: '#f97316' }] },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
+  const percentFiltrados = totalComUsuario > 0 ? ((filtradoComUsuario / totalComUsuario) * 100).toFixed(1) : '100.0';
+  document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
 }
 
 // ===================================
-// ✅ ATUALIZAR GRÁFICOS (COM LEGENDAS DENTRO DAS BARRAS - NO MEIO)
+// ✅ GRÁFICOS (mantidos - dependem de _tipo e aliases)
 // ===================================
 function updateCharts() {
-  // DISTRITOS - todos
   const distritosCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
@@ -191,7 +404,6 @@ function updateCharts() {
   const distritosValues = distritosLabels.map(label => distritosCount[label]);
   createDistritoChart('chartDistritos', distritosLabels, distritosValues);
 
-  // DISTRITOS - pendentes
   const distritosCountPendentes = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
@@ -206,7 +418,6 @@ function updateCharts() {
 
   createResolutividadeDistritoChart();
 
-  // STATUS
   const statusCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
@@ -218,11 +429,10 @@ function updateCharts() {
   const statusValues = statusLabels.map(label => statusCount[label]);
   createStatusChart('chartStatus', statusLabels, statusValues);
 
-  // PRESTADOR - todos
   const prestadoresCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    const prestador = item['Prestador'] || 'Não informado';
+    const prestador = getColumnValue(item, ['Prestador','prestador'], 'Não informado');
     prestadoresCount[prestador] = (prestadoresCount[prestador] || 0) + 1;
   });
 
@@ -230,12 +440,11 @@ function updateCharts() {
   const prestadoresValues = prestadoresLabels.map(label => prestadoresCount[label]);
   createPrestadorChart('chartPrestadores', prestadoresLabels, prestadoresValues);
 
-  // PRESTADOR - pendentes
   const prestadoresCountPendentes = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
     if (item['_tipo'] !== 'PENDENTE') return;
-    const prestador = item['Prestador'] || 'Não informado';
+    const prestador = getColumnValue(item, ['Prestador','prestador'], 'Não informado');
     prestadoresCountPendentes[prestador] = (prestadoresCountPendentes[prestador] || 0) + 1;
   });
 
@@ -245,15 +454,14 @@ function updateCharts() {
 
   createResolutividadePrestadorChart();
 
-  // PIZZA
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
-  // POR MÊS
   const mesCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
     const dataInicio = parseDate(getColumnValue(item, [
       'Data Início da Pendência',
+      'data_inicio_da_pendencia',
       'Data Inicio da Pendencia',
       'Data Início Pendência',
       'Data Inicio Pendencia'
@@ -1291,5 +1499,6 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
 
 
