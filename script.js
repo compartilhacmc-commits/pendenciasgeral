@@ -1,125 +1,15 @@
 // ===================================
-// CONFIGURAÇÃO DAS PLANILHAS (8 DISTRITOS)
+// CONFIGURAÇÃO DOS ARQUIVOS JSON (8 DISTRITOS + GERAL)
 // ===================================
-
-// helper para padronizar URL CSV do Google Sheets COM CACHE BUSTING
-function gvizCsvUrl(spreadsheetId, gid) {
-  const timestamp = new Date().getTime();
-  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_=${timestamp}`;
-}
-
-const SHEETS = [
-  // DISTRITO ELDORADO 
-  {
-    name: 'PENDÊNCIAS ELDORADO',
-    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
-    distrito: 'ELDORADO',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS ELDORADO',
-    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '2142054254'),
-    distrito: 'ELDORADO',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO INDUSTRIAL 
-  {
-    name: 'PENDÊNCIAS INDUSTRIAL',
-    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '278071504'),
-    distrito: 'INDUSTRIAL',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS INDUSTRIAL',
-    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '1086207100'),
-    distrito: 'INDUSTRIAL',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO NACIONAL
-  {
-    name: 'PENDÊNCIAS NACIONAL',
-    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '278071504'),
-    distrito: 'NACIONAL',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS NACIONAL',
-    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '150768142'),
-    distrito: 'NACIONAL',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO PETROLÂNDIA
-  {
-    name: 'PENDÊNCIAS PETROLÂNDIA',
-    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '278071504'),
-    distrito: 'PETROLÂNDIA',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS PETROLÂNDIA',
-    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '1067061018'),
-    distrito: 'PETROLÂNDIA',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO RESSACA 
-  {
-    name: 'PENDÊNCIAS RESSACA',
-    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '278071504'),
-    distrito: 'RESSACA',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS RESSACA',
-    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '699447584'),
-    distrito: 'RESSACA',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO RIACHO
-  {
-    name: 'PENDÊNCIAS RIACHO',
-    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '278071504'),
-    distrito: 'RIACHO',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS RIACHO',
-    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '1996983614'),
-    distrito: 'RIACHO',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO SEDE
-  {
-    name: 'PENDÊNCIAS SEDE',
-    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '278071504'),
-    distrito: 'SEDE',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS SEDE',
-    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '626867102'),
-    distrito: 'SEDE',
-    tipo: 'RESOLVIDO'
-  },
-
-  // DISTRITO VARGEM DAS FLORES
-  {
-    name: 'PENDÊNCIAS VARGEM DAS FLORES',
-    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '278071504'),
-    distrito: 'VARGEM DAS FLORES',
-    tipo: 'PENDENTE'
-  },
-  {
-    name: 'RESOLVIDOS VARGEM DAS FLORES',
-    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '451254610'),
-    distrito: 'VARGEM DAS FLORES',
-    tipo: 'RESOLVIDO'
-  }
+const JSON_FILES = [
+  { name: "ELDORADO", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_ELDORADO" },
+  { name: "INDUSTRIAL", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_INDUSTRIAL" },
+  { name: "NACIONAL", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_NACIONAL" },
+  { name: "PETROLÂNDIA", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_PETROLANDIA" },
+  { name: "RESSACA", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_RESSACA" },
+  { name: "RIACHO", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_RIACHO" },
+  { name: "SEDE", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_SEDE" },
+  { name: "VARGEM DAS FLORES", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_VARGEM" },
 ];
 
 // ===================================
@@ -128,233 +18,49 @@ const SHEETS = [
 let allData = [];
 let filteredData = [];
 
-let chartDistritos = null;
-let chartDistritosPendentes = null;
-let chartStatus = null;
-let chartPrestadores = null;
-let chartPrestadoresPendentes = null;
-let chartPizzaStatus = null;
-let chartResolutividadeDistrito = null;
-let chartResolutividadePrestador = null;
-let chartPendenciasPorMes = null;
-
 // ===================================
-// ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
 // ===================================
 function hasUsuarioPreenchido(item) {
-  const usuario = getColumnValue(item, ['Usuário', 'Usuario', 'USUÁRIO', 'USUARIO']);
-  return usuario && usuario !== '-' && usuario.trim() !== '';
-}
-
-// ===================================
-// ✅ FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
-// ===================================
-function getColumnValue(item, possibleNames, defaultValue = '-') {
-  for (let name of possibleNames) {
-    // Busca exata
-    if (item.hasOwnProperty(name) && item[name]) return item[name];
-    
-    // Busca com trim (remove espaços)
-    const trimmedName = name.trim();
-    if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
-    
-    // Busca case-insensitive
-    const keys = Object.keys(item);
-    const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
-    if (foundKey && item[foundKey]) return item[foundKey];
-  }
-  return defaultValue;
-}
-
-// ===================================
-// MULTISELECT (CHECKBOX) HELPERS
-// ===================================
-function toggleMultiSelect(id) {
-  document.getElementById(id).classList.toggle('open');
-}
-
-// fecha dropdown ao clicar fora
-document.addEventListener('click', (e) => {
-  document.querySelectorAll('.multi-select').forEach(ms => {
-    if (!ms.contains(e.target)) ms.classList.remove('open');
-  });
-
-  document.querySelectorAll('.th-filter').forEach(box => {
-    if (!box.contains(e.target)) box.classList.remove('open');
-  });
-});
-
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function renderMultiSelect(panelId, values, onChange) {
-  const panel = document.getElementById(panelId);
-  panel.innerHTML = '';
-
-  const actions = document.createElement('div');
-  actions.className = 'ms-actions';
-  actions.innerHTML = `
-    <button type="button" class="ms-all">Marcar todos</button>
-    <button type="button" class="ms-none">Limpar</button>
-  `;
-  panel.appendChild(actions);
-
-  const btnAll = actions.querySelector('.ms-all');
-  const btnNone = actions.querySelector('.ms-none');
-
-  btnAll.addEventListener('click', () => {
-    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-    onChange();
-  });
-
-  btnNone.addEventListener('click', () => {
-    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-    onChange();
-  });
-
-  values.forEach(v => {
-    const item = document.createElement('label');
-    item.className = 'ms-item';
-    item.innerHTML = `
-      <input type="checkbox" value="${escapeHtml(v)}">
-      <span>${escapeHtml(v)}</span>
-    `;
-    item.querySelector('input').addEventListener('change', onChange);
-    panel.appendChild(item);
-  });
-}
-
-function getSelectedFromPanel(panelId) {
-  const panel = document.getElementById(panelId);
-  return [...panel.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-}
-
-function setMultiSelectText(textId, selected, fallbackLabel) {
-  const el = document.getElementById(textId);
-  if (!selected || selected.length === 0) el.textContent = fallbackLabel;
-  else if (selected.length === 1) el.textContent = selected[0];
-  else el.textContent = `${selected.length} selecionados`;
+  return item['usuario'] && item['usuario'].trim() !== '';
 }
 
 // ===================================
 // INICIALIZAÇÃO
 // ===================================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   loadData();
 });
 
 // ===================================
-// ✅ CARREGAR DADOS DE TODAS AS PLANILHAS
+// CARREGAR DADOS DE TODOS OS JSONS
 // ===================================
 async function loadData() {
   showLoading(true);
   allData = [];
 
   try {
-    const promises = SHEETS.map(sheet =>
-      fetch(sheet.url, {
-        cache: 'no-store', // Força não usar cache
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      })
-        .then(response => response.ok ? response.text() : null)
-        .then(csvText => {
-          if (!csvText) return null;
-          return { name: sheet.name, csv: csvText, distrito: sheet.distrito, tipo: sheet.tipo };
-        })
-        .catch(() => null)
+    const promises = JSON_FILES.map(file =>
+      fetch(file.url)
+        .then(resp => resp.ok ? resp.json() : [])
+        .then(jsonData => jsonData.map(item => ({ ...item, _distrito: file.name })))
+        .catch(() => [])
     );
 
     const results = await Promise.all(promises);
+    results.forEach(arr => allData.push(...arr));
 
-    results.forEach(result => {
-      if (!result) return;
-
-      const rows = parseCSV(result.csv);
-      if (rows.length < 2) return;
-
-      const headers = rows[0];
-      
-      const sheetData = rows.slice(1)
-        .filter(row => row.length > 1 && row[0])
-        .map(row => {
-          const obj = {
-            _origem: result.name,
-            _distrito: result.distrito,
-            _tipo: result.tipo
-          };
-          headers.forEach((header, index) => {
-            obj[header.trim()] = (row[index] || '').trim();
-          });
-          return obj;
-        });
-
-      allData.push(...sheetData);
-    });
-
-    if (allData.length === 0) throw new Error('Nenhum dado foi carregado das planilhas');
+    if (allData.length === 0) throw new Error("Nenhum dado foi carregado dos JSONs");
 
     filteredData = [...allData];
     populateFilters();
     updateDashboard();
 
   } catch (error) {
-    alert(`Erro ao carregar dados das planilhas: ${error.message}`);
+    alert(`Erro ao carregar os dados: ${error.message}`);
   } finally {
     showLoading(false);
   }
-}
-
-// ===================================
-// PARSE CSV (COM SUPORTE A ASPAS)
-// ===================================
-function parseCSV(text) {
-  const rows = [];
-  let currentRow = [];
-  let currentCell = '';
-  let insideQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const nextChar = text[i + 1];
-
-    if (char === '"') {
-      if (insideQuotes && nextChar === '"') {
-        currentCell += '"';
-        i++;
-      } else {
-        insideQuotes = !insideQuotes;
-      }
-    } else if (char === ',' && !insideQuotes) {
-      currentRow.push(currentCell.trim());
-      currentCell = '';
-    } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-      if (currentCell || currentRow.length > 0) {
-        currentRow.push(currentCell.trim());
-        rows.push(currentRow);
-        currentRow = [];
-        currentCell = '';
-      }
-      if (char === '\r' && nextChar === '\n') i++;
-    } else {
-      currentCell += char;
-    }
-  }
-
-  if (currentCell || currentRow.length > 0) {
-    currentRow.push(currentCell.trim());
-    rows.push(currentRow);
-  }
-
-  return rows;
 }
 
 // ===================================
@@ -362,133 +68,70 @@ function parseCSV(text) {
 // ===================================
 function showLoading(show) {
   const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
   if (show) overlay.classList.add('active');
   else overlay.classList.remove('active');
 }
 
 // ===================================
-// ✅ POPULAR FILTROS (COM CBO ESPECIALIDADE)
+// POPULAR FILTROS
 // ===================================
 function populateFilters() {
-  // Distrito
-  const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
+  const distritos = [...new Set(allData.map(item => item._distrito))].sort();
   renderMultiSelect('msDistritoPanel', distritos, applyFilters);
   setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
 
-  // Unidade Solicitante
-  const unidades = [...new Set(allData.map(item => item['Unidade Solicitante']))].filter(Boolean).sort();
-  renderMultiSelect('msUnidadePanel', unidades, applyFilters);
-  setMultiSelectText('msUnidadeText', [], 'Todas');
-
-  // Prestador
-  const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
-  renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
-  setMultiSelectText('msPrestadorText', [], 'Todos');
-
-  // ✅ CBO Especialidade
-  const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
-  renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
-  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
-
-  // Status
-  const statusList = [...new Set(allData.map(item => item['Status']))].filter(Boolean).sort();
+  const statusList = [...new Set(allData.map(item => item.status))].sort();
   renderMultiSelect('msStatusPanel', statusList, applyFilters);
   setMultiSelectText('msStatusText', [], 'Todos');
-
-  // Mês
-  populateMonthFilter();
 }
 
-function populateMonthFilter() {
-  const mesesSet = new Set();
-
-  allData.forEach(item => {
-    const dataInicio = parseDate(getColumnValue(item, [
-      'Data Início da Pendência',
-      'Data Inicio da Pendencia',
-      'Data Início Pendência',
-      'Data Inicio Pendencia'
-    ]));
-
-    if (dataInicio) {
-      const mesAno = `${dataInicio.getFullYear()}-${String(dataInicio.getMonth() + 1).padStart(2, '0')}`;
-      mesesSet.add(mesAno);
-    }
-  });
-
-  const mesesOrdenados = Array.from(mesesSet).sort().reverse();
-  const mesesFormatados = mesesOrdenados.map(mesAno => {
-    const [ano, mes] = mesAno.split('-');
-    const nomeMes = new Date(ano, mes - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-    return nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
-  });
-
-  renderMultiSelect('msMesPanel', mesesFormatados, applyFilters);
-  setMultiSelectText('msMesText', [], 'Todos os Meses');
-}
-
+// ===================================
+// FILTRAR DADOS
+// ===================================
 function applyFilters() {
   const distritoSel = getSelectedFromPanel('msDistritoPanel');
-  const unidadeSel = getSelectedFromPanel('msUnidadePanel');
-  const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
-  const cboEspecialidadeSel = getSelectedFromPanel('msCboEspecialidadePanel');
   const statusSel = getSelectedFromPanel('msStatusPanel');
-  const mesSel = getSelectedFromPanel('msMesPanel');
 
   setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
-  setMultiSelectText('msUnidadeText', unidadeSel, 'Todas');
-  setMultiSelectText('msPrestadorText', prestadorSel, 'Todos');
-  setMultiSelectText('msCboEspecialidadeText', cboEspecialidadeSel, 'Todas');
   setMultiSelectText('msStatusText', statusSel, 'Todos');
-  setMultiSelectText('msMesText', mesSel, 'Todos os Meses');
 
   filteredData = allData.filter(item => {
-    const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
-    const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
-    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
-    
-    const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
-    const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
-    
-    const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
-
-    let okMes = true;
-    if (mesSel.length > 0) {
-      const dataInicio = parseDate(getColumnValue(item, [
-        'Data Início da Pendência',
-        'Data Inicio da Pendencia',
-        'Data Início Pendência',
-        'Data Inicio Pendencia'
-      ]));
-      if (dataInicio) {
-        const nomeMes = new Date(dataInicio.getFullYear(), dataInicio.getMonth()).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        const mesFormatado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
-        okMes = mesSel.includes(mesFormatado);
-      } else okMes = false;
-    }
-
-    return okDistrito && okUnidade && okPrest && okCbo && okStatus && okMes;
+    const okDistrito = distritoSel.length === 0 || distritoSel.includes(item._distrito);
+    const okStatus = statusSel.length === 0 || statusSel.includes(item.status);
+    return okDistrito && okStatus;
   });
 
   updateDashboard();
 }
 
-function clearFilters() {
-  ['msDistritoPanel','msUnidadePanel','msPrestadorPanel','msCboEspecialidadePanel','msStatusPanel','msMesPanel'].forEach(panelId => {
-    const panel = document.getElementById(panelId);
-    if (!panel) return;
-    panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+// ===================================
+// FUNÇÕES AUXILIARES DE MULTISELECT
+// ===================================
+function renderMultiSelect(panelId, values, onChange) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.innerHTML = '';
+  values.forEach(v => {
+    const item = document.createElement('label');
+    item.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+    item.querySelector('input').addEventListener('change', onChange);
+    panel.appendChild(item);
   });
+}
 
-  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
-  setMultiSelectText('msUnidadeText', [], 'Todas');
-  setMultiSelectText('msPrestadorText', [], 'Todos');
-  setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
-  setMultiSelectText('msStatusText', [], 'Todos');
-  setMultiSelectText('msMesText', [], 'Todos os Meses');
+function getSelectedFromPanel(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return [];
+  return [...panel.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+}
 
-  filteredData = [...allData];
-  updateDashboard();
+function setMultiSelectText(textId, selected, fallbackLabel) {
+  const el = document.getElementById(textId);
+  if (!el) return;
+  if (!selected || selected.length === 0) el.textContent = fallbackLabel;
+  else if (selected.length === 1) el.textContent = selected[0];
+  else el.textContent = `${selected.length} selecionados`;
 }
 
 // ===================================
@@ -497,40 +140,33 @@ function clearFilters() {
 function updateDashboard() {
   updateCards();
   updateCharts();
-  updateDemandasTable();
 }
 
 function updateCards() {
-  const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
-  const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
+  const total = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
+  document.getElementById('totalPendencias').textContent = total;
+}
 
-  const hoje = new Date();
-  let pendencias15 = 0;
-  let pendencias30 = 0;
-
+function updateCharts() {
+  // Exemplo simples de gráfico por status
+  const statusCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-
-    const dataInicio = parseDate(getColumnValue(item, [
-      'Data Início da Pendência',
-      'Data Inicio da Pendencia',
-      'Data Início Pendência',
-      'Data Inicio Pendencia'
-    ]));
-
-    if (dataInicio) {
-      const diasDecorridos = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
-      if (diasDecorridos >= 15 && diasDecorridos < 30) pendencias15++;
-      if (diasDecorridos >= 30) pendencias30++;
-    }
+    const status = item.status || 'Não informado';
+    statusCount[status] = (statusCount[status] || 0) + 1;
   });
 
-  document.getElementById('totalPendencias').textContent = totalComUsuario;
-  document.getElementById('pendencias15').textContent = pendencias15;
-  document.getElementById('pendencias30').textContent = pendencias30;
+  const labels = Object.keys(statusCount);
+  const data = labels.map(l => statusCount[l]);
 
-  const percentFiltrados = totalComUsuario > 0 ? ((filtradoComUsuario / totalComUsuario) * 100).toFixed(1) : '100.0';
-  document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
+  const ctx = document.getElementById('chartStatus');
+  if (!ctx) return;
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: '#f97316' }] },
+    options: { responsive: true }
+  });
 }
 
 // ===================================
@@ -1649,3 +1285,4 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
