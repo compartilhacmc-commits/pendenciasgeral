@@ -2,14 +2,15 @@
 // CONFIGURAÇÃO DOS ARQUIVOS JSON (8 DISTRITOS + GERAL)
 // ===================================
 const JSON_FILES = [
-  { name: "ELDORADO", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_ELDORADO" },
-  { name: "INDUSTRIAL", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_INDUSTRIAL" },
-  { name: "NACIONAL", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_NACIONAL" },
-  { name: "PETROLÂNDIA", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_PETROLANDIA" },
-  { name: "RESSACA", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_RESSACA" },
-  { name: "RIACHO", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_RIACHO" },
-  { name: "SEDE", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_SEDE" },
-  { name: "VARGEM DAS FLORES", url: "https://drive.google.com/uc?export=download&id=ID_DO_JSON_VARGEM" },
+  { name: "ELDORADO", url: "https://drive.google.com/uc?export=download&id=1pR0QEFtaTMvzgHS-qEn0H_6QeScXQjs6" },
+  { name: "INDUSTRIAL", url: "https://drive.google.com/uc?export=download&id=1rReToKmJZg7Cnh0o_TKKRXjJPNYSONo8" },
+  { name: "NACIONAL", url: "https://drive.google.com/uc?export=download&id=1eJ8F1ThPv8blLvKCFW4zHOXhTTtlJD8U" },
+  { name: "PETROLÂNDIA", url: "https://drive.google.com/uc?export=download&id=1IKjh8GiopU98jXp7cZRgXqgt99Nus5qP" },
+  { name: "RESSACA", url: "https://drive.google.com/uc?export=download&id=1NFIpWvcpWXthLJ7ZqfNJQ6C8vt4GLMLR" },
+  { name: "RIACHO", url: "https://drive.google.com/uc?export=download&id=1w2ucxe4y0K7r0Bmz87ZrtlDrE_K-dZc8" },
+  { name: "SEDE", url: "https://drive.google.com/uc?export=download&id=18rsXxI9UqXC9-Er1-atHPqwzmWIqgqCo" },
+  { name: "VARGEM DAS FLORES", url: "https://drive.google.com/uc?export=download&id=1aulSvodY2qV4F4IfauEXyFrtF6yplbvP" },
+  { name: "GERAL", url: "https://drive.google.com/uc?export=download&id=1LR69xX9hmEQKG85GSPkVld6JFrvmEOSN" }
 ];
 
 // ===================================
@@ -19,7 +20,7 @@ let allData = [];
 let filteredData = [];
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// FUNÇÃO AUXILIAR PARA VERIFICAR USUÁRIO
 // ===================================
 function hasUsuarioPreenchido(item) {
   return item['usuario'] && item['usuario'].trim() !== '';
@@ -69,46 +70,20 @@ async function loadData() {
 function showLoading(show) {
   const overlay = document.getElementById('loadingOverlay');
   if (!overlay) return;
-  if (show) overlay.classList.add('active');
-  else overlay.classList.remove('active');
+  overlay.style.display = show ? 'flex' : 'none';
 }
 
 // ===================================
 // POPULAR FILTROS
 // ===================================
 function populateFilters() {
-  const distritos = [...new Set(allData.map(item => item._distrito))].sort();
-  renderMultiSelect('msDistritoPanel', distritos, applyFilters);
-  setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
-
-  const statusList = [...new Set(allData.map(item => item.status))].sort();
-  renderMultiSelect('msStatusPanel', statusList, applyFilters);
-  setMultiSelectText('msStatusText', [], 'Todos');
+  populateMultiSelect('msDistritoPanel', 'msDistritoText', [...new Set(allData.map(item => item._distrito))].sort(), applyFilters, 'Todos os Distritos');
+  populateMultiSelect('msStatusPanel', 'msStatusText', [...new Set(allData.map(item => item.status))].sort(), applyFilters, 'Todos');
+  populateMultiSelect('msPrestadorPanel', 'msPrestadorText', [...new Set(allData.map(item => item.prestador))].sort(), applyFilters, 'Todos Prestadores');
+  populateMultiSelect('msTipoServicoPanel', 'msTipoServicoText', [...new Set(allData.map(item => item.tipo_servico))].sort(), applyFilters, 'Todos Tipos');
 }
 
-// ===================================
-// FILTRAR DADOS
-// ===================================
-function applyFilters() {
-  const distritoSel = getSelectedFromPanel('msDistritoPanel');
-  const statusSel = getSelectedFromPanel('msStatusPanel');
-
-  setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
-  setMultiSelectText('msStatusText', statusSel, 'Todos');
-
-  filteredData = allData.filter(item => {
-    const okDistrito = distritoSel.length === 0 || distritoSel.includes(item._distrito);
-    const okStatus = statusSel.length === 0 || statusSel.includes(item.status);
-    return okDistrito && okStatus;
-  });
-
-  updateDashboard();
-}
-
-// ===================================
-// FUNÇÕES AUXILIARES DE MULTISELECT
-// ===================================
-function renderMultiSelect(panelId, values, onChange) {
+function populateMultiSelect(panelId, textId, values, onChange, fallbackLabel) {
   const panel = document.getElementById(panelId);
   if (!panel) return;
   panel.innerHTML = '';
@@ -118,6 +93,7 @@ function renderMultiSelect(panelId, values, onChange) {
     item.querySelector('input').addEventListener('change', onChange);
     panel.appendChild(item);
   });
+  setMultiSelectText(textId, [], fallbackLabel);
 }
 
 function getSelectedFromPanel(panelId) {
@@ -135,6 +111,31 @@ function setMultiSelectText(textId, selected, fallbackLabel) {
 }
 
 // ===================================
+// FILTRAR DADOS
+// ===================================
+function applyFilters() {
+  const distritoSel = getSelectedFromPanel('msDistritoPanel');
+  const statusSel = getSelectedFromPanel('msStatusPanel');
+  const prestadorSel = getSelectedFromPanel('msPrestadorPanel');
+  const tipoSel = getSelectedFromPanel('msTipoServicoPanel');
+
+  setMultiSelectText('msDistritoText', distritoSel, 'Todos os Distritos');
+  setMultiSelectText('msStatusText', statusSel, 'Todos');
+  setMultiSelectText('msPrestadorText', prestadorSel, 'Todos Prestadores');
+  setMultiSelectText('msTipoServicoText', tipoSel, 'Todos Tipos');
+
+  filteredData = allData.filter(item => {
+    const okDistrito = distritoSel.length === 0 || distritoSel.includes(item._distrito);
+    const okStatus = statusSel.length === 0 || statusSel.includes(item.status);
+    const okPrestador = prestadorSel.length === 0 || prestadorSel.includes(item.prestador);
+    const okTipo = tipoSel.length === 0 || tipoSel.includes(item.tipo_servico);
+    return okDistrito && okStatus && okPrestador && okTipo;
+  });
+
+  updateDashboard();
+}
+
+// ===================================
 // ATUALIZAR DASHBOARD
 // ===================================
 function updateDashboard() {
@@ -148,24 +149,29 @@ function updateCards() {
 }
 
 function updateCharts() {
-  // Exemplo simples de gráfico por status
-  const statusCount = {};
+  updateChart('chartStatus', 'status');
+  updateChart('chartPrestador', 'prestador');
+  updateChart('chartTipoServico', 'tipo_servico');
+}
+
+function updateChart(canvasId, campo) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+
+  const counts = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    const status = item.status || 'Não informado';
-    statusCount[status] = (statusCount[status] || 0) + 1;
+    const key = item[campo] || 'Não informado';
+    counts[key] = (counts[key] || 0) + 1;
   });
 
-  const labels = Object.keys(statusCount);
-  const data = labels.map(l => statusCount[l]);
-
-  const ctx = document.getElementById('chartStatus');
-  if (!ctx) return;
+  const labels = Object.keys(counts);
+  const data = labels.map(l => counts[l]);
 
   new Chart(ctx, {
     type: 'bar',
     data: { labels, datasets: [{ data, backgroundColor: '#f97316' }] },
-    options: { responsive: true }
+    options: { responsive: true, maintainAspectRatio: false }
   });
 }
 
@@ -1285,4 +1291,5 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
 
