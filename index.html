@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel de Controle - Distrito Sanitário Eldorado</title>
+
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -169,7 +170,7 @@
           </div>
         </div>
 
-        <!-- 4️⃣ CBO ESPECIALIDADE (NOVO) -->
+        <!-- 4️⃣ CBO ESPECIALIDADE -->
         <div class="filter-box">
           <label>CBO Especialidade:</label>
           <div class="multi-select" id="msCboEspecialidade">
@@ -255,7 +256,7 @@
         </div>
       </div>
     </div>
-      
+
     <div class="charts-container">
       <div class="chart-box">
         <h3 class="chart-title">Total de Pendências por Mês</h3>
@@ -289,12 +290,25 @@
       </div>
     </div>
 
+    <!-- TABELA -->
     <div class="table-section">
       <h3 class="section-title"><i class="fas fa-table"></i> Todas as Demandas</h3>
 
       <div class="table-search">
         <i class="fas fa-search"></i>
         <input id="tableSearchInput" type="text" placeholder="Pesquisar na tabela..." oninput="onTableSearch()">
+      </div>
+
+      <div class="table-records-selector">
+        <label for="recordsPerPage">Mostrar:</label>
+        <select id="recordsPerPage" onchange="changeRecordsPerPage()">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50" selected>50</option>
+          <option value="500">500</option>
+          <option value="1000">1.000</option>
+        </select>
+        <span>registros por página</span>
       </div>
 
       <div class="table-wrapper">
@@ -315,7 +329,7 @@
 
         <div class="table-page-size">
           <span>Exibindo:</span>
-          <strong>100</strong>
+          <strong id="displayedRecords">50</strong>
           <span>por página</span>
         </div>
       </div>
@@ -344,4 +358,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
