@@ -138,8 +138,11 @@ let chartResolutividadeDistrito = null;
 let chartResolutividadePrestador = null;
 let chartPendenciasPorMes = null;
 
+/* NOVO GRÁFICO */
+let chartEvolucaoTemporal = null;
+
 // ===================================
-// ✅ FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
 // ===================================
 function hasUsuarioPreenchido(item) {
   const usuario = getColumnValue(item, ['Usuário', 'Usuario', 'USUÁRIO', 'USUARIO']);
@@ -147,17 +150,17 @@ function hasUsuarioPreenchido(item) {
 }
 
 // ===================================
-// ✅ FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
+// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
   for (let name of possibleNames) {
     // Busca exata
     if (item.hasOwnProperty(name) && item[name]) return item[name];
-    
+
     // Busca com trim (remove espaços)
     const trimmedName = name.trim();
     if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
-    
+
     // Busca case-insensitive
     const keys = Object.keys(item);
     const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
@@ -250,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ===================================
-// ✅ CARREGAR DADOS DE TODAS AS PLANILHAS
+// CARREGAR DADOS DE TODAS AS PLANILHAS
 // ===================================
 async function loadData() {
   showLoading(true);
@@ -282,7 +285,7 @@ async function loadData() {
       if (rows.length < 2) return;
 
       const headers = rows[0];
-      
+
       const sheetData = rows.slice(1)
         .filter(row => row.length > 1 && row[0])
         .map(row => {
@@ -367,7 +370,7 @@ function showLoading(show) {
 }
 
 // ===================================
-// ✅ POPULAR FILTROS (COM CBO ESPECIALIDADE)
+// POPULAR FILTROS (COM CBO ESPECIALIDADE)
 // ===================================
 function populateFilters() {
   // Distrito
@@ -385,7 +388,7 @@ function populateFilters() {
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
-  // ✅ CBO Especialidade
+  // CBO Especialidade
   const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
   renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
   setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
@@ -446,10 +449,10 @@ function applyFilters() {
     const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
     const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
     const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
-    
+
     const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
     const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
-    
+
     const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
 
     let okMes = true;
@@ -534,7 +537,7 @@ function updateCards() {
 }
 
 // ===================================
-// ✅ ATUALIZAR GRÁFICOS (COM LEGENDAS DENTRO DAS BARRAS - NO MEIO)
+// ATUALIZAR GRÁFICOS
 // ===================================
 function updateCharts() {
   // DISTRITOS - todos
@@ -576,6 +579,35 @@ function updateCharts() {
   const statusValues = statusLabels.map(label => statusCount[label]);
   createStatusChart('chartStatus', statusLabels, statusValues);
 
+  /* NOVO: Evolução Temporal (por mês, Data Início da Pendência) */
+  const evoCount = {};
+  filteredData.forEach(item => {
+    if (!hasUsuarioPreenchido(item)) return;
+
+    const dataInicio = parseDate(getColumnValue(item, [
+      'Data Início da Pendência',
+      'Data Inicio da Pendencia',
+      'Data Início Pendência',
+      'Data Inicio Pendencia'
+    ]));
+    if (!dataInicio) return;
+
+    const y = dataInicio.getFullYear();
+    const m = String(dataInicio.getMonth() + 1).padStart(2, '0');
+    const key = `${y}-${m}`;
+    evoCount[key] = (evoCount[key] || 0) + 1;
+  });
+
+  const evoKeys = Object.keys(evoCount).sort();
+  const evoLabels = evoKeys.map(key => {
+    const [ano, mes] = key.split('-');
+    const nome = new Date(Number(ano), Number(mes) - 1).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+    return nome;
+  });
+  const evoValues = evoKeys.map(k => evoCount[k]);
+
+  createEvolucaoTemporalChart('chartEvolucaoTemporal', evoLabels, evoValues);
+
   // PRESTADOR - todos
   const prestadoresCount = {};
   filteredData.forEach(item => {
@@ -606,7 +638,7 @@ function updateCharts() {
   // PIZZA
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
-  // POR MÊS
+  // POR MÊS (Barras horizontais)
   const mesCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
@@ -635,8 +667,83 @@ function updateCharts() {
   createPendenciasPorMesChart('chartPendenciasPorMes', mesLabels, mesValues);
 }
 
+/* =========================================================
+   Evolução Temporal (linha + área)
+========================================================= */
+function createEvolucaoTemporalChart(canvasId, labels, data) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+
+  if (chartEvolucaoTemporal) chartEvolucaoTemporal.destroy();
+
+  chartEvolucaoTemporal = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pendências Registradas',
+        data,
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.15)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#f97316',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 16,
+            font: { size: 13, weight: 'bold' },
+            color: '#111827'
+          }
+        },
+        tooltip: {
+          enabled: true,
+          backgroundColor: 'rgba(17,24,39,0.9)',
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          padding: 12,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: '#4b5563',
+            font: { size: 12, weight: '600' },
+            maxRotation: 0,
+            minRotation: 0
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: {
+            color: '#4b5563',
+            font: { size: 12, weight: '600' }
+          }
+        }
+      }
+    }
+  });
+}
+
 // ===================================
-// ✅ GRÁFICO: Total de Pendências por Mês (BARRAS HORIZONTAIS)
+// GRÁFICO: Total de Pendências por Mês (BARRAS HORIZONTAIS)
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -709,7 +816,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ GRÁFICO: Registros Geral de Pendências por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Registros Geral de Pendências por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
 // ===================================
 function createDistritoChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -784,7 +891,7 @@ function createDistritoChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ GRÁFICO: Pendências Não Resolvidas por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Pendências Não Resolvidas por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
 // ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -943,7 +1050,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// ✅ GRÁFICO: Registros Geral de Pendências por Status (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Registros Geral de Pendências por Status (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1006,7 +1113,7 @@ function createStatusChart(canvasId, labels, data) {
           const value = dataset.data[i];
           const text = `${value}`;
           const xPos = bar.x;
-          // ✅ AJUSTE: Posição Y no meio da barra
+          // AJUSTE: Posição Y no meio da barra
           const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, xPos, yPos);
         });
@@ -1018,7 +1125,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ GRÁFICO: Registros Geral de Pendências por Prestador (BARRAS HORIZONTAIS)
+// GRÁFICO: Registros Geral de Pendências por Prestador (BARRAS HORIZONTAIS)
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1091,7 +1198,7 @@ function createPrestadorChart(canvasId, labels, data) {
 }
 
 // ===================================
-// ✅ GRÁFICO: Pendências Não Resolvidas por Prestador (BARRAS HORIZONTAIS)
+// GRÁFICO: Pendências Não Resolvidas por Prestador (BARRAS HORIZONTAIS)
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1649,4 +1756,5 @@ function updateDemandasTable() {
   if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
   if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
 }
+
 
