@@ -478,41 +478,6 @@ body {
 .loading-content i { font-size: 3rem; color: var(--azul-medio); margin-bottom: 1rem; }
 .loading-content p { font-size: 1.2rem; color: var(--cinza-800); font-weight: 600; }
 
-/* ===================================
-   RESPONSIVIDADE
-=================================== */
-@media (max-width: 1200px) {
-  .charts-container { grid-template-columns: 1fr; }
-  .charts-container-resolutividade { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 768px) {
-  .header-title { font-size: 1.8rem; }
-  .header-subtitle { font-size: 0.95rem; }
-  .header-credits { font-size: 0.75rem; }
-
-  .container { padding: 0 1rem; }
-  .top-actions { flex-direction: column; gap: 1rem; }
-  .action-buttons { width: 100%; flex-direction: column; }
-  .btn { width: 100%; justify-content: center; }
-
-  .cards-grid { grid-template-columns: 1fr; }
-  .filters-grid { grid-template-columns: 1fr; }
-
-  .chart-wrapper, .chart-wrapper-pizza { height: 350px; }
-  .chart-wrapper-distrito { height: 320px; }
-
-  .paineis-distrito-grid { grid-template-columns: 1fr; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.metric-card, .filters-container, .chart-box, .chart-box-full { animation: fadeInUp 0.6s ease-out; }
-html { scroll-behavior: smooth; }
-
 /* =========================================================
  TABELA "Todas as Demandas" (como na referência)
 ========================================================= */
@@ -548,6 +513,56 @@ html { scroll-behavior: smooth; }
   background: transparent;
   font-size: 1rem;
   color: var(--cinza-800);
+}
+
+/* ===================================
+   ✅ MUDANÇA 1: SELETOR DE REGISTROS POR PÁGINA
+=================================== */
+.table-records-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #eff6ff;
+  border-radius: 10px;
+  border: 2px solid var(--azul-medio);
+}
+
+.table-records-selector label {
+  font-weight: 700;
+  color: var(--azul-escuro);
+  font-size: 0.95rem;
+}
+
+.table-records-selector select {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--azul-medio);
+  border-radius: 8px;
+  background: var(--branco);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cinza-800);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--sombra-sm);
+}
+
+.table-records-selector select:hover {
+  border-color: var(--azul-claro);
+  box-shadow: var(--sombra-md);
+}
+
+.table-records-selector select:focus {
+  outline: none;
+  border-color: var(--azul-claro);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.table-records-selector span {
+  font-weight: 600;
+  color: var(--cinza-800);
+  font-size: 0.95rem;
 }
 
 .table-wrapper{
@@ -765,3 +780,38 @@ html { scroll-behavior: smooth; }
   display: inline-block;
   vertical-align: middle;
 }
+
+/* ===================================
+   RESPONSIVIDADE
+=================================== */
+@media (max-width: 1200px) {
+  .charts-container { grid-template-columns: 1fr; }
+  .charts-container-resolutividade { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .header-title { font-size: 1.8rem; }
+  .header-subtitle { font-size: 0.95rem; }
+  .header-credits { font-size: 0.75rem; }
+
+  .container { padding: 0 1rem; }
+  .top-actions { flex-direction: column; gap: 1rem; }
+  .action-buttons { width: 100%; flex-direction: column; }
+  .btn { width: 100%; justify-content: center; }
+
+  .cards-grid { grid-template-columns: 1fr; }
+  .filters-grid { grid-template-columns: 1fr; }
+
+  .chart-wrapper, .chart-wrapper-pizza { height: 350px; }
+  .chart-wrapper-distrito { height: 320px; }
+
+  .paineis-distrito-grid { grid-template-columns: 1fr; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.metric-card, .filters-container, .chart-box, .chart-box-full { animation: fadeInUp 0.6s ease-out; }
+html { scroll-behavior: smooth; }
