@@ -514,7 +514,7 @@ body {
 html { scroll-behavior: smooth; }
 
 /* =========================================================
-   ✅✅✅ TABELA "Todas as Demandas" (como na referência)
+ TABELA "Todas as Demandas" (como na referência)
 ========================================================= */
 .table-section{
   background: var(--branco);
@@ -727,4 +727,41 @@ html { scroll-behavior: smooth; }
 .table-page-size{
   color: #374151;
   font-weight: 600;
+}
+
+/* =========================================================
+   FIX DE ALINHAMENTO (APENAS AJUSTE DE LINHAS/BASELINE)
+   - corrige desalinhamento visual de caracteres/linhas
+   - não altera cores nem estrutura do layout
+========================================================= */
+.header-title,
+.header-subtitle,
+.footer-credits,
+.section-title,
+.chart-title,
+.card-title,
+.card-value,
+.status-text,
+.multi-select-btn,
+.filter-box label {
+  line-height: 1.25;
+}
+
+.header-content * {
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.section-title,
+.chart-title,
+.connection-status,
+.btn,
+.painel-card {
+  align-items: center;
+}
+
+.status-text {
+  display: inline-block;
+  vertical-align: middle;
 }
