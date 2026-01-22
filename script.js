@@ -9,7 +9,7 @@ function gvizCsvUrl(spreadsheetId, gid) {
 }
 
 const SHEETS = [
-  // DISTRITO ELDORADO 
+  // DISTRITO ELDORADO
   {
     name: 'PENDÊNCIAS ELDORADO',
     url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
@@ -23,7 +23,7 @@ const SHEETS = [
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO INDUSTRIAL 
+  // DISTRITO INDUSTRIAL
   {
     name: 'PENDÊNCIAS INDUSTRIAL',
     url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '278071504'),
@@ -65,7 +65,7 @@ const SHEETS = [
     tipo: 'RESOLVIDO'
   },
 
-  // DISTRITO RESSACA 
+  // DISTRITO RESSACA
   {
     name: 'PENDÊNCIAS RESSACA',
     url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '278071504'),
@@ -137,9 +137,15 @@ let chartPizzaStatus = null;
 let chartResolutividadeDistrito = null;
 let chartResolutividadePrestador = null;
 let chartPendenciasPorMes = null;
-
-/* NOVO GRÁFICO */
 let chartEvolucaoTemporal = null;
+
+// ===================================
+// TABELA: paginação e filtros
+// ===================================
+let TABLE_PAGE_SIZE = 50;
+let tableCurrentPage = 1;
+let tableSearchQuery = '';
+let tableColumnFilters = {}; // (mantido, se usar depois)
 
 // ===================================
 // FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
@@ -154,19 +160,72 @@ function hasUsuarioPreenchido(item) {
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
   for (let name of possibleNames) {
-    // Busca exata
     if (item.hasOwnProperty(name) && item[name]) return item[name];
 
-    // Busca com trim (remove espaços)
     const trimmedName = name.trim();
     if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
 
-    // Busca case-insensitive
     const keys = Object.keys(item);
     const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
     if (foundKey && item[foundKey]) return item[foundKey];
   }
   return defaultValue;
+}
+
+// ===================================
+// ✅ NOVA FUNÇÃO: CALCULAR PRAZOS
+// ===================================
+function calcularPrazos(dataInicio) {
+  if (!dataInicio) return {
+    prazo15: '-',
+    email15: '-',
+    prazo30: '-',
+    email30: '-'
+  };
+
+  const dataInicioObj = parseDate(dataInicio);
+  if (!dataInicioObj || isNaN(dataInicioObj.getTime())) {
+    return {
+      prazo15: '-',
+      email15: '-',
+      prazo30: '-',
+      email30: '-'
+    };
+  }
+
+  // Calcular Data Final do Prazo (15 dias)
+  const prazo15Obj = new Date(dataInicioObj);
+  prazo15Obj.setDate(prazo15Obj.getDate() + 15);
+
+  // Calcular Data do Envio do Email (13 dias - 2 dias antes do prazo de 15)
+  const email15Obj = new Date(dataInicioObj);
+  email15Obj.setDate(email15Obj.getDate() + 13);
+
+  // Calcular Data Final do Prazo (30 dias)
+  const prazo30Obj = new Date(dataInicioObj);
+  prazo30Obj.setDate(prazo30Obj.getDate() + 30);
+
+  // Calcular Data do Envio do Email (28 dias - 2 dias antes do prazo de 30)
+  const email30Obj = new Date(dataInicioObj);
+  email30Obj.setDate(email30Obj.getDate() + 28);
+
+  return {
+    prazo15: formatDateFromObj(prazo15Obj),
+    email15: formatDateFromObj(email15Obj),
+    prazo30: formatDateFromObj(prazo30Obj),
+    email30: formatDateFromObj(email30Obj)
+  };
+}
+
+// ===================================
+// ✅ NOVA FUNÇÃO: FORMATAR DATA A PARTIR DE OBJETO DATE
+// ===================================
+function formatDateFromObj(dateObj) {
+  if (!dateObj || isNaN(dateObj.getTime())) return '-';
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${day}/${month}/${year}`;
 }
 
 // ===================================
@@ -176,7 +235,6 @@ function toggleMultiSelect(id) {
   document.getElementById(id).classList.toggle('open');
 }
 
-// fecha dropdown ao clicar fora
 document.addEventListener('click', (e) => {
   document.querySelectorAll('.multi-select').forEach(ms => {
     if (!ms.contains(e.target)) ms.classList.remove('open');
@@ -262,7 +320,7 @@ async function loadData() {
   try {
     const promises = SHEETS.map(sheet =>
       fetch(sheet.url, {
-        cache: 'no-store', // Força não usar cache
+        cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -537,7 +595,7 @@ function updateCards() {
 }
 
 // ===================================
-// ATUALIZAR GRÁFICOS
+// ATUALIZAR GRÁFICOS (VERSÃO COMPLETA COM TODOS OS GRÁFICOS)
 // ===================================
 function updateCharts() {
   // DISTRITOS - todos
@@ -816,7 +874,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Registros Geral de Pendências por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Registros Geral de Pendências por Distrito
 // ===================================
 function createDistritoChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -844,18 +902,18 @@ function createDistritoChart(canvasId, labels, data) {
         tooltip: { enabled: false }
       },
       scales: {
-        x: { 
-          ticks: { 
-            font: { size: 13, weight: 'bold' }, 
-            color: '#1e3a8a', 
-            maxRotation: 45, 
-            minRotation: 0 
-          }, 
-          grid: { display: false } 
+        x: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#1e3a8a',
+            maxRotation: 45,
+            minRotation: 0
+          },
+          grid: { display: false }
         },
-        y: { 
-          beginAtZero: true, 
-          ticks: { display: false }, 
+        y: {
+          beginAtZero: true,
+          ticks: { display: false },
           grid: { display: false },
           border: { display: false }
         }
@@ -879,7 +937,6 @@ function createDistritoChart(canvasId, labels, data) {
           const value = dataset.data[i];
           const text = `${value}`;
           const xPos = bar.x;
-          // ✅ AJUSTE: Posição Y no meio da barra
           const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, xPos, yPos);
         });
@@ -891,7 +948,7 @@ function createDistritoChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Pendências Não Resolvidas por Distrito (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Pendências Não Resolvidas por Distrito
 // ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -919,18 +976,18 @@ function createDistritoPendenteChart(canvasId, labels, data) {
         tooltip: { enabled: false }
       },
       scales: {
-        x: { 
-          ticks: { 
-            font: { size: 13, weight: 'bold' }, 
-            color: '#dc2626', 
-            maxRotation: 45, 
-            minRotation: 0 
-          }, 
-          grid: { display: false } 
+        x: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#dc2626',
+            maxRotation: 45,
+            minRotation: 0
+          },
+          grid: { display: false }
         },
-        y: { 
-          beginAtZero: true, 
-          ticks: { display: false }, 
+        y: {
+          beginAtZero: true,
+          ticks: { display: false },
           grid: { display: false },
           border: { display: false }
         }
@@ -954,7 +1011,6 @@ function createDistritoPendenteChart(canvasId, labels, data) {
           const value = dataset.data[i];
           const text = `${value}`;
           const xPos = bar.x;
-          // ✅ AJUSTE: Posição Y no meio da barra
           const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, xPos, yPos);
         });
@@ -1050,7 +1106,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// GRÁFICO: Registros Geral de Pendências por Status (LEGENDAS NO MEIO DA BARRA - BRANCO E NEGRITO)
+// GRÁFICO: Registros Geral de Pendências por Status
 // ===================================
 function createStatusChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1078,18 +1134,18 @@ function createStatusChart(canvasId, labels, data) {
         tooltip: { enabled: false }
       },
       scales: {
-        x: { 
-          ticks: { 
-            font: { size: 13, weight: 'bold' }, 
-            color: '#f97316', 
-            maxRotation: 45, 
-            minRotation: 0 
-          }, 
-          grid: { display: false } 
+        x: {
+          ticks: {
+            font: { size: 13, weight: 'bold' },
+            color: '#f97316',
+            maxRotation: 45,
+            minRotation: 0
+          },
+          grid: { display: false }
         },
-        y: { 
-          beginAtZero: true, 
-          ticks: { display: false }, 
+        y: {
+          beginAtZero: true,
+          ticks: { display: false },
           grid: { display: false },
           border: { display: false }
         }
@@ -1113,7 +1169,6 @@ function createStatusChart(canvasId, labels, data) {
           const value = dataset.data[i];
           const text = `${value}`;
           const xPos = bar.x;
-          // AJUSTE: Posição Y no meio da barra
           const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, xPos, yPos);
         });
@@ -1125,7 +1180,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Registros Geral de Pendências por Prestador (BARRAS HORIZONTAIS)
+// GRÁFICO: Registros Geral de Pendências por Prestador
 // ===================================
 function createPrestadorChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1198,7 +1253,7 @@ function createPrestadorChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Pendências Não Resolvidas por Prestador (BARRAS HORIZONTAIS)
+// GRÁFICO: Pendências Não Resolvidas por Prestador
 // ===================================
 function createPrestadorPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1211,7 +1266,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#065f46',
+        backgroundColor: '#dc2626',
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1236,7 +1291,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
         y: {
           ticks: {
             font: { size: 13, weight: 'bold' },
-            color: '#065f46'
+            color: '#dc2626'
           },
           grid: { display: false },
           border: { display: false }
@@ -1244,7 +1299,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
       }
     },
     plugins: [{
-      id: 'prestadorPendInsideLabels',
+      id: 'prestadorPendenteInsideLabels',
       afterDatasetsDraw(chart) {
         const { ctx } = chart;
         const meta = chart.getDatasetMeta(0);
@@ -1273,27 +1328,23 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 function createResolutividadePrestadorChart() {
   const ctx = document.getElementById('chartResolutividadePrestador');
 
-  const prestadoresStats = {};
+  const prestadorStats = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
 
     const prestador = item['Prestador'] || 'Não informado';
-    if (!prestadoresStats[prestador]) prestadoresStats[prestador] = { total: 0, resolvidos: 0 };
+    if (!prestadorStats[prestador]) prestadorStats[prestador] = { total: 0, resolvidos: 0 };
 
-    prestadoresStats[prestador].total++;
-    if (item['_tipo'] === 'RESOLVIDO') prestadoresStats[prestador].resolvidos++;
+    prestadorStats[prestador].total++;
+    if (item['_tipo'] === 'RESOLVIDO') prestadorStats[prestador].resolvidos++;
   });
 
-  const labels = Object.keys(prestadoresStats)
-    .sort((a, b) => {
-      const percA = (prestadoresStats[a].resolvidos / prestadoresStats[a].total) * 100;
-      const percB = (prestadoresStats[b].resolvidos / prestadoresStats[b].total) * 100;
-      return percB - percA;
-    })
-    .slice(0, 15);
+  const labels = Object.keys(prestadorStats)
+    .sort((a, b) => prestadorStats[b].total - prestadorStats[a].total)
+    .slice(0, 20);
 
   const percentuais = labels.map(p => {
-    const s = prestadoresStats[p];
+    const s = prestadorStats[p];
     return s.total > 0 ? Number(((s.resolvidos / s.total) * 100).toFixed(1)) : 0;
   });
 
@@ -1308,9 +1359,9 @@ function createResolutividadePrestadorChart() {
         data: percentuais,
         backgroundColor: '#059669',
         borderWidth: 0,
-        borderRadius: 8,
-        barPercentage: 0.65,
-        categoryPercentage: 0.75
+        borderRadius: 6,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8
       }]
     },
     options: {
@@ -1322,14 +1373,14 @@ function createResolutividadePrestadorChart() {
         tooltip: {
           enabled: true,
           backgroundColor: 'rgba(5, 150, 105, 0.9)',
-          titleFont: { size: 16, weight: 'bold' },
-          bodyFont: { size: 14 },
-          padding: 14,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          padding: 12,
           cornerRadius: 8,
           callbacks: {
             label: function(context) {
               const prestador = context.label;
-              const stats = prestadoresStats[prestador];
+              const stats = prestadorStats[prestador];
               return [
                 `Resolutividade: ${context.parsed.x}%`,
                 `Resolvidos: ${stats.resolvidos}`,
@@ -1350,18 +1401,34 @@ function createResolutividadePrestadorChart() {
           },
           grid: { color: 'rgba(0,0,0,0.06)' }
         },
-        y: { ticks: { font: { size: 13, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
+        y: { ticks: { font: { size: 12, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
       }
     }
   });
 }
 
+// ===================================
+// GRÁFICO DE PIZZA
+// ===================================
 function createPieChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPizzaStatus) chartPizzaStatus.destroy();
 
-  const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f97316','#6366f1','#84cc16'];
-  const total = data.reduce((sum, val) => sum + val, 0);
+  // Definir cores baseadas no STATUS (como na imagem)
+  const colorMap = {
+    'PENDENTE': '#3b82f6',
+    'Pendente': '#3b82f6',
+    'CANCELADO': '#ef4444',
+    'Cancelado': '#ef4444',
+    'RESOLVIDO': '#10b981',
+    'Resolvido': '#10b981',
+    'AGENDADO': '#f59e0b',
+    'Agendado': '#f59e0b'
+  };
+
+  const colors = labels.map(label => colorMap[label] || '#8b5cf6');
+
+  const total = data.reduce((acc, v) => acc + v, 0);
 
   chartPizzaStatus = new Chart(ctx, {
     type: 'pie',
@@ -1369,7 +1436,7 @@ function createPieChart(canvasId, labels, data) {
       labels,
       datasets: [{
         data,
-        backgroundColor: colors.slice(0, labels.length),
+        backgroundColor: colors,
         borderWidth: 3,
         borderColor: '#ffffff'
       }]
@@ -1379,69 +1446,80 @@ function createPieChart(canvasId, labels, data) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: true,
           position: 'right',
           labels: {
-            font: { size: 14, weight: 'bold', family: 'Arial, sans-serif' },
-            color: '#000000',
-            padding: 15,
+            font: { size: 14, weight: 'bold' },
+            color: '#111827',
+            padding: 18,
+            boxWidth: 22,
             usePointStyle: true,
             pointStyle: 'circle',
-            boxWidth: 20,
-            boxHeight: 20,
             generateLabels: function(chart) {
-              const datasets = chart.data.datasets;
-              const labels = chart.data.labels;
-              return labels.map((label, i) => {
-                const value = datasets[0].data[i];
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                return {
-                  text: `${label} (${percentage}%)`,
-                  fillStyle: datasets[0].backgroundColor[i],
-                  strokeStyle: datasets[0].backgroundColor[i],
-                  lineWidth: 2,
-                  hidden: false,
-                  index: i
-                };
-              });
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label, i) => {
+                  const value = data.datasets[0].data[i];
+                  const percent = ((value / total) * 100).toFixed(1);
+                  return {
+                    text: `${label} (${percent}%)`,
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    hidden: false,
+                    index: i
+                  };
+                });
+              }
+              return [];
             }
           }
         },
         tooltip: {
           enabled: true,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleFont: { size: 14, weight: 'bold' },
-          bodyFont: { size: 13 },
-          padding: 12,
-          cornerRadius: 8,
+          backgroundColor: 'rgba(17,24,39,0.95)',
+          titleFont: { size: 15, weight: 'bold' },
+          bodyFont: { size: 14 },
+          padding: 14,
+          cornerRadius: 10,
           callbacks: {
             label: function(context) {
-              const value = context.parsed;
-              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              return `${context.label}: ${percentage}% (${value} registros)`;
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const percent = ((value / total) * 100).toFixed(1);
+              return `${label}: ${value} (${percent}%)`;
             }
           }
         }
       }
     },
     plugins: [{
-      id: 'customPieLabelsInside',
-      afterDatasetsDraw: function(chart) {
-        const ctx = chart.ctx;
+      id: 'pizzaInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
         const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
         ctx.save();
         ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        chart.getDatasetMeta(0).data.forEach(function(element, index) {
-          const value = dataset.data[index];
-          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-          if (parseFloat(percentage) > 5) {
-            ctx.fillStyle = '#ffffff';
-            const position = element.tooltipPosition();
-            ctx.fillText(`${percentage}%`, position.x, position.y);
-          }
+        meta.data.forEach((slice, i) => {
+          const value = dataset.data[i];
+          const percent = ((value / total) * 100).toFixed(1);
+
+          const midAngle = (slice.startAngle + slice.endAngle) / 2;
+          const radius = (slice.outerRadius + slice.innerRadius) / 2;
+
+          const x = slice.x + Math.cos(midAngle) * radius * 0.7;
+          const y = slice.y + Math.sin(midAngle) * radius * 0.7;
+
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+
+          ctx.fillText(`${percent}%`, x, y);
         });
 
         ctx.restore();
@@ -1450,263 +1528,252 @@ function createPieChart(canvasId, labels, data) {
   });
 }
 
-function parseDate(dateString) {
-  if (!dateString || dateString === '-') return null;
+// ===================================
+// FUNÇÃO DOWNLOAD EXCEL
+// ===================================
+function downloadExcel() {
+  const dataToExport = filteredData
+    .filter(item => hasUsuarioPreenchido(item))
+    .map(item => {
+      const dataInicioPendencia = getColumnValue(item, [
+        'Data Início da Pendência',
+        'Data Inicio da Pendencia',
+        'Data Início Pendência',
+        'Data Inicio Pendencia'
+      ], '');
 
-  let match = dateString.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-  if (match) return new Date(match[3], match[2] - 1, match[1]);
+      const prazos = calcularPrazos(dataInicioPendencia);
 
-  match = dateString.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (match) return new Date(match[1], match[2] - 1, match[3]);
+      return {
+        'Distrito': item['_distrito'] || '',
+        'Tipo': item['_tipo'] || '',
+
+        'Nº Solicitação': getColumnValue(item, [
+          'Solicitação',
+          'SOLICITAÇÃO',
+          'Nº Solicitação',
+          'Numero Solicitação'
+        ], ''),
+
+        'Data Solicitação': formatDate(getColumnValue(item, [
+          'Data da Solicitação',
+          'DATA DA SOLICITAÇÃO',
+          'Data Solicitação',
+          'Data Solicitacao'
+        ], '')),
+
+        'Nº Prontuário': getColumnValue(item, ['Nº Prontuário', 'Numero Prontuário'], ''),
+
+        'Prestador': item['Prestador'] || '',
+
+        'Unidade Solicitante': item['Unidade Solicitante'] || '',
+
+        'CBO Especialidade': getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade'], ''),
+
+        'Data Início da Pendência': formatDate(dataInicioPendencia),
+
+        'Data Final do Prazo (Pendência com 15 dias)': prazos.prazo15,
+        'Data do envio do Email (Prazo: Pendência com 15 dias)': prazos.email15,
+        'Data Final do Prazo (Pendência com 30 dias)': prazos.prazo30,
+        'Data do envio do Email (Prazo: Pendência com 30 dias)': prazos.email30,
+
+        'Status': item['Status'] || ''
+      };
+    });
+
+  const ws = XLSX.utils.json_to_sheet(dataToExport);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Pendências');
+
+  const fileName = `Pendencias_${new Date().toISOString().split('T')[0]}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
+
+// ===================================
+// TABELA ATUALIZADA
+// ===================================
+function updateDemandasTable() {
+  const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
+
+  let rows = baseItems.map(item => {
+    const dataInicioPendencia = getColumnValue(item, [
+      'Data Início da Pendência',
+      'Data Inicio da Pendencia',
+      'Data Início Pendência',
+      'Data Inicio Pendencia'
+    ]);
+
+    const prazos = calcularPrazos(dataInicioPendencia);
+
+    return {
+      _item: item,
+      _dataInicio: parseDate(dataInicioPendencia),
+
+      origem: item['_origem'] || '-',
+
+      // 
+      numeroSolicitacao: getColumnValue(item, [
+        'Solicitação',
+        'Solicitacâo',
+        'Solicitaçâo',
+        'SOLICITAÇÃO',
+        'Nº Solicitação',
+        'Numero Solicitação',
+        'N Solicitação',
+        'N Solicitao',
+        'Número Solicitação',
+        'Numero da Solicitação'
+      ], '-'),
+
+      dataSolicitacao: formatDate(getColumnValue(item, [
+        'Data da Solicitação',
+        'DATA DA SOLICITAÇÃO',
+        'Data Solicitação',
+        'Data Solicitacao',
+        'Data da Solicitacao'
+      ], '')),
+
+      prontuario: getColumnValue(item, ['Nº Prontuário', 'Numero Prontuário'], '-'),
+
+      prestador: getColumnValue(item, ['Prestador'], '-'),
+
+      unidadeSolicitante: getColumnValue(item, ['Unidade Solicitante'], '-'),
+
+      cboEspecialidade: getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade'], '-'),
+
+      dataInicioPendencia: formatDate(dataInicioPendencia),
+
+      prazo15: prazos.prazo15,
+      email15: prazos.email15,
+      prazo30: prazos.prazo30,
+      email30: prazos.email30,
+
+      status: getColumnValue(item, ['Status'], '-')
+    };
+  });
+
+  if (tableSearchQuery) {
+    rows = rows.filter(r => {
+      return Object.values(r).some(val =>
+        String(val).toLowerCase().includes(tableSearchQuery)
+      );
+    });
+  }
+
+  const { pageRows, total, totalPages } = paginate(rows);
+
+  const thead = document.getElementById('demandasThead');
+  thead.innerHTML = `
+    <tr>
+      <th>Origem</th>
+      <th>Solicitação</th>
+      <th>Data Solicitação</th>
+      <th>Nº Prontuário</th>
+      <th>Prestador</th>
+      <th>Unidade Solicitante</th>
+      <th>CBO Especialidade</th>
+      <th>Data Início da Pendência</th>
+      <th>Data Final do Prazo (15 dias)</th>
+      <th>Data Envio Email (15 dias)</th>
+      <th>Data Final do Prazo (30 dias)</th>
+      <th>Data Envio Email (30 dias)</th>
+      <th>Status</th>
+    </tr>
+  `;
+
+  const tbody = document.getElementById('demandasTbody');
+  tbody.innerHTML = '';
+
+  const hoje = new Date();
+
+  pageRows.forEach(r => {
+    const tr = document.createElement('tr');
+
+    if (r._item['_tipo'] === 'PENDENTE' && r._dataInicio) {
+      const diasDecorridos = Math.floor((hoje - r._dataInicio) / (1000 * 60 * 60 * 24));
+      if (diasDecorridos >= 15) {
+        tr.style.backgroundColor = '#fefce8';
+        tr.style.boxShadow = 'inset 4px 0 0 #fde68a';
+      }
+    }
+
+    [
+      'origem',
+      'numeroSolicitacao',
+      'dataSolicitacao',
+      'prontuario',
+      'prestador',
+      'unidadeSolicitante',
+      'cboEspecialidade',
+      'dataInicioPendencia',
+      'prazo15',
+      'email15',
+      'prazo30',
+      'email30',
+      'status'
+    ].forEach(key => {
+      const td = document.createElement('td');
+      td.textContent = r[key] ?? '-';
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('tableInfo').textContent = `${total} registros`;
+  document.getElementById('pageIndicator').textContent = `Página ${tableCurrentPage} de ${totalPages}`;
+
+  const btns = document.querySelectorAll('.table-pagination .btn-page');
+  const btnPrev = btns[0];
+  const btnNext = btns[1];
+
+  if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
+  if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
+}
+
+// ===================================
+// PARSE DATE
+// ===================================
+function parseDate(dateStr) {
+  if (!dateStr || dateStr === '-') return null;
+
+  const s = String(dateStr).trim();
+
+  let match = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?/);
+  if (match) {
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const year = parseInt(match[3], 10);
+    return new Date(year, month, day);
+  }
+
+  match = s.match(/(\d{4})-(\d{2})-(\d{2})(?:[T\s]\d{2}:\d{2}(?::\d{2})?)?/);
+  if (match) {
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
+    return new Date(year, month, day);
+  }
 
   return null;
 }
 
-function formatDate(dateString) {
-  if (!dateString || dateString === '-') return '-';
+// ===================================
+// FORMAT DATE
+// ===================================
+function formatDate(dateStr) {
+  const d = parseDate(dateStr);
+  if (!d || isNaN(d.getTime())) return dateStr;
 
-  const date = parseDate(dateString);
-  if (!date || isNaN(date.getTime())) return dateString;
-
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 }
 
-function refreshData() {
-  loadData();
-}
-
-function downloadExcel() {
-  const dataParaExportar = filteredData.filter(item => hasUsuarioPreenchido(item));
-
-  if (dataParaExportar.length === 0) {
-    alert('Não há dados com Usuário preenchido para exportar.');
-    return;
-  }
-
-  const exportData = dataParaExportar.map(item => ({
-    'Nº Prontuário': getColumnValue(item, ['Nº Prontuário','N° Prontuário','Numero Prontuário','Prontuário','Prontuario'], ''),
-    'Telefone': item['Telefone'] || '',
-    'Distrito': item['_distrito'] || '',
-    'Origem': item['_origem'] || '',
-    'Data Solicitação': getColumnValue(item, ['Data da Solicitação','Data Solicitação','Data da Solicitacao','Data Solicitacao'], ''),
-    'Unidade Solicitante': item['Unidade Solicitante'] || '',
-    'CBO Especialidade': getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'], ''),
-    'Data Início Pendência': getColumnValue(item, ['Data Início da Pendência','Data Início Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], ''),
-    'Status': item['Status'] || '',
-    'Prestador': item['Prestador'] || '',
-    'Usuário': getColumnValue(item, ['Usuário','Usuario'], ''),
-    'Data Final Prazo 15d': getColumnValue(item, ['Data Final do Prazo (Pendência com 15 dias)','Data Final do Prazo (Pendencia com 15 dias)','Data Final Prazo 15d','Prazo 15 dias'], ''),
-    'Data Envio Email 15d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 15 dias)','Data do envio do Email (Prazo: Pendencia com 15 dias)','Data Envio Email 15d','Email 15 dias'], ''),
-    'Data Final Prazo 30d': getColumnValue(item, ['Data Final do Prazo (Pendência com 30 dias)','Data Final do Prazo (Pendencia com 30 dias)','Data Final Prazo 30d','Prazo 30 dias'], ''),
-    'Data Envio Email 30d': getColumnValue(item, ['Data do envio do Email (Prazo: Pendência com 30 dias)','Data do envio do Email (Prazo: Pendencia com 30 dias)','Data Envio Email 30d','Email 30 dias'], '')
-  }));
-
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Dados Completos');
-
-  ws['!cols'] = [
-    { wch: 18 },
-    { wch: 18 },
-    { wch: 16 },
-    { wch: 20 },
-    { wch: 30 },
-    { wch: 18 },
-    { wch: 30 },
-    { wch: 30 },
-    { wch: 18 },
-    { wch: 20 },
-    { wch: 25 },
-    { wch: 20 },
-    { wch: 18 },
-    { wch: 20 },
-    { wch: 18 },
-    { wch: 20 }
-  ];
-
-  const hoje = new Date().toISOString().split('T')[0];
-  XLSX.writeFile(wb, `Dados_Todos_Distritos_${hoje}.xlsx`);
-}
-
-/* =========================================================
-   TABELA "Todas as Demandas"
-========================================================= */
-
-const TABLE_PAGE_SIZE = 100;
-let tableCurrentPage = 1;
-let tableSearchQuery = '';
-let tableColumnFilters = {};
-
-const TABLE_COLUMNS = [
-  { key: 'origem', label: 'Origem da planilha' },
-  { key: 'dataSolicitacao', label: 'Data Solicitação' },
-  { key: 'prontuario', label: 'Nº Prontuário' },
-  { key: 'telefone', label: 'Telefone' },
-  { key: 'unidadeSolicitante', label: 'Unidade Solicitante' },
-  { key: 'cboEspecialidade', label: 'CBO Especialidade' },
-  { key: 'dataInicioPendencia', label: 'Data Início Pendência' },
-  { key: 'status', label: 'Status' },
-  { key: 'dataFinalPrazo15', label: 'Data Final Prazo (15d)' },
-  { key: 'dataEnvioEmail15', label: 'Data Envio Email (15d)' },
-  { key: 'dataFinalPrazo30', label: 'Data Final Prazo (30d)' },
-  { key: 'dataEnvioEmail30', label: 'Data Envio Email (30d)' }
-];
-
-function onTableSearch() {
-  const el = document.getElementById('tableSearchInput');
-  tableSearchQuery = (el.value || '').trim().toLowerCase();
-  tableCurrentPage = 1;
-  updateDemandasTable();
-}
-
-function tablePrevPage() {
-  if (tableCurrentPage > 1) {
-    tableCurrentPage--;
-    updateDemandasTable();
-  }
-}
-
-function tableNextPage() {
-  tableCurrentPage++;
-  updateDemandasTable();
-}
-
-function normalizeText(s) {
-  return String(s || '').toLowerCase();
-}
-
-function getTableRowObject(item) {
-  return {
-    origem: item['_origem'] || '-',
-    dataSolicitacao: formatDate(getColumnValue(item, ['Data da Solicitação','Data Solicitação','Data da Solicitacao','Data Solicitacao'], '-')),
-    prontuario: getColumnValue(item, ['Nº Prontuário','N° Prontuário','Numero Prontuário','Prontuário','Prontuario'], '-'),
-    telefone: getColumnValue(item, ['Telefone','TELEFONE'], '-'),
-    unidadeSolicitante: getColumnValue(item, ['Unidade Solicitante','Unidade','UNIDADE SOLICITANTE'], '-'),
-    cboEspecialidade: getColumnValue(item, ['Cbo Especialidade','CBO Especialidade','CBO','Especialidade','Especialidade CBO'], '-'),
-    dataInicioPendencia: formatDate(getColumnValue(item, ['Data Início Pendência','Data Início da Pendência','Data Inicio da Pendencia','Data Inicio Pendencia'], '-')),
-    status: getColumnValue(item, ['Status','STATUS'], '-'),
-    dataFinalPrazo15: formatDate(getColumnValue(item, ['Data Final Prazo (15d)','Data Final do Prazo (Pendência com 15 dias)','Data Final do Prazo (Pendencia com 15 dias)','Data Final Prazo 15d','Prazo 15 dias'], '-')),
-    dataEnvioEmail15: formatDate(getColumnValue(item, ['Data Envio Email (15d)','Data do envio do Email (Prazo: Pendência com 15 dias)','Data do envio do Email (Prazo: Pendencia com 15 dias)','Data Envio Email 15d','Email 15 dias'], '-')),
-    dataFinalPrazo30: formatDate(getColumnValue(item, ['Data Final Prazo (30d)','Data Final do Prazo (Pendência com 30 dias)','Data Final do Prazo (Pendencia com 30 dias)','Data Final Prazo 30d','Prazo 30 dias'], '-')),
-    dataEnvioEmail30: formatDate(getColumnValue(item, ['Data Envio Email (30d)','Data do envio do Email (Prazo: Pendência com 30 dias)','Data do envio do Email (Prazo: Pendencia com 30 dias)','Data Envio Email 30d','Email 30 dias'], '-'))
-  };
-}
-
-function buildTableHeaderWithFilters(rows) {
-  const thead = document.getElementById('demandasThead');
-  thead.innerHTML = '';
-
-  const tr = document.createElement('tr');
-
-  TABLE_COLUMNS.forEach(col => {
-    const th = document.createElement('th');
-    th.className = 'th-cell';
-
-    const title = document.createElement('div');
-    title.className = 'th-title';
-    title.textContent = col.label;
-
-    const filterBox = document.createElement('div');
-    filterBox.className = 'th-filter';
-    filterBox.setAttribute('data-key', col.key);
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'th-filter-btn';
-    btn.innerHTML = `<i class="fas fa-filter"></i>`;
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      filterBox.classList.toggle('open');
-    };
-
-    const panel = document.createElement('div');
-    panel.className = 'th-filter-panel';
-
-    const values = [...new Set(rows.map(r => r[col.key]).filter(v => v && v !== '-'))]
-      .sort((a,b)=> String(a).localeCompare(String(b)));
-
-    if (!tableColumnFilters[col.key]) tableColumnFilters[col.key] = new Set();
-
-    const actions = document.createElement('div');
-    actions.className = 'th-filter-actions';
-    actions.innerHTML = `
-      <button type="button" class="th-ms-all">Todos</button>
-      <button type="button" class="th-ms-none">Limpar</button>
-    `;
-
-    const list = document.createElement('div');
-    list.className = 'th-filter-list';
-
-    actions.querySelector('.th-ms-all').onclick = () => {
-      tableColumnFilters[col.key] = new Set(values);
-      tableCurrentPage = 1;
-      updateDemandasTable();
-    };
-
-    actions.querySelector('.th-ms-none').onclick = () => {
-      tableColumnFilters[col.key] = new Set();
-      tableCurrentPage = 1;
-      updateDemandasTable();
-    };
-
-    values.forEach(v => {
-      const lab = document.createElement('label');
-      lab.className = 'th-filter-item';
-      const checked = tableColumnFilters[col.key].has(v);
-      lab.innerHTML = `
-        <input type="checkbox" ${checked ? 'checked' : ''}>
-        <span>${escapeHtml(v)}</span>
-      `;
-      lab.querySelector('input').onchange = (ev) => {
-        const isChecked = ev.target.checked;
-        const set = tableColumnFilters[col.key] || new Set();
-        if (isChecked) set.add(v);
-        else set.delete(v);
-        tableColumnFilters[col.key] = set;
-        tableCurrentPage = 1;
-        updateDemandasTable();
-      };
-      list.appendChild(lab);
-    });
-
-    panel.appendChild(actions);
-    panel.appendChild(list);
-
-    filterBox.appendChild(btn);
-    filterBox.appendChild(panel);
-
-    th.appendChild(title);
-    th.appendChild(filterBox);
-    tr.appendChild(th);
-  });
-
-  thead.appendChild(tr);
-}
-
-function applyTableFilters(rows) {
-  let out = [...rows];
-
-  if (tableSearchQuery) {
-    out = out.filter(r => {
-      const blob = TABLE_COLUMNS.map(c => r[c.key]).join(' | ');
-      return normalizeText(blob).includes(tableSearchQuery);
-    });
-  }
-
-  TABLE_COLUMNS.forEach(col => {
-    const set = tableColumnFilters[col.key];
-    if (set && set.size > 0) {
-      out = out.filter(r => r[col.key] && set.has(r[col.key]));
-    }
-  });
-
-  return out;
-}
-
+// ===================================
+// PAGINAÇÃO
+// ===================================
 function paginate(rows) {
   const total = rows.length;
   const totalPages = Math.max(1, Math.ceil(total / TABLE_PAGE_SIZE));
@@ -1721,40 +1788,40 @@ function paginate(rows) {
   return { pageRows, total, totalPages };
 }
 
-function updateDemandasTable() {
-  const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
-  const rows = baseItems.map(getTableRowObject);
-
-  buildTableHeaderWithFilters(rows);
-
-  const filteredRows = applyTableFilters(rows);
-  const { pageRows, total, totalPages } = paginate(filteredRows);
-
-  const tbody = document.getElementById('demandasTbody');
-  tbody.innerHTML = '';
-
-  pageRows.forEach(r => {
-    const tr = document.createElement('tr');
-    TABLE_COLUMNS.forEach(col => {
-      const td = document.createElement('td');
-      td.textContent = r[col.key] ?? '-';
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-
-  const tableInfo = document.getElementById('tableInfo');
-  tableInfo.textContent = `${total} registros`;
-
-  const pageIndicator = document.getElementById('pageIndicator');
-  pageIndicator.textContent = `Página ${tableCurrentPage} de ${totalPages}`;
-
-  const btns = document.querySelectorAll('.table-pagination .btn-page');
-  const btnPrev = btns[0];
-  const btnNext = btns[1];
-
-  if (btnPrev) btnPrev.disabled = (tableCurrentPage <= 1);
-  if (btnNext) btnNext.disabled = (tableCurrentPage >= totalPages);
+function tablePrevPage() {
+  if (tableCurrentPage > 1) {
+    tableCurrentPage--;
+    updateDemandasTable();
+  }
 }
 
+function tableNextPage() {
+  const rows = filteredData.filter(item => hasUsuarioPreenchido(item));
+  const totalPages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (tableCurrentPage < totalPages) {
+    tableCurrentPage++;
+    updateDemandasTable();
+  }
+}
 
+function changeRecordsPerPage() {
+  const select = document.getElementById('recordsPerPage');
+  TABLE_PAGE_SIZE = parseInt(select.value, 10);
+  tableCurrentPage = 1;
+  document.getElementById('displayedRecords').textContent = TABLE_PAGE_SIZE;
+  updateDemandasTable();
+}
+
+function onTableSearch() {
+  const input = document.getElementById('tableSearchInput');
+  tableSearchQuery = input.value.toLowerCase();
+  tableCurrentPage = 1;
+  updateDemandasTable();
+}
+
+// ===================================
+// REFRESH DATA
+// ===================================
+function refreshData() {
+  loadData();
+}
