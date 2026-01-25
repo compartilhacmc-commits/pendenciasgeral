@@ -561,9 +561,17 @@ function updateDashboard() {
   updateDemandasTable();
 }
 
+// ===================================
+// ✅ MODIFICAÇÃO 1: ATUALIZAR CARDS (ADICIONAR NOVO CARD)
+// ===================================
 function updateCards() {
   const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
   const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
+
+  // ✅ NOVO: Contar registros com usuário preenchido NA ABA PENDÊNCIAS
+  const totalPendenciasResponder = allData.filter(item => 
+    hasUsuarioPreenchido(item) && item['_tipo'] === 'PENDENTE'
+  ).length;
 
   const hoje = new Date();
   let pendencias15 = 0;
@@ -587,6 +595,7 @@ function updateCards() {
   });
 
   document.getElementById('totalPendencias').textContent = totalComUsuario;
+  document.getElementById('totalPendenciasResponder').textContent = totalPendenciasResponder;
   document.getElementById('pendencias15').textContent = pendencias15;
   document.getElementById('pendencias30').textContent = pendencias30;
 
@@ -1590,7 +1599,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// TABELA ATUALIZADA
+// ✅ MODIFICAÇÃO 2: TABELA ATUALIZADA (DESTAQUE AMARELO MODIFICADO)
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1611,7 +1620,6 @@ function updateDemandasTable() {
 
       origem: item['_origem'] || '-',
 
-      // 
       numeroSolicitacao: getColumnValue(item, [
         'Solicitação',
         'Solicitacâo',
@@ -1689,9 +1697,10 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
+    // ✅ NOVA LÓGICA: Destacar em amarelo pendências com 26+ dias (faltando 4 dias para 30)
     if (r._item['_tipo'] === 'PENDENTE' && r._dataInicio) {
       const diasDecorridos = Math.floor((hoje - r._dataInicio) / (1000 * 60 * 60 * 24));
-      if (diasDecorridos >= 15) {
+      if (diasDecorridos >= 26) {
         tr.style.backgroundColor = '#fefce8';
         tr.style.boxShadow = 'inset 4px 0 0 #fde68a';
       }
