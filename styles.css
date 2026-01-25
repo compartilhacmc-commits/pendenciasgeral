@@ -131,7 +131,7 @@ body {
 .btn-clear { background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); color: var(--branco); margin-top: 1rem; }
 
 /* ===================================
-   PAINÉIS DISTRITO (AJUSTADO: MAIS FINO + ÍCONE OK)
+   ✅ PAINÉIS DISTRITO (AJUSTADO: TODOS MAIS FINOS E UNIFORMES)
 =================================== */
 .paineis-distrito-section {
   background: var(--branco);
@@ -152,14 +152,14 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.6rem 0.85rem;
+  padding: 0.55rem 0.8rem; /* ✅ REDUZIDO PARA TODOS FICAREM MAIS FINOS */
   border-radius: 10px;
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: var(--sombra-sm);
   position: relative;
   overflow: hidden;
-  min-height: 56px;
+  min-height: 52px; /* ✅ ALTURA MÍNIMA UNIFORME */
 }
 
 .painel-card::before {
@@ -176,24 +176,24 @@ body {
 .painel-sede { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e3a8a; }
 
 .painel-icon {
-  width: 34px; height: 34px;
+  width: 32px; height: 32px; /* ✅ TAMANHO UNIFORME DO ÍCONE */
   display: flex;
   align-items: center;
   justify-content: center;
   background: currentColor;
   color: var(--branco);
-  border-radius: 9px;
-  font-size: 1.05rem;
+  border-radius: 8px;
+  font-size: 1rem;
   opacity: 0.95;
   flex-shrink: 0;
 }
 
 .painel-info { flex: 1; }
-.painel-info h4 { font-size: 0.98rem; font-weight: 800; margin-bottom: 0.1rem; color: inherit; }
-.painel-info p { font-size: 0.78rem; font-weight: 600; opacity: 0.85; color: inherit; }
+.painel-info h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.1rem; color: inherit; }
+.painel-info p { font-size: 0.75rem; font-weight: 600; opacity: 0.85; color: inherit; }
 
 .painel-arrow {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: inherit;
   transition: transform 0.3s ease;
   opacity: 0.7;
@@ -613,6 +613,64 @@ CARDS DE MÉTRICAS (AJUSTADO: 5 LADO A LADO + MENOR)
 .th-title{
   font-weight: 800;
   margin-bottom: 0.35rem;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--cinza-200);
+}
+
+.table-info {
+  font-weight: 600;
+  color: var(--cinza-600);
+}
+
+.table-pagination {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-page {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--azul-medio);
+  border-radius: 8px;
+  background: var(--branco);
+  color: var(--azul-medio);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-page:hover {
+  background: var(--azul-medio);
+  color: var(--branco);
+}
+
+.btn-page:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-weight: 700;
+  color: var(--azul-escuro);
+}
+
+.table-page-size {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+  color: var(--cinza-600);
+}
+
+.table-page-size strong {
+  color: var(--azul-escuro);
 }
 
 /* ===================================
