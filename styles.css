@@ -131,7 +131,7 @@ body {
 .btn-clear { background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); color: var(--branco); margin-top: 1rem; }
 
 /* ===================================
-   PAINÉIS DISTRITO
+   PAINÉIS DISTRITO (AJUSTADO: MAIS FINO + ÍCONE OK)
 =================================== */
 .paineis-distrito-section {
   background: var(--branco);
@@ -144,22 +144,22 @@ body {
 
 .paineis-distrito-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.75rem;
 }
 
 .painel-card {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.85rem 1rem;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
   border-radius: 10px;
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: var(--sombra-sm);
   position: relative;
   overflow: hidden;
-  min-height: 68px;
+  min-height: 56px;
 }
 
 .painel-card::before {
@@ -176,50 +176,51 @@ body {
 .painel-sede { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e3a8a; }
 
 .painel-icon {
-  width: 42px; height: 42px;
+  width: 34px; height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: currentColor;
   color: var(--branco);
-  border-radius: 10px;
-  font-size: 1.25rem;
-  opacity: 0.9;
+  border-radius: 9px;
+  font-size: 1.05rem;
+  opacity: 0.95;
   flex-shrink: 0;
 }
 
 .painel-info { flex: 1; }
-.painel-info h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.15rem; color: inherit; }
-.painel-info p { font-size: 0.82rem; font-weight: 500; opacity: 0.8; color: inherit; }
+.painel-info h4 { font-size: 0.98rem; font-weight: 800; margin-bottom: 0.1rem; color: inherit; }
+.painel-info p { font-size: 0.78rem; font-weight: 600; opacity: 0.85; color: inherit; }
 
 .painel-arrow {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   color: inherit;
   transition: transform 0.3s ease;
   opacity: 0.7;
 }
 
 /* ===================================
-CARDS DE MÉTRICAS
+CARDS DE MÉTRICAS (AJUSTADO: 5 LADO A LADO + MENOR)
 =================================== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .metric-card {
   background: var(--branco);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0.9rem 1rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.9rem;
   box-shadow: var(--sombra-md);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  min-height: 86px;
 }
 
 .metric-card::before {
@@ -248,29 +249,30 @@ CARDS DE MÉTRICAS
 .card-info::before { background: var(--roxo); }
 
 .card-icon {
-  width: 60px; height: 60px;
+  width: 44px; height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: currentColor;
   color: var(--branco);
-  border-radius: 12px;
-  font-size: 1.8rem;
+  border-radius: 10px;
+  font-size: 1.25rem;
   opacity: 0.9;
+  flex-shrink: 0;
 }
 
 .card-info h3 {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   color: var(--cinza-600);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .card-value {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   color: var(--cinza-800);
   line-height: 1;
 }
@@ -482,7 +484,7 @@ CARDS DE MÉTRICAS
 .loading-content p { font-size: 1.2rem; color: var(--cinza-800); font-weight: 600; }
 
 /* =========================================================
- TABELA "Todas as Demandas" (como na referência)
+ TABELA "Todas as Demandas"
 ========================================================= */
 .table-section{
   background: var(--branco);
@@ -613,181 +615,15 @@ CARDS DE MÉTRICAS
   margin-bottom: 0.35rem;
 }
 
-/* filtro na coluna */
-.th-filter{
-  position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-}
-
-.th-filter-btn{
-  border: 0;
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  padding: 0.35rem 0.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: var(--sombra-sm);
-}
-
-.th-filter-btn:hover{
-  background: rgba(255,255,255,0.25);
-}
-
-.th-filter-panel{
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  width: 260px;
-  background: #fff;
-  border: 1px solid var(--cinza-200);
-  border-radius: 12px;
-  box-shadow: var(--sombra-lg);
-  padding: 0.75rem;
-  z-index: 80;
-  max-height: 320px;
-  overflow: auto;
-  color: var(--cinza-800);
-}
-
-.th-filter.open .th-filter-panel{ display: block; }
-
-.th-filter-actions{
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.65rem;
-}
-
-.th-filter-actions button{
-  border: 0;
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 0.85rem;
-  box-shadow: var(--sombra-sm);
-}
-
-.th-ms-all{ background: #e0e7ff; color: #1e3a8a; }
-.th-ms-none{ background: #f3f4f6; color: #374151; }
-
-.th-filter-list{
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.th-filter-item{
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  padding: 0.4rem 0.45rem;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.th-filter-item:hover{
-  background: var(--cinza-100);
-}
-
-.th-filter-item input{
-  width: 16px;
-  height: 16px;
-}
-
-.th-filter-item span{
-  font-size: 0.9rem;
-  color: #111827;
-}
-
-.table-footer{
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.table-info{
-  font-weight: 700;
-  color: var(--cinza-800);
-}
-
-.table-pagination{
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.btn-page{
-  border: 0;
-  background: #e0e7ff;
-  color: #1e3a8a;
-  font-weight: 800;
-  padding: 0.55rem 0.9rem;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: var(--sombra-sm);
-}
-
-.btn-page:disabled{
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.page-indicator{
-  font-weight: 800;
-  color: #1e3a8a;
-}
-
-.table-page-size{
-  color: #374151;
-  font-weight: 600;
-}
-
-/* =========================================================
-   FIX DE ALINHAMENTO
-========================================================= */
-.header-title,
-.header-subtitle,
-.footer-credits,
-.section-title,
-.chart-title,
-.card-title,
-.card-value,
-.status-text,
-.multi-select-btn,
-.filter-box label {
-  line-height: 1.25;
-}
-
-.header-content * {
-  text-rendering: geometricPrecision;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.section-title,
-.chart-title,
-.connection-status,
-.btn,
-.painel-card {
-  align-items: center;
-}
-
-.status-text {
-  display: inline-block;
-  vertical-align: middle;
-}
-
 /* ===================================
    RESPONSIVIDADE
 =================================== */
 @media (max-width: 1200px) {
   .charts-container { grid-template-columns: 1fr; }
   .charts-container-resolutividade { grid-template-columns: 1fr; }
+
+  /* cards quebram quando não couber */
+  .cards-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 }
 
 @media (max-width: 768px) {
