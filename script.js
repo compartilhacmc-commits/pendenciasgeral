@@ -562,24 +562,38 @@ function updateDashboard() {
 }
 
 // ===================================
-// ✅ MODIFICAÇÃO 1: ATUALIZAR CARDS (ADICIONAR NOVO CARD)
+// ✅ CARDS (LÓGICA CORRIGIDA) - RESPOSTA A
+// - 30 dias INCLUI as de 15 dias (janela até 30)
 // ===================================
 function updateCards() {
   const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
   const filtradoComUsuario = filteredData.filter(item => hasUsuarioPreenchido(item)).length;
 
-  // ✅ NOVO: Contar registros com usuário preenchido NA ABA PENDÊNCIAS
-  const totalPendenciasResponder = allData.filter(item => 
-    hasUsuarioPreenchido(item) && item['_tipo'] === 'PENDENTE'
-  ).length;
+  // Somente pendências (aba PENDÊNCIAS) + Usuário preenchido
+  const pendentesBaseAll = allData.filter(item =>
+    item['_tipo'] === 'PENDENTE' && hasUsuarioPreenchido(item)
+  );
+
+  // Cards devem respeitar filtros atuais
+  const pendentesBaseFiltered = filteredData.filter(item =>
+    item['_tipo'] === 'PENDENTE' && hasUsuarioPreenchido(item)
+  );
+
+  const totalPendenciasResponder = pendentesBaseAll.length;
 
   const hoje = new Date();
-  let pendencias15 = 0;
-  let pendencias30 = 0;
+  hoje.setHours(0, 0, 0, 0);
 
-  filteredData.forEach(item => {
-    if (!hasUsuarioPreenchido(item)) return;
+  const hojeMais15 = new Date(hoje);
+  hojeMais15.setDate(hojeMais15.getDate() + 15);
 
+  const hojeMais30 = new Date(hoje);
+  hojeMais30.setDate(hojeMais30.getDate() + 30);
+
+  let vencendo15 = 0;
+  let vencendo30 = 0;
+
+  pendentesBaseFiltered.forEach(item => {
     const dataInicio = parseDate(getColumnValue(item, [
       'Data Início da Pendência',
       'Data Inicio da Pendencia',
@@ -587,24 +601,34 @@ function updateCards() {
       'Data Inicio Pendencia'
     ]));
 
-    if (dataInicio) {
-      const diasDecorridos = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
-      if (diasDecorridos >= 15 && diasDecorridos < 30) pendencias15++;
-      if (diasDecorridos >= 30) pendencias30++;
-    }
+    if (!dataInicio || isNaN(dataInicio.getTime())) return;
+
+    const prazo15 = new Date(dataInicio);
+    prazo15.setHours(0, 0, 0, 0);
+    prazo15.setDate(prazo15.getDate() + 15);
+
+    const prazo30 = new Date(dataInicio);
+    prazo30.setHours(0, 0, 0, 0);
+    prazo30.setDate(prazo30.getDate() + 30);
+
+    if (prazo15 >= hoje && prazo15 <= hojeMais15) vencendo15++;
+    if (prazo30 >= hoje && prazo30 <= hojeMais30) vencendo30++; // inclui as de 15 (Resposta A)
   });
 
   document.getElementById('totalPendencias').textContent = totalComUsuario;
   document.getElementById('totalPendenciasResponder').textContent = totalPendenciasResponder;
-  document.getElementById('pendencias15').textContent = pendencias15;
-  document.getElementById('pendencias30').textContent = pendencias30;
+  document.getElementById('pendencias15').textContent = vencendo15;
+  document.getElementById('pendencias30').textContent = vencendo30;
 
-  const percentFiltrados = totalComUsuario > 0 ? ((filtradoComUsuario / totalComUsuario) * 100).toFixed(1) : '100.0';
+  const percentFiltrados = totalComUsuario > 0
+    ? ((filtradoComUsuario / totalComUsuario) * 100).toFixed(1)
+    : '100.0';
+
   document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
 }
 
 // ===================================
-// ATUALIZAR GRÁFICOS (VERSÃO COMPLETA COM TODOS OS GRÁFICOS)
+// ATUALIZAR GRÁFICOS
 // ===================================
 function updateCharts() {
   // DISTRITOS - todos
@@ -646,7 +670,7 @@ function updateCharts() {
   const statusValues = statusLabels.map(label => statusCount[label]);
   createStatusChart('chartStatus', statusLabels, statusValues);
 
-  /* NOVO: Evolução Temporal (por mês, Data Início da Pendência) */
+  /* Evolução Temporal (por mês, Data Início da Pendência) */
   const evoCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
@@ -1423,7 +1447,6 @@ function createPieChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
   if (chartPizzaStatus) chartPizzaStatus.destroy();
 
-  // Definir cores baseadas no STATUS (como na imagem)
   const colorMap = {
     'PENDENTE': '#3b82f6',
     'Pendente': '#3b82f6',
@@ -1599,7 +1622,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// ✅ MODIFICAÇÃO 2: TABELA ATUALIZADA (DESTAQUE AMARELO MODIFICADO)
+// ✅ TABELA ATUALIZADA
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1697,7 +1720,6 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
-    // ✅ NOVA LÓGICA: Destacar em amarelo pendências com 26+ dias (faltando 4 dias para 30)
     if (r._item['_tipo'] === 'PENDENTE' && r._dataInicio) {
       const diasDecorridos = Math.floor((hoje - r._dataInicio) / (1000 * 60 * 60 * 24));
       if (diasDecorridos >= 26) {
