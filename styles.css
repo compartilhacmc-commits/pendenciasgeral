@@ -200,7 +200,7 @@ body {
 }
 
 /* ===================================
-   CARDS DE MÉTRICAS
+CARDS DE MÉTRICAS
 =================================== */
 .cards-grid {
   display: grid;
@@ -234,6 +234,9 @@ body {
 
 .card-primary { color: var(--azul-medio); }
 .card-primary::before { background: var(--azul-medio); }
+
+.card-success { color: var(--verde); }
+.card-success::before { background: var(--verde); }
 
 .card-warning { color: var(--amarelo); }
 .card-warning::before { background: var(--amarelo); }
@@ -516,7 +519,7 @@ body {
 }
 
 /* ===================================
-   ✅ MUDANÇA 1: SELETOR DE REGISTROS POR PÁGINA
+   SELETOR DE REGISTROS POR PÁGINA
 =================================== */
 .table-records-selector {
   display: flex;
@@ -745,9 +748,7 @@ body {
 }
 
 /* =========================================================
-   FIX DE ALINHAMENTO (APENAS AJUSTE DE LINHAS/BASELINE)
-   - corrige desalinhamento visual de caracteres/linhas
-   - não altera cores nem estrutura do layout
+   FIX DE ALINHAMENTO
 ========================================================= */
 .header-title,
 .header-subtitle,
