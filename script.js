@@ -562,8 +562,8 @@ function updateDashboard() {
 }
 
 // ===================================
-// ✅ CARDS (LÓGICA CORRIGIDA) - RESPOSTA A
-// - 30 dias INCLUI as de 15 dias (janela até 30)
+// CARDS
+// CONTA PENDÊNCIAS QUE JÁ PASSARAM DE 15/30 DIAS
 // ===================================
 function updateCards() {
   const totalComUsuario = allData.filter(item => hasUsuarioPreenchido(item)).length;
@@ -584,12 +584,6 @@ function updateCards() {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  const hojeMais15 = new Date(hoje);
-  hojeMais15.setDate(hojeMais15.getDate() + 15);
-
-  const hojeMais30 = new Date(hoje);
-  hojeMais30.setDate(hojeMais30.getDate() + 30);
-
   let vencendo15 = 0;
   let vencendo30 = 0;
 
@@ -603,16 +597,18 @@ function updateCards() {
 
     if (!dataInicio || isNaN(dataInicio.getTime())) return;
 
-    const prazo15 = new Date(dataInicio);
-    prazo15.setHours(0, 0, 0, 0);
-    prazo15.setDate(prazo15.getDate() + 15);
+    // Calcular quantos dias se passaram desde o início
+    const diasDecorridos = Math.floor((hoje - dataInicio) / (1000 * 60 * 60 * 24));
 
-    const prazo30 = new Date(dataInicio);
-    prazo30.setHours(0, 0, 0, 0);
-    prazo30.setDate(prazo30.getDate() + 30);
+    // Conta se já passou 15 dias ou mais
+    if (diasDecorridos >= 15) {
+      vencendo15++;
+    }
 
-    if (prazo15 >= hoje && prazo15 <= hojeMais15) vencendo15++;
-    if (prazo30 >= hoje && prazo30 <= hojeMais30) vencendo30++; // inclui as de 15 (Resposta A)
+    // Conta se já passou 30 dias ou mais
+    if (diasDecorridos >= 30) {
+      vencendo30++;
+    }
   });
 
   document.getElementById('totalPendencias').textContent = totalComUsuario;
@@ -1622,7 +1618,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// ✅ TABELA ATUALIZADA
+// TABELA
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
