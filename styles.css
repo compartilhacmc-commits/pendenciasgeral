@@ -131,7 +131,7 @@ body {
 .btn-clear { background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); color: var(--branco); margin-top: 1rem; }
 
 /* ===================================
-   ✅ PAINÉIS DISTRITO (AJUSTADO: TODOS MAIS FINOS E UNIFORMES)
+   ✅ PAINÉIS DISTRITO - CORRIGIDO PARA TAMANHOS UNIFORMES
 =================================== */
 .paineis-distrito-section {
   background: var(--branco);
@@ -152,14 +152,14 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0.8rem; /* ✅ REDUZIDO PARA TODOS FICAREM MAIS FINOS */
+  padding: 0.65rem 0.9rem;
   border-radius: 10px;
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: var(--sombra-sm);
   position: relative;
   overflow: hidden;
-  min-height: 52px; /* ✅ ALTURA MÍNIMA UNIFORME */
+  height: 60px; /* ✅ ALTURA FIXA PARA UNIFORMIDADE */
 }
 
 .painel-card::before {
@@ -176,27 +176,52 @@ body {
 .painel-sede { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #1e3a8a; }
 
 .painel-icon {
-  width: 32px; height: 32px; /* ✅ TAMANHO UNIFORME DO ÍCONE */
+  width: 36px; 
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: currentColor;
   color: var(--branco);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   opacity: 0.95;
   flex-shrink: 0;
 }
 
-.painel-info { flex: 1; }
-.painel-info h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.1rem; color: inherit; }
-.painel-info p { font-size: 0.75rem; font-weight: 600; opacity: 0.85; color: inherit; }
+.painel-info { 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0; /* ✅ PERMITE TRUNCAMENTO DE TEXTO LONGO */
+}
+
+.painel-info h4 { 
+  font-size: 0.95rem; 
+  font-weight: 800; 
+  margin-bottom: 0.15rem; 
+  color: inherit;
+  line-height: 1.2;
+  white-space: nowrap; /* ✅ EVITA QUEBRA DE LINHA */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-info p { 
+  font-size: 0.75rem; 
+  font-weight: 600; 
+  opacity: 0.85; 
+  color: inherit;
+  line-height: 1.2;
+}
 
 .painel-arrow {
   font-size: 1rem;
   color: inherit;
   transition: transform 0.3s ease;
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 /* ===================================
