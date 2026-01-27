@@ -1,4 +1,4 @@
-/* ===================================
+/* =========================================================
    RESET E VARIÁVEIS GLOBAIS
 =================================== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -131,7 +131,7 @@ body {
 .btn-clear { background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); color: var(--branco); margin-top: 1rem; }
 
 /* ===================================
-   ✅ PAINÉIS DISTRITO - CORRIGIDO PARA TAMANHOS UNIFORMES
+PAINÉIS DISTRITO
 =================================== */
 .paineis-distrito-section {
   background: var(--branco);
@@ -159,7 +159,7 @@ body {
   box-shadow: var(--sombra-sm);
   position: relative;
   overflow: hidden;
-  height: 60px; /* ✅ ALTURA FIXA PARA UNIFORMIDADE */
+  height: 60px;
 }
 
 .painel-card::before {
@@ -194,7 +194,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 0; /* ✅ PERMITE TRUNCAMENTO DE TEXTO LONGO */
+  min-width: 0;
 }
 
 .painel-info h4 { 
@@ -203,7 +203,7 @@ body {
   margin-bottom: 0.15rem; 
   color: inherit;
   line-height: 1.2;
-  white-space: nowrap; /* ✅ EVITA QUEBRA DE LINHA */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -295,11 +295,13 @@ CARDS DE MÉTRICAS (AJUSTADO: 5 LADO A LADO + MENOR)
   letter-spacing: 0.4px;
 }
 
+/* VALOR DO CARD CENTRALIZADO */
 .card-value {
   font-size: 1.6rem;
   font-weight: 800;
   color: var(--cinza-800);
   line-height: 1;
+  text-align: center;
 }
 
 /* ===================================
@@ -704,8 +706,6 @@ CARDS DE MÉTRICAS (AJUSTADO: 5 LADO A LADO + MENOR)
 @media (max-width: 1200px) {
   .charts-container { grid-template-columns: 1fr; }
   .charts-container-resolutividade { grid-template-columns: 1fr; }
-
-  /* cards quebram quando não couber */
   .cards-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 }
 
