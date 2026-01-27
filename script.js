@@ -1,5 +1,5 @@
 // ===================================
-// CONFIGURAÇÃO DAS PLANILHAS (8 DISTRITOS)
+// PLANILHAS (8 DISTRITOS)
 // ===================================
 
 // helper para padronizar URL CSV do Google Sheets COM CACHE BUSTING
@@ -173,7 +173,7 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
 }
 
 // ===================================
-// ✅ NOVA FUNÇÃO: CALCULAR PRAZOS
+// CALCULAR PRAZOS
 // ===================================
 function calcularPrazos(dataInicio) {
   if (!dataInicio) return {
@@ -218,7 +218,7 @@ function calcularPrazos(dataInicio) {
 }
 
 // ===================================
-// ✅ NOVA FUNÇÃO: FORMATAR DATA A PARTIR DE OBJETO DATE
+// FORMATAR DATA A PARTIR DE OBJETO DATE
 // ===================================
 function formatDateFromObj(dateObj) {
   if (!dateObj || isNaN(dateObj.getTime())) return '-';
@@ -1852,3 +1852,4 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
