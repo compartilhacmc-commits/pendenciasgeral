@@ -236,6 +236,7 @@
       </button>
     </div>
 
+    <!-- ✅ GRÁFICO 1: Pendências Não Resolvidas por Distrito (MANTÉM O ORIGINAL) -->
     <div class="chart-box chart-box-full">
       <h3 class="chart-title">Pendências Não Resolvidas por Distrito</h3>
       <div class="chart-wrapper-distrito">
@@ -243,6 +244,7 @@
       </div>
     </div>
 
+    <!-- ✅ GRÁFICO 2: Pendências Resolvidas por Distrito (AGORA VERTICAL) -->
     <div class="chart-box chart-box-full">
       <h3 class="chart-title">Pendências Resolvidas por Distrito</h3>
       <div class="chart-wrapper-distrito">
@@ -250,6 +252,7 @@
       </div>
     </div>
 
+    <!-- ✅ GRÁFICO 3: Registros de Pendências por Status (AGORA VERTICAL) -->
     <div class="chart-box chart-box-full">
       <h3 class="chart-title">Registros de Pendências por Status</h3>
       <div class="chart-wrapper-distrito">
@@ -257,10 +260,20 @@
       </div>
     </div>
 
-    <div class="chart-box chart-box-full">
-      <h3 class="chart-title">Evolução Temporal de Pendências</h3>
-      <div class="chart-wrapper-distrito">
-        <canvas id="chartEvolucaoTemporal"></canvas>
+    <!--GRÁFICOS DE ESPECIALIDADE (TOP 10) -->
+    <div class="charts-container">
+      <div class="chart-box">
+        <h3 class="chart-title">Registros Geral de Pendências por Especialidade TOP 10</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartEspecialidades"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <h3 class="chart-title">Registros de Pendências Não Resolvidas por Especialidade TOP 10</h3>
+        <div class="chart-wrapper">
+          <canvas id="chartEspecialidadesPendentes"></canvas>
+        </div>
       </div>
     </div>
 
@@ -311,6 +324,14 @@
         <div class="chart-wrapper">
           <canvas id="chartResolutividadePrestador"></canvas>
         </div>
+      </div>
+    </div>
+
+    <!-- ✅ EVOLUÇÃO TEMPORAL -->
+    <div class="chart-box chart-box-full">
+      <h3 class="chart-title">Evolução Temporal de Pendências</h3>
+      <div class="chart-wrapper-distrito">
+        <canvas id="chartEvolucaoTemporal"></canvas>
       </div>
     </div>
 
