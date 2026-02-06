@@ -1871,7 +1871,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// ✅ TABELA (NOVA LÓGICA DESTAQUE AMARELO)
+// ✅ TABELA (NOVA LÓGICA DESTAQUE AMARELO - FALTAM 4 DIAS)
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1990,14 +1990,14 @@ function updateDemandasTable() {
     const tr = document.createElement('tr');
 
     // ✅ NOVA LÓGICA DESTAQUE AMARELO:
-    // Somente aba PENDÊNCIAS + Usuário preenchido + faltam 26 dias para prazo 30
+    // Somente aba PENDÊNCIAS + Usuário preenchido + faltam 4 dias ou menos para prazo 30
     if (
       r._item['_tipo'] === 'PENDENTE' &&
       r._prazo30Data
     ) {
       const diasRestantes = Math.ceil((r._prazo30Data - hoje) / (1000 * 60 * 60 * 24));
       
-      if (diasRestantes >= 0 && diasRestantes <= 26) {
+      if (diasRestantes >= 0 && diasRestantes <= 4) {
         tr.style.backgroundColor = '#fefce8';
         tr.style.boxShadow = 'inset 4px 0 0 #fde68a';
       }
@@ -2135,5 +2135,3 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
-
-
