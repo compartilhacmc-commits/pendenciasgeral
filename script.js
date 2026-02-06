@@ -159,7 +159,7 @@ function hasUsuarioPreenchido(item) {
 
 // ===================================
 // FUNÇÃO PARA CANCELADOS POR VENCIMENTO
-// STATU = "CANCELADO/VENCIMENTO DO PRAZO"
+// STATUS = "CANCELADO/VENCIMENTO DO PRAZO"
 // ===================================
 function getCanceladoPorVencimentoInfo(item) {
   // Deve estar na aba RESOLVIDOS
@@ -864,7 +864,7 @@ function updateCharts() {
 }
 
 // ===================================
-// ✅ GRÁFICO: Pendências Não Resolvidas por Distrito (ESTILO VERTICAL)
+// GRÁFICO: Pendências Não Resolvidas por Distrito (ESTILO VERTICAL)
 // ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -942,7 +942,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 
 
 // ===================================
-// ✅ GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
+// GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
 // ===================================
 function createDistritoResolvidasChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -956,7 +956,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#059669', // ✅ VERDE MAIS ESCURO
+        backgroundColor: '#059669', // VERDE ESCURO
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -975,7 +975,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
         x: {
           ticks: {
             font: { size: 12, weight: 'bold' },
-            color: '#059669' // ✅ VERDE MAIS ESCURO
+            color: '#059669' // VERDE ESCURO
           },
           grid: { display: false },
           border: { display: false }
@@ -1033,7 +1033,7 @@ function createStatusChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#f97316', // ✅ LARANJA
+        backgroundColor: '#f97316', // LARANJA
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1041,7 +1041,7 @@ function createStatusChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x', // ✅ BARRAS VERTICAIS
+      indexAxis: 'x', // BARRAS VERTICAIS
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -1074,7 +1074,7 @@ function createStatusChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // ✅ RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1084,7 +1084,7 @@ function createStatusChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // ✅ NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -1095,7 +1095,7 @@ function createStatusChart(canvasId, labels, data) {
   });
 }
 // ===================================
-// ✅ GRÁFICO: Evolução Temporal
+// GRÁFICO: Evolução Temporal
 // ===================================
 function createEvolucaoTemporalChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1164,7 +1164,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#1e3a8a', // ✅ AZUL ESCURO
+        backgroundColor: '#1e3a8a', // AZUL ESCURO
         borderWidth: 0,
         borderRadius: 6
       }]
@@ -1197,7 +1197,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // ✅ RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1205,7 +1205,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         meta.data.forEach((bar, i) => {
           const value = dataset.data[i];
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // ✅ NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
           ctx.fillText(text, bar.x, yPos);
         });
 
@@ -1886,7 +1886,7 @@ function updateDemandasTable() {
 
     const prazos = calcularPrazos(dataInicioPendencia);
 
-    // ✅ CORREÇÃO: "Data Envio Email (15/30)" deve vir APENAS da planilha
+    // "Data Envio Email (15/30)" deve vir APENAS da planilha
     const email15Planilha = getColumnValue(item, [
       'Data Envio Email (15 dias)',
       'Data Envio Email 15 dias',
@@ -1943,9 +1943,9 @@ function updateDemandasTable() {
       dataInicioPendencia: formatDate(dataInicioPendencia),
 
       prazo15: prazos.prazo15,
-      email15: formatDate(email15Planilha), // ✅ apenas planilha
+      email15: formatDate(email15Planilha), // apenas planilha
       prazo30: prazos.prazo30,
-      email30: formatDate(email30Planilha), // ✅ apenas planilha
+      email30: formatDate(email30Planilha), // apenas planilha
 
       status: getColumnValue(item, ['Status'], '-')
     };
@@ -1988,7 +1988,6 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
-    // ✅ CORREÇÃO DO ERRO GRAVE:
     // Destacar em amarelo APENAS:
     // - registros da aba RESOLVIDOS
     // - com Usuário preenchido (baseItems já filtra por isso)
@@ -2129,3 +2128,4 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
