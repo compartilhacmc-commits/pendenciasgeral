@@ -940,7 +940,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 
 
 // ===================================
-// GRÁFICO: Pendências Resolvidas por Distrito
+// ✅ GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
 // ===================================
 function createDistritoResolvidasChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -954,7 +954,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#10b981', // Verde
+        backgroundColor: '#059669', // ✅ VERDE MAIS ESCURO
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -962,7 +962,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x', // ✅ BARRAS VERTICAIS
+      indexAxis: 'x',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -973,7 +973,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
         x: {
           ticks: {
             font: { size: 12, weight: 'bold' },
-            color: '#10b981'
+            color: '#059669' // ✅ VERDE MAIS ESCURO
           },
           grid: { display: false },
           border: { display: false }
@@ -995,7 +995,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // ✅ RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1005,7 +1005,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // ✅ NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2);
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -2103,3 +2103,4 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
