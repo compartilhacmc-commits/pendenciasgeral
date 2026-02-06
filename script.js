@@ -637,11 +637,6 @@ function updateCards() {
     item['_tipo'] === 'RESOLVIDO'
   ).length;
 
-  const totalAgendadas = filteredComUsuario.filter(item => {
-    const status = getColumnValue(item, ['Status', 'STATUS', 'status'], '');
-    return String(status).trim().toLowerCase() === 'agendado' || String(status).trim().toLowerCase() === 'agendada';
-  }).length;
-
   const totalCanceladosGeral = filteredComUsuario.filter(item => {
     const status = getColumnValue(item, ['Status', 'STATUS', 'status'], '');
     return String(status).trim().toLowerCase() === 'cancelado' || String(status).trim().toLowerCase() === 'cancelada';
@@ -655,7 +650,9 @@ function updateCards() {
   document.getElementById('totalPendenciasResponder').textContent = totalPendenciasResponder;
   document.getElementById('totalCanceladosVencimento').textContent = totalCanceladosVencimento;
   document.getElementById('totalResolvidas').textContent = totalResolvidas;
-  document.getElementById('totalAgendadas').textContent = totalAgendadas;
+
+  // ✅ REMOVIDO: atualização do card "totalAgendadas" (card removido do HTML)
+
   document.getElementById('totalCanceladosGeral').textContent = totalCanceladosGeral;
   document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
 }
@@ -701,7 +698,6 @@ function updateCharts() {
     'RESOLVIDOS': 0,
     'PENDENTES': 0,
     'CANCELADO': 0,
-    'AGENDADO': 0,
     'CANCELADO/VENCIMENTO DO PRAZO': 0
   };
 
@@ -722,9 +718,7 @@ function updateCharts() {
       statusCount['CANCELADO']++;
     }
 
-    if (item['_tipo'] === 'RESOLVIDO' && (status === 'AGENDADO' || status === 'AGENDADA')) {
-      statusCount['AGENDADO']++;
-    }
+    // ✅ REMOVIDO: contagem de AGENDADO/AGENDADA
 
     if (item['_tipo'] === 'RESOLVIDO' && status === 'CANCELADO/VENCIMENTO DO PRAZO') {
       statusCount['CANCELADO/VENCIMENTO DO PRAZO']++;
@@ -824,6 +818,8 @@ function updateCharts() {
 
   createResolutividadePrestadorChart();
 
+  // ✅ Como statusLabels/statusValues não têm mais AGENDADO,
+  // o gráfico de rosca também fica sem a legenda AGENDADO.
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
   // Pendências por mês
@@ -939,7 +935,6 @@ function createDistritoPendenteChart(canvasId, labels, data) {
     }]
   });
 }
-
 
 // ===================================
 // GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
@@ -1094,6 +1089,7 @@ function createStatusChart(canvasId, labels, data) {
     }]
   });
 }
+
 // ===================================
 // GRÁFICO: Evolução Temporal
 // ===================================
@@ -1692,7 +1688,7 @@ function createPieChart(canvasId, labels, data) {
     'RESOLVIDOS': '#10b981',
     'PENDENTES': '#3b82f6',
     'CANCELADO': '#ef4444',
-    'AGENDADO': '#f59e0b',
+    // ✅ REMOVIDO: AGENDADO
     'CANCELADO/VENCIMENTO DO PRAZO': '#9333ea'
   };
 
@@ -2135,4 +2131,3 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
-
