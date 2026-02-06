@@ -135,12 +135,12 @@ body {
 .btn-clear { background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); color: var(--branco); margin-top: 1rem; }
 
 /* ===================================
-   CARDS DE MÉTRICAS - ✅ CORRIGIDO PARA 6 CARDS (3x2)
+   CARDS DE MÉTRICAS - ✅ 6 CARDS EM UMA LINHA COM LETRAS MAIORES
 =================================== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.2rem;
   margin-bottom: 2rem;
 }
 
@@ -180,9 +180,9 @@ body {
   width: 100%;
 }
 
-/* ✅ TÍTULO DO CARD (UPPERCASE, PEQUENO, CINZA) */
+/* ✅ TÍTULO DO CARD (LETRAS AUMENTADAS DE 0.7rem PARA 0.85rem) */
 .card-title {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #6b7280;
   margin-bottom: 1rem;
@@ -191,7 +191,7 @@ body {
   line-height: 1.4;
 }
 
-/* ✅ VALOR DO CARD (NÚMERO REDUZIDO PARA 2.4rem) */
+/* ✅ VALOR DO CARD (NÚMEROS MANTIDOS EM 2.4rem) */
 .card-value {
   font-size: 2.4rem;
   font-weight: 900;
