@@ -191,9 +191,9 @@ body {
   line-height: 1.4;
 }
 
-/* ✅ VALOR DO CARD (NÚMERO GRANDE E NEGRITO) */
+/* ✅ VALOR DO CARD (NÚMERO REDUZIDO PARA 2.4rem) */
 .card-value {
-  font-size: 3rem;
+  font-size: 2.4rem;
   font-weight: 900;
   color: #1f2937;
   line-height: 1;
