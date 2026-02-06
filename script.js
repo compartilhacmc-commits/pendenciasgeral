@@ -177,7 +177,9 @@ function getCanceladoPorVencimentoInfo(item) {
       'Data do envio do Email (Prazo: Pendência com 30 dias)',
       'Data do envio do Email (Prazo Pendência com 30 dias)',
       'Data envio Email 30 dias',
-      'Email 30 dias'
+      'Email 30 dias',
+      'Data Envio Email (30 dias)',
+      'Data Envio Email 30 dias'
     ], '');
 
     const dataEmail30Parsed = parseDate(dataEmail30);
@@ -1884,6 +1886,25 @@ function updateDemandasTable() {
 
     const prazos = calcularPrazos(dataInicioPendencia);
 
+    // ✅ CORREÇÃO: "Data Envio Email (15/30)" deve vir APENAS da planilha
+    const email15Planilha = getColumnValue(item, [
+      'Data Envio Email (15 dias)',
+      'Data Envio Email 15 dias',
+      'Data do envio do Email (Prazo: Pendência com 15 dias)',
+      'Data do envio do Email (Prazo Pendência com 15 dias)',
+      'Data envio Email 15 dias',
+      'Email 15 dias'
+    ], '-');
+
+    const email30Planilha = getColumnValue(item, [
+      'Data Envio Email (30 dias)',
+      'Data Envio Email 30 dias',
+      'Data do envio do Email (Prazo: Pendência com 30 dias)',
+      'Data do envio do Email (Prazo Pendência com 30 dias)',
+      'Data envio Email 30 dias',
+      'Email 30 dias'
+    ], '-');
+
     return {
       _item: item,
       _dataInicio: parseDate(dataInicioPendencia),
@@ -1922,9 +1943,9 @@ function updateDemandasTable() {
       dataInicioPendencia: formatDate(dataInicioPendencia),
 
       prazo15: prazos.prazo15,
-      email15: prazos.email15,
+      email15: formatDate(email15Planilha), // ✅ apenas planilha
       prazo30: prazos.prazo30,
-      email30: prazos.email30,
+      email30: formatDate(email30Planilha), // ✅ apenas planilha
 
       status: getColumnValue(item, ['Status'], '-')
     };
@@ -1967,7 +1988,12 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
-    if (r._item['_tipo'] === 'PENDENTE' && r._dataInicio) {
+    // ✅ CORREÇÃO DO ERRO GRAVE:
+    // Destacar em amarelo APENAS:
+    // - registros da aba RESOLVIDOS
+    // - com Usuário preenchido (baseItems já filtra por isso)
+    // - com 26 dias ou mais desde a "Data Início da Pendência"
+    if (r._item['_tipo'] === 'RESOLVIDO' && r._dataInicio) {
       const diasDecorridos = Math.floor((hoje - r._dataInicio) / (1000 * 60 * 60 * 24));
       if (diasDecorridos >= 26) {
         tr.style.backgroundColor = '#fefce8';
@@ -2103,4 +2129,3 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
-
