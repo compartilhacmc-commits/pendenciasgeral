@@ -1871,7 +1871,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// TABELA
+// ✅ TABELA (NOVA LÓGICA DESTAQUE AMARELO)
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1886,7 +1886,6 @@ function updateDemandasTable() {
 
     const prazos = calcularPrazos(dataInicioPendencia);
 
-    // "Data Envio Email (15/30)" deve vir APENAS da planilha
     const email15Planilha = getColumnValue(item, [
       'Data Envio Email (15 dias)',
       'Data Envio Email 15 dias',
@@ -1908,6 +1907,7 @@ function updateDemandasTable() {
     return {
       _item: item,
       _dataInicio: parseDate(dataInicioPendencia),
+      _prazo30Data: parseDate(prazos.prazo30),
 
       origem: item['_origem'] || '-',
 
@@ -1943,9 +1943,9 @@ function updateDemandasTable() {
       dataInicioPendencia: formatDate(dataInicioPendencia),
 
       prazo15: prazos.prazo15,
-      email15: formatDate(email15Planilha), // apenas planilha
+      email15: formatDate(email15Planilha),
       prazo30: prazos.prazo30,
-      email30: formatDate(email30Planilha), // apenas planilha
+      email30: formatDate(email30Planilha),
 
       status: getColumnValue(item, ['Status'], '-')
     };
@@ -1984,17 +1984,20 @@ function updateDemandasTable() {
   tbody.innerHTML = '';
 
   const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
 
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
-    // Destacar em amarelo APENAS:
-    // - registros da aba RESOLVIDOS
-    // - com Usuário preenchido (baseItems já filtra por isso)
-    // - com 26 dias ou mais desde a "Data Início da Pendência"
-    if (r._item['_tipo'] === 'RESOLVIDO' && r._dataInicio) {
-      const diasDecorridos = Math.floor((hoje - r._dataInicio) / (1000 * 60 * 60 * 24));
-      if (diasDecorridos >= 26) {
+    // ✅ NOVA LÓGICA DESTAQUE AMARELO:
+    // Somente aba PENDÊNCIAS + Usuário preenchido + faltam 26 dias para prazo 30
+    if (
+      r._item['_tipo'] === 'PENDENTE' &&
+      r._prazo30Data
+    ) {
+      const diasRestantes = Math.ceil((r._prazo30Data - hoje) / (1000 * 60 * 60 * 24));
+      
+      if (diasRestantes >= 0 && diasRestantes <= 26) {
         tr.style.backgroundColor = '#fefce8';
         tr.style.boxShadow = 'inset 4px 0 0 #fde68a';
       }
@@ -2047,7 +2050,9 @@ function parseDate(dateStr) {
     const day = parseInt(match[1], 10);
     const month = parseInt(match[2], 10) - 1;
     const year = parseInt(match[3], 10);
-    return new Date(year, month, day);
+    const d = new Date(year, month, day);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   match = s.match(/(\d{4})-(\d{2})-(\d{2})(?:[T\s]\d{2}:\d{2}(?::\d{2})?)?/);
@@ -2055,7 +2060,9 @@ function parseDate(dateStr) {
     const year = parseInt(match[1], 10);
     const month = parseInt(match[2], 10) - 1;
     const day = parseInt(match[3], 10);
-    return new Date(year, month, day);
+    const d = new Date(year, month, day);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
 
   return null;
@@ -2128,4 +2135,5 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
 
