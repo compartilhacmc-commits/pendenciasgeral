@@ -1993,7 +1993,7 @@ function updateDemandasTable() {
     ) {
       const diasRestantes = Math.ceil((r._prazo30Data - hoje) / (1000 * 60 * 60 * 24));
       
-      if (diasRestantes >= 0 && diasRestantes <= 4) {
+      if (diasRestantes >= 0 && diasRestantes <= 10) {
         tr.style.backgroundColor = '#fefce8';
         tr.style.boxShadow = 'inset 4px 0 0 #fde68a';
       }
@@ -2131,3 +2131,4 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
