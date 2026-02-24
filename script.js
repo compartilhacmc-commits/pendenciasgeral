@@ -818,7 +818,7 @@ function updateCharts() {
 
   createResolutividadePrestadorChart();
 
-  // ✅ Como statusLabels/statusValues não têm mais AGENDADO,
+  // Como statusLabels/statusValues não têm mais AGENDADO,
   // o gráfico de rosca também fica sem a legenda AGENDADO.
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
@@ -1688,7 +1688,7 @@ function createPieChart(canvasId, labels, data) {
     'RESOLVIDOS': '#10b981',
     'PENDENTES': '#3b82f6',
     'CANCELADO': '#ef4444',
-    // ✅ REMOVIDO: AGENDADO
+    //REMOVIDO: AGENDADO
     'CANCELADO/VENCIMENTO DO PRAZO': '#9333ea'
   };
 
@@ -1907,18 +1907,25 @@ function updateDemandasTable() {
 
       origem: item['_origem'] || '-',
 
-      numeroSolicitacao: getColumnValue(item, [
-        'Solicitação',
-        'Solicitacâo',
-        'Solicitaçâo',
-        'SOLICITAÇÃO',
-        'Nº Solicitação',
-        'Numero Solicitação',
-        'N Solicitação',
-        'N Solicitao',
-        'Número Solicitação',
-        'Numero da Solicitação'
-      ], '-'),
+      numeroSolicitacao: (() => {
+  // Primeiro tenta encontrar diretamente a coluna "Solicitação"
+  if (item['Solicitação'] !== undefined && item['Solicitação'] !== '') {
+    return item['Solicitação'];
+  }
+  
+  // Se não encontrar, tenta outras variações
+  return getColumnValue(item, [
+    'Solicitação',
+    'SOLICITAÇÃO',
+    'Solicitacao',
+    'solicitacao',
+    'Nº Solicitação',
+    'Nº da Solicitação',
+    'Numero Solicitação',
+    'Número da Solicitação',
+    'N_Solicitacao'
+  ], '-');
+})(),
 
       dataSolicitacao: formatDate(getColumnValue(item, [
         'Data da Solicitação',
@@ -2131,4 +2138,5 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
+
 
