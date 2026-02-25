@@ -204,20 +204,90 @@ function isCanceladoPorVencimentoPrazo(item) {
 }
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (MELHORADA)
+// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (VERSÃO SUPER MELHORADA)
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
+  // Se o item for null ou undefined, retorna defaultValue
+  if (!item) return defaultValue;
+  
+  // Primeiro, tenta encontrar exatamente como está no objeto
   for (let name of possibleNames) {
-    if (item.hasOwnProperty(name) && item[name]) return item[name];
-
-    const trimmedName = name.trim();
-    if (item.hasOwnProperty(trimmedName) && item[trimmedName]) return item[trimmedName];
-
-    const keys = Object.keys(item);
-    const foundKey = keys.find(k => k.toLowerCase().trim() === name.toLowerCase().trim());
-    if (foundKey && item[foundKey]) return item[foundKey];
+    if (item.hasOwnProperty(name) && item[name] !== undefined && item[name] !== null && item[name].toString().trim() !== '') {
+      return item[name].toString().trim();
+    }
   }
+  
+  // Se não encontrar, tenta com case insensitive
+  const keys = Object.keys(item);
+  
+  for (let key of keys) {
+    const keyLower = key.toLowerCase().trim();
+    
+    for (let searchName of possibleNames) {
+      const searchLower = searchName.toLowerCase().trim();
+      
+      // Verifica correspondência exata ignorando maiúsculas/minúsculas
+      if (keyLower === searchLower) {
+        const value = item[key];
+        if (value !== undefined && value !== null && value.toString().trim() !== '') {
+          return value.toString().trim();
+        }
+      }
+      
+      // Verifica se uma string contém a outra (para casos como "Nº Solicitação" vs "Solicitação")
+      if (keyLower.includes(searchLower) || searchLower.includes(keyLower)) {
+        const value = item[key];
+        if (value !== undefined && value !== null && value.toString().trim() !== '') {
+          return value.toString().trim();
+        }
+      }
+    }
+  }
+  
+  // Tenta encontrar qualquer chave que contenha "solicita" (para o caso específico da solicitação)
+  const isSolicitacao = possibleNames.some(name => 
+    name.toLowerCase().includes('solicita') || name.toLowerCase().includes('solic')
+  );
+  
+  if (isSolicitacao) {
+    for (let key of keys) {
+      if (key.toLowerCase().includes('solicita') || key.toLowerCase().includes('solic')) {
+        const value = item[key];
+        if (value !== undefined && value !== null && value.toString().trim() !== '') {
+          return value.toString().trim();
+        }
+      }
+    }
+  }
+  
   return defaultValue;
+}
+
+// ===================================
+// FUNÇÃO DE DEBUG PARA VERIFICAR COLUNAS
+// ===================================
+function debugColumns() {
+  if (allData.length > 0) {
+    console.log('=== DEBUG: Primeiro item carregado ===');
+    console.log('Colunas disponíveis:', Object.keys(allData[0]));
+    console.log('Valores completos:', allData[0]);
+    
+    // Verifica especificamente a coluna de solicitação
+    const solicitacaoKeys = Object.keys(allData[0]).filter(key => 
+      key.toLowerCase().includes('solicita') || key.toLowerCase().includes('solic')
+    );
+    console.log('Possíveis colunas de solicitação:', solicitacaoKeys);
+    
+    if (solicitacaoKeys.length > 0) {
+      console.log('Valores encontrados para solicitação:');
+      solicitacaoKeys.forEach(key => {
+        console.log(`  ${key}: "${allData[0][key]}"`);
+      });
+    } else {
+      console.log('NENHUMA coluna relacionada a "solicitação" encontrada!');
+      console.log('Primeiras 10 colunas disponíveis:', Object.keys(allData[0]).slice(0, 10));
+    }
+  }
 }
 
 // ===================================
@@ -383,7 +453,7 @@ async function loadData() {
       const rows = parseCSV(result.csv);
       if (rows.length < 2) return;
 
-      const headers = rows[0];
+      const headers = rows[0].map(h => h.trim());
 
       const sheetData = rows.slice(1)
         .filter(row => row.length > 1 && row[0])
@@ -394,7 +464,7 @@ async function loadData() {
             _tipo: result.tipo
           };
           headers.forEach((header, index) => {
-            obj[header.trim()] = (row[index] || '').trim();
+            obj[header] = (row[index] || '').trim();
           });
           return obj;
         });
@@ -407,6 +477,9 @@ async function loadData() {
     filteredData = [...allData];
     populateFilters();
     updateDashboard();
+    
+    // Adiciona debug para verificar as colunas
+    debugColumns();
 
   } catch (error) {
     alert(`Erro ao carregar dados das planilhas: ${error.message}`);
@@ -650,9 +723,6 @@ function updateCards() {
   document.getElementById('totalPendenciasResponder').textContent = totalPendenciasResponder;
   document.getElementById('totalCanceladosVencimento').textContent = totalCanceladosVencimento;
   document.getElementById('totalResolvidas').textContent = totalResolvidas;
-
-  // ✅ REMOVIDO: atualização do card "totalAgendadas" (card removido do HTML)
-
   document.getElementById('totalCanceladosGeral').textContent = totalCanceladosGeral;
   document.getElementById('percentFiltrados').textContent = percentFiltrados + '%';
 }
@@ -717,8 +787,6 @@ function updateCharts() {
     if (item['_tipo'] === 'RESOLVIDO' && status === 'CANCELADO') {
       statusCount['CANCELADO']++;
     }
-
-    // ✅ REMOVIDO: contagem de AGENDADO/AGENDADA
 
     if (item['_tipo'] === 'RESOLVIDO' && status === 'CANCELADO/VENCIMENTO DO PRAZO') {
       statusCount['CANCELADO/VENCIMENTO DO PRAZO']++;
@@ -1688,7 +1756,6 @@ function createPieChart(canvasId, labels, data) {
     'RESOLVIDOS': '#10b981',
     'PENDENTES': '#3b82f6',
     'CANCELADO': '#ef4444',
-    //REMOVIDO: AGENDADO
     'CANCELADO/VENCIMENTO DO PRAZO': '#9333ea'
   };
 
@@ -1908,24 +1975,40 @@ function updateDemandasTable() {
       origem: item['_origem'] || '-',
 
       numeroSolicitacao: (() => {
-  // Primeiro tenta encontrar diretamente a coluna "Solicitação"
-  if (item['Solicitação'] !== undefined && item['Solicitação'] !== '') {
-    return item['Solicitação'];
-  }
-  
-  // Se não encontrar, tenta outras variações
-  return getColumnValue(item, [
-    'Solicitação',
-    'SOLICITAÇÃO',
-    'Solicitacao',
-    'solicitacao',
-    'Nº Solicitação',
-    'Nº da Solicitação',
-    'Numero Solicitação',
-    'Número da Solicitação',
-    'N_Solicitacao'
-  ], '-');
-})(),
+        // Tenta encontrar o valor da solicitação com a função melhorada
+        const valor = getColumnValue(item, [
+          'Solicitação',
+          'SOLICITAÇÃO',
+          'Solicitacao',
+          'solicitacao',
+          'Nº Solicitação',
+          'Nº da Solicitação',
+          'Numero Solicitação',
+          'Número da Solicitação',
+          'N_Solicitacao',
+          'Solicitação Nº',
+          'Nº Solic',
+          'Solic'
+        ], '-');
+        
+        // Se encontrou um valor diferente de '-', retorna ele
+        if (valor !== '-') {
+          return valor;
+        }
+        
+        // Se não encontrou, tenta buscar qualquer coluna que contenha "solicita"
+        const keys = Object.keys(item);
+        for (let key of keys) {
+          if (key.toLowerCase().includes('solicita')) {
+            const val = item[key];
+            if (val && val.toString().trim() !== '') {
+              return val.toString().trim();
+            }
+          }
+        }
+        
+        return '-';
+      })(),
 
       dataSolicitacao: formatDate(getColumnValue(item, [
         'Data da Solicitação',
@@ -2138,5 +2221,3 @@ function onTableSearch() {
 function refreshData() {
   loadData();
 }
-
-
