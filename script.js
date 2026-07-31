@@ -1,5 +1,5 @@
 // ===================================
-// PLANILHAS (8 DISTRITOS)
+// PLANILHAS (8 DISTRITOS) - NOVOS LINKS
 // ===================================
 
 // helper para padronizar URL CSV do Google Sheets COM CACHE BUSTING
@@ -12,13 +12,13 @@ const SHEETS = [
   // DISTRITO ELDORADO
   {
     name: 'PENDÊNCIAS ELDORADO',
-    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '278071504'),
+    url: gvizCsvUrl('1_74uHFBFFZOM9klydEEEgCahFI3rVeQDXjZxgGsioTo', '0'),
     distrito: 'ELDORADO',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS ELDORADO',
-    url: gvizCsvUrl('1r6NLcVkVLD5vp4UxPEa7TcreBpOd0qeNt-QREOG4Xr4', '2142054254'),
+    url: gvizCsvUrl('1_74uHFBFFZOM9klydEEEgCahFI3rVeQDXjZxgGsioTo', '781262891'),
     distrito: 'ELDORADO',
     tipo: 'RESOLVIDO'
   },
@@ -26,13 +26,13 @@ const SHEETS = [
   // DISTRITO INDUSTRIAL
   {
     name: 'PENDÊNCIAS INDUSTRIAL',
-    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '278071504'),
+    url: gvizCsvUrl('1qc1C661Ixk8UmEWw_IoOSzAO4965RcIJLtxZ6shcnjY', '0'),
     distrito: 'INDUSTRIAL',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS INDUSTRIAL',
-    url: gvizCsvUrl('14eUVIsWPubMve4DhVjVwlh7gin-qVyN3PspkwQ1PZMg', '1086207100'),
+    url: gvizCsvUrl('1qc1C661Ixk8UmEWw_IoOSzAO4965RcIJLtxZ6shcnjY', '865192575'),
     distrito: 'INDUSTRIAL',
     tipo: 'RESOLVIDO'
   },
@@ -40,13 +40,13 @@ const SHEETS = [
   // DISTRITO NACIONAL
   {
     name: 'PENDÊNCIAS NACIONAL',
-    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '278071504'),
+    url: gvizCsvUrl('10AuFz8Sop1UYMg_abPKlLmlfqP8nYo2Qo-FTVfYLqPY', '0'),
     distrito: 'NACIONAL',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS NACIONAL',
-    url: gvizCsvUrl('1lMGO9Hh_qL9OKI270fPL7lxadr-BZN9x_ZtmQeX6OcA', '150768142'),
+    url: gvizCsvUrl('10AuFz8Sop1UYMg_abPKlLmlfqP8nYo2Qo-FTVfYLqPY', '487343989'),
     distrito: 'NACIONAL',
     tipo: 'RESOLVIDO'
   },
@@ -54,13 +54,13 @@ const SHEETS = [
   // DISTRITO PETROLÂNDIA
   {
     name: 'PENDÊNCIAS PETROLÂNDIA',
-    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '278071504'),
+    url: gvizCsvUrl('1KlAp03X0t-IxH1fmWnsG9IZIQOZa3IQOt_6l3peubmc', '568154847'),
     distrito: 'PETROLÂNDIA',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS PETROLÂNDIA',
-    url: gvizCsvUrl('1Z9Uf5MGm5tClVDR95SUpwOjivAdqEVUfDj7mIuRLf4s', '1067061018'),
+    url: gvizCsvUrl('1KlAp03X0t-IxH1fmWnsG9IZIQOZa3IQOt_6l3peubmc', '1968686065'),
     distrito: 'PETROLÂNDIA',
     tipo: 'RESOLVIDO'
   },
@@ -68,13 +68,13 @@ const SHEETS = [
   // DISTRITO RESSACA
   {
     name: 'PENDÊNCIAS RESSACA',
-    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '278071504'),
+    url: gvizCsvUrl('19pPJh7XrjIqw1SApVvU0X58zTlqY94q-GJF-UQKJkXI', '1572892277'),
     distrito: 'RESSACA',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS RESSACA',
-    url: gvizCsvUrl('1aIsq1a8Lb90M19TQdiJG_WyX7wzzC2WRohelJY6A-u8', '699447584'),
+    url: gvizCsvUrl('19pPJh7XrjIqw1SApVvU0X58zTlqY94q-GJF-UQKJkXI', '1480825067'),
     distrito: 'RESSACA',
     tipo: 'RESOLVIDO'
   },
@@ -82,13 +82,13 @@ const SHEETS = [
   // DISTRITO RIACHO
   {
     name: 'PENDÊNCIAS RIACHO',
-    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '278071504'),
+    url: gvizCsvUrl('1r5lDvzMau-T-JJ48tF34422sncs8dkQc9Swek67jyi4', '98875262'),
     distrito: 'RIACHO',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS RIACHO',
-    url: gvizCsvUrl('1367XyjVDYyDWo3vUz6Hd_zEqLAJkH_c1MwlvtZnpmUc', '1996983614'),
+    url: gvizCsvUrl('1r5lDvzMau-T-JJ48tF34422sncs8dkQc9Swek67jyi4', '1506954832'),
     distrito: 'RIACHO',
     tipo: 'RESOLVIDO'
   },
@@ -96,13 +96,13 @@ const SHEETS = [
   // DISTRITO SEDE
   {
     name: 'PENDÊNCIAS SEDE',
-    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '278071504'),
+    url: gvizCsvUrl('1fn02Xx2bMOswFden8FrwhqjJ4zZ2mAAvnq61IRa9_Mg', '0'),
     distrito: 'SEDE',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS SEDE',
-    url: gvizCsvUrl('1RPf2bfQVoM1FqnyA-0P8uPTJ_PG4I2Ce6lXnk54ixfc', '626867102'),
+    url: gvizCsvUrl('1fn02Xx2bMOswFden8FrwhqjJ4zZ2mAAvnq61IRa9_Mg', '120192244'),
     distrito: 'SEDE',
     tipo: 'RESOLVIDO'
   },
@@ -110,13 +110,13 @@ const SHEETS = [
   // DISTRITO VARGEM DAS FLORES
   {
     name: 'PENDÊNCIAS VARGEM DAS FLORES',
-    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '278071504'),
+    url: gvizCsvUrl('1S-i9JgEXm1iRGxatGX8Sw05gaN9qiGGzuW6POSvSsf4', '195857617'),
     distrito: 'VARGEM DAS FLORES',
     tipo: 'PENDENTE'
   },
   {
     name: 'RESOLVIDOS VARGEM DAS FLORES',
-    url: gvizCsvUrl('1IHknmxe3xAnfy5Bju_23B5ivIL-qMaaE6q_HuPaLBpk', '451254610'),
+    url: gvizCsvUrl('1S-i9JgEXm1iRGxatGX8Sw05gaN9qiGGzuW6POSvSsf4', '175440536'),
     distrito: 'VARGEM DAS FLORES',
     tipo: 'RESOLVIDO'
   }
@@ -150,22 +150,23 @@ let tableSearchQuery = '';
 let tableColumnFilters = {};
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA VERIFICAR SE USUÁRIO ESTÁ PREENCHIDO
+// FUNÇÃO AUXILIAR PARA VERIFICAR SE SOLICITAÇÃO ESTÁ PREENCHIDA
+// (SUBSTITUI A VERIFICAÇÃO DE USUÁRIO)
 // ===================================
 function hasUsuarioPreenchido(item) {
-  const usuario = getColumnValue(item, ['Usuário', 'Usuario', 'USUÁRIO', 'USUARIO'], '');
-  return usuario && usuario !== '-' && String(usuario).trim() !== '';
+  const solicitacao = getColumnValue(item, ['Solicitação', 'SOLICITAÇÃO', 'Solicitacao', 'solicitacao'], '');
+  return solicitacao && solicitacao !== '-' && String(solicitacao).trim() !== '';
 }
 
 // ===================================
 // FUNÇÃO PARA CANCELADOS POR VENCIMENTO
-// STATUS = "CANCELADO/VENCIMENTO DO PRAZO"
+// (MANTIDA EXATAMENTE IGUAL, APENAS USA A NOVA hasUsuarioPreenchido)
 // ===================================
 function getCanceladoPorVencimentoInfo(item) {
   // Deve estar na aba RESOLVIDOS
   if (item['_tipo'] !== 'RESOLVIDO') return { isCancelado: false, dataVencimento: null };
 
-  // Deve ter usuário preenchido
+  // Deve ter solicitação preenchida (antigamente era usuário)
   if (!hasUsuarioPreenchido(item)) return { isCancelado: false, dataVencimento: null };
 
   // Verifica se o STATUS é exatamente "CANCELADO/VENCIMENTO DO PRAZO"
