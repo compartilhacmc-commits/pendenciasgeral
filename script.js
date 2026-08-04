@@ -151,22 +151,29 @@ let tableColumnFilters = {};
 
 // ===================================
 // FUNÇÃO AUXILIAR PARA VERIFICAR SE SOLICITAÇÃO ESTÁ PREENCHIDA
+// (SUBSTITUI A VERIFICAÇÃO DE USUÁRIO)
 // ===================================
 function hasUsuarioPreenchido(item) {
-  const solicitacao = getColumnValue(item, ['Solicitação', 'SOLICITAÇÃO', 'Solicitacao', 'solicitacao', 'Nº Solicitação', 'Nº da Solicitação'], '');
+  const solicitacao = getColumnValue(item, ['Solicitação', 'SOLICITAÇÃO', 'Solicitacao', 'solicitacao'], '');
   return solicitacao && solicitacao !== '-' && String(solicitacao).trim() !== '';
 }
 
 // ===================================
 // FUNÇÃO PARA CANCELADOS POR VENCIMENTO
+// (MANTIDA EXATAMENTE IGUAL, APENAS USA A NOVA hasUsuarioPreenchido)
 // ===================================
 function getCanceladoPorVencimentoInfo(item) {
+  // Deve estar na aba RESOLVIDOS
   if (item['_tipo'] !== 'RESOLVIDO') return { isCancelado: false, dataVencimento: null };
+
+  // Deve ter solicitação preenchida (antigamente era usuário)
   if (!hasUsuarioPreenchido(item)) return { isCancelado: false, dataVencimento: null };
 
+  // Verifica se o STATUS é exatamente "CANCELADO/VENCIMENTO DO PRAZO"
   const status = getColumnValue(item, ['Status', 'STATUS', 'status'], '').trim().toUpperCase();
   
   if (status === 'CANCELADO/VENCIMENTO DO PRAZO') {
+    // Busca a data de vencimento (se houver)
     const dataEmail30 = getColumnValue(item, [
       'Data do envio do Email (Prazo: Pendência com 30 dias)',
       'Data do envio do Email (Prazo Pendência com 30 dias)',
@@ -192,24 +199,26 @@ function getCanceladoPorVencimentoInfo(item) {
   return { isCancelado: false, dataVencimento: null };
 }
 
+// Função auxiliar para compatibilidade com código existente
 function isCanceladoPorVencimentoPrazo(item) {
   return getCanceladoPorVencimentoInfo(item).isCancelado;
 }
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA - CORRIGIDA
+// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (VERSÃO SUPER MELHORADA)
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
+  // Se o item for null ou undefined, retorna defaultValue
   if (!item) return defaultValue;
   
-  // 1. Tenta encontrar exatamente como está no objeto (case sensitive)
+  // Primeiro, tenta encontrar exatamente como está no objeto
   for (let name of possibleNames) {
     if (item.hasOwnProperty(name) && item[name] !== undefined && item[name] !== null && item[name].toString().trim() !== '') {
       return item[name].toString().trim();
     }
   }
   
-  // 2. Tenta com case insensitive e correspondência exata
+  // Se não encontrar, tenta com case insensitive
   const keys = Object.keys(item);
   
   for (let key of keys) {
@@ -218,24 +227,15 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
     for (let searchName of possibleNames) {
       const searchLower = searchName.toLowerCase().trim();
       
-      // Correspondência exata ignorando maiúsculas/minúsculas
+      // Verifica correspondência exata ignorando maiúsculas/minúsculas
       if (keyLower === searchLower) {
         const value = item[key];
         if (value !== undefined && value !== null && value.toString().trim() !== '') {
           return value.toString().trim();
         }
       }
-    }
-  }
-  
-  // 3. Tenta correspondência parcial (para casos como "Cbo Especialidade" vs "CBO Especialidade")
-  for (let key of keys) {
-    const keyLower = key.toLowerCase().trim();
-    
-    for (let searchName of possibleNames) {
-      const searchLower = searchName.toLowerCase().trim();
       
-      // Verifica se a chave contém o termo buscado ou vice-versa
+      // Verifica se uma string contém a outra (para casos como "Nº Solicitação" vs "Solicitação")
       if (keyLower.includes(searchLower) || searchLower.includes(keyLower)) {
         const value = item[key];
         if (value !== undefined && value !== null && value.toString().trim() !== '') {
@@ -245,40 +245,7 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
     }
   }
   
-  // 4. Para PRESTADOR - busca específica
-  const isPrestador = possibleNames.some(name => 
-    name.toLowerCase().includes('prestador')
-  );
-  
-  if (isPrestador) {
-    for (let key of keys) {
-      if (key.toLowerCase().includes('prestador') || key.toLowerCase().includes('prest')) {
-        const value = item[key];
-        if (value !== undefined && value !== null && value.toString().trim() !== '') {
-          return value.toString().trim();
-        }
-      }
-    }
-  }
-  
-  // 5. Para CBO ESPECIALIDADE - busca específica
-  const isCbo = possibleNames.some(name => 
-    name.toLowerCase().includes('cbo') || name.toLowerCase().includes('especialidade')
-  );
-  
-  if (isCbo) {
-    for (let key of keys) {
-      const keyLower = key.toLowerCase();
-      if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
-        const value = item[key];
-        if (value !== undefined && value !== null && value.toString().trim() !== '') {
-          return value.toString().trim();
-        }
-      }
-    }
-  }
-  
-  // 6. Para SOLICITAÇÃO - busca específica
+  // Tenta encontrar qualquer chave que contenha "solicita" (para o caso específico da solicitação)
   const isSolicitacao = possibleNames.some(name => 
     name.toLowerCase().includes('solicita') || name.toLowerCase().includes('solic')
   );
@@ -306,30 +273,20 @@ function debugColumns() {
     console.log('Colunas disponíveis:', Object.keys(allData[0]));
     console.log('Valores completos:', allData[0]);
     
-    // Verifica especificamente a coluna de prestador
-    const prestadorKeys = Object.keys(allData[0]).filter(key => 
-      key.toLowerCase().includes('prestador') || key.toLowerCase().includes('prest')
+    // Verifica especificamente a coluna de solicitação
+    const solicitacaoKeys = Object.keys(allData[0]).filter(key => 
+      key.toLowerCase().includes('solicita') || key.toLowerCase().includes('solic')
     );
-    console.log('Possíveis colunas de prestador:', prestadorKeys);
+    console.log('Possíveis colunas de solicitação:', solicitacaoKeys);
     
-    // Verifica especificamente a coluna de CBO Especialidade
-    const cboKeys = Object.keys(allData[0]).filter(key => 
-      key.toLowerCase().includes('cbo') || key.toLowerCase().includes('especialidade') || key.toLowerCase().includes('espec')
-    );
-    console.log('Possíveis colunas de CBO Especialidade:', cboKeys);
-    
-    if (prestadorKeys.length > 0) {
-      console.log('Valores encontrados para prestador:');
-      prestadorKeys.forEach(key => {
+    if (solicitacaoKeys.length > 0) {
+      console.log('Valores encontrados para solicitação:');
+      solicitacaoKeys.forEach(key => {
         console.log(`  ${key}: "${allData[0][key]}"`);
       });
-    }
-    
-    if (cboKeys.length > 0) {
-      console.log('Valores encontrados para CBO Especialidade:');
-      cboKeys.forEach(key => {
-        console.log(`  ${key}: "${allData[0][key]}"`);
-      });
+    } else {
+      console.log('NENHUMA coluna relacionada a "solicitação" encontrada!');
+      console.log('Primeiras 10 colunas disponíveis:', Object.keys(allData[0]).slice(0, 10));
     }
   }
 }
@@ -586,59 +543,22 @@ function showLoading(show) {
 }
 
 // ===================================
-// POPULAR FILTROS (COM CBO ESPECIALIDADE CORRIGIDO)
+// POPULAR FILTROS (COM CBO ESPECIALIDADE)
 // ===================================
 function populateFilters() {
   const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
   renderMultiSelect('msDistritoPanel', distritos, applyFilters);
   setMultiSelectText('msDistritoText', [], 'Todos os Distritos');
 
-  const unidades = [...new Set(allData.map(item => getColumnValue(item, ['Unidade Solicitante', 'UNIDADE SOLICITANTE']))].filter(Boolean).sort();
+  const unidades = [...new Set(allData.map(item => item['Unidade Solicitante']))].filter(Boolean).sort();
   renderMultiSelect('msUnidadePanel', unidades, applyFilters);
   setMultiSelectText('msUnidadeText', [], 'Todas');
 
-  // PRESTADOR - CORRIGIDO: busca mais abrangente
-  const prestadores = [...new Set(allData.map(item => {
-    // Tenta várias formas de obter o prestador
-    let prestador = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador']);
-    if (!prestador || prestador === '-') {
-      // Busca por qualquer coluna que contenha "prestad"
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        if (key.toLowerCase().includes('prestad')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            prestador = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    return prestador;
-  }))].filter(v => v && v !== '-').sort();
+  const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
-  // CBO ESPECIALIDADE - CORRIGIDO: busca mais abrangente
-  const cboEspecialidades = [...new Set(allData.map(item => {
-    // Tenta várias formas de obter o CBO Especialidade
-    let cbo = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
-    if (!cbo || cbo === '-') {
-      // Busca por qualquer coluna que contenha "cbo" ou "especialidade"
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        const keyLower = key.toLowerCase();
-        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            cbo = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    return cbo;
-  }))].filter(v => v && v !== '-').sort();
+  const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
   renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
   setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
 
@@ -702,40 +622,11 @@ function applyFilters() {
 
   filteredData = allData.filter(item => {
     const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
-    const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(getColumnValue(item, ['Unidade Solicitante', 'UNIDADE SOLICITANTE']) || '');
-    
-    // PRESTADOR - CORRIGIDO
-    let prestadorVal = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador']);
-    if (!prestadorVal || prestadorVal === '-') {
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        if (key.toLowerCase().includes('prestad')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            prestadorVal = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(prestadorVal);
+    const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
+    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
 
-    // CBO ESPECIALIDADE - CORRIGIDO
-    let cboVal = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
-    if (!cboVal || cboVal === '-') {
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        const keyLower = key.toLowerCase();
-        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            cboVal = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboVal);
+    const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
 
     const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
 
@@ -811,6 +702,7 @@ function updateCards() {
     item['_tipo'] === 'PENDENTE' && hasUsuarioPreenchido(item)
   ).length;
 
+  //CONTA APENAS STATUS = "CANCELADO/VENCIMENTO DO PRAZO"
   const totalCanceladosVencimento = filteredComUsuario.filter(item =>
     isCanceladoPorVencimentoPrazo(item)
   ).length;
@@ -973,20 +865,7 @@ function updateCharts() {
   const prestadoresCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    let prestador = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador']);
-    if (!prestador || prestador === '-') {
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        if (key.toLowerCase().includes('prestad')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            prestador = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    prestador = prestador || 'Não informado';
+    const prestador = item['Prestador'] || 'Não informado';
     prestadoresCount[prestador] = (prestadoresCount[prestador] || 0) + 1;
   });
 
@@ -998,20 +877,7 @@ function updateCharts() {
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
     if (item['_tipo'] !== 'PENDENTE') return;
-    let prestador = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador']);
-    if (!prestador || prestador === '-') {
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        if (key.toLowerCase().includes('prestad')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            prestador = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    prestador = prestador || 'Não informado';
+    const prestador = item['Prestador'] || 'Não informado';
     prestadoresCountPendentes[prestador] = (prestadoresCountPendentes[prestador] || 0) + 1;
   });
 
@@ -1021,6 +887,8 @@ function updateCharts() {
 
   createResolutividadePrestadorChart();
 
+  // Como statusLabels/statusValues não têm mais AGENDADO,
+  // o gráfico de rosca também fica sem a legenda AGENDADO.
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
   // Pendências por mês
@@ -1061,7 +929,7 @@ function updateCharts() {
 }
 
 // ===================================
-// GRÁFICO: Pendências Não Resolvidas por Distrito
+// GRÁFICO: Pendências Não Resolvidas por Distrito (ESTILO VERTICAL)
 // ===================================
 function createDistritoPendenteChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1075,7 +943,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#dc2626',
+        backgroundColor: '#dc2626', // Vermelho similar à imagem
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1083,7 +951,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x',
+      indexAxis: 'x', // ✅ BARRAS VERTICAIS
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -1116,7 +984,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#ffffff'; // ✅ RÓTULOS BRANCOS
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1126,7 +994,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2);
+          const yPos = bar.y + (bar.height / 2); // ✅ NO MEIO DA BARRA
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -1138,7 +1006,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Pendências Resolvidas por Distrito
+// GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
 // ===================================
 function createDistritoResolvidasChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1152,7 +1020,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#059669',
+        backgroundColor: '#059669', // VERDE ESCURO
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1171,7 +1039,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
         x: {
           ticks: {
             font: { size: 12, weight: 'bold' },
-            color: '#059669'
+            color: '#059669' // VERDE ESCURO
           },
           grid: { display: false },
           border: { display: false }
@@ -1229,7 +1097,7 @@ function createStatusChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#f97316',
+        backgroundColor: '#f97316', // LARANJA
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1237,7 +1105,7 @@ function createStatusChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x',
+      indexAxis: 'x', // BARRAS VERTICAIS
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -1270,7 +1138,7 @@ function createStatusChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1280,7 +1148,7 @@ function createStatusChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2);
+          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -1347,7 +1215,7 @@ function createEvolucaoTemporalChart(canvasId, labels, data) {
 }
 
 // ===================================
-// Total de Pendências por Mês
+// Total de Pendências por Mês (AZUL ESCURO, RÓTULOS BRANCOS NO MEIO)
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1361,7 +1229,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#1e3a8a',
+        backgroundColor: '#1e3a8a', // AZUL ESCURO
         borderWidth: 0,
         borderRadius: 6
       }]
@@ -1394,7 +1262,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1402,7 +1270,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         meta.data.forEach((bar, i) => {
           const value = dataset.data[i];
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2);
+          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
           ctx.fillText(text, bar.x, yPos);
         });
 
@@ -1802,21 +1670,7 @@ function createResolutividadePrestadorChart() {
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
 
-    let prestador = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador']);
-    if (!prestador || prestador === '-') {
-      const keys = Object.keys(item);
-      for (let key of keys) {
-        if (key.toLowerCase().includes('prestad')) {
-          const val = item[key];
-          if (val && val.toString().trim() !== '') {
-            prestador = val.toString().trim();
-            break;
-          }
-        }
-      }
-    }
-    prestador = prestador || 'Não informado';
-    
+    const prestador = item['Prestador'] || 'Não informado';
     if (!prestadorStats[prestador]) prestadorStats[prestador] = { total: 0, resolvidos: 0 };
 
     prestadorStats[prestador].total++;
@@ -2055,9 +1909,9 @@ function downloadExcel() {
 
         'Nº Prontuário': getColumnValue(item, ['Nº Prontuário', 'Numero Prontuário'], ''),
 
-        'Prestador': getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador'], ''),
+        'Prestador': item['Prestador'] || '',
 
-        'Unidade Solicitante': getColumnValue(item, ['Unidade Solicitante', 'UNIDADE SOLICITANTE'], ''),
+        'Unidade Solicitante': item['Unidade Solicitante'] || '',
 
         'CBO Especialidade': getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade'], ''),
 
@@ -2068,7 +1922,7 @@ function downloadExcel() {
         'Data Final do Prazo (Pendência com 30 dias)': prazos.prazo30,
         'Data do envio do Email (Prazo: Pendência com 30 dias)': prazos.email30,
 
-        'Status': getColumnValue(item, ['Status', 'STATUS', 'status'], '')
+        'Status': item['Status'] || ''
       };
     });
 
@@ -2081,7 +1935,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// TABELA
+// ✅ TABELA (NOVA LÓGICA DESTAQUE AMARELO - FALTAM 4 DIAS)
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -2122,6 +1976,7 @@ function updateDemandasTable() {
       origem: item['_origem'] || '-',
 
       numeroSolicitacao: (() => {
+        // Tenta encontrar o valor da solicitação com a função melhorada
         const valor = getColumnValue(item, [
           'Solicitação',
           'SOLICITAÇÃO',
@@ -2137,10 +1992,12 @@ function updateDemandasTable() {
           'Solic'
         ], '-');
         
+        // Se encontrou um valor diferente de '-', retorna ele
         if (valor !== '-') {
           return valor;
         }
         
+        // Se não encontrou, tenta buscar qualquer coluna que contenha "solicita"
         const keys = Object.keys(item);
         for (let key of keys) {
           if (key.toLowerCase().includes('solicita')) {
@@ -2164,42 +2021,11 @@ function updateDemandasTable() {
 
       prontuario: getColumnValue(item, ['Nº Prontuário', 'Numero Prontuário'], '-'),
 
-      prestador: (() => {
-        let prestador = getColumnValue(item, ['Prestador', 'PRESTADOR', 'prestador'], '-');
-        if (prestador === '-') {
-          const keys = Object.keys(item);
-          for (let key of keys) {
-            if (key.toLowerCase().includes('prestad')) {
-              const val = item[key];
-              if (val && val.toString().trim() !== '') {
-                prestador = val.toString().trim();
-                break;
-              }
-            }
-          }
-        }
-        return prestador;
-      })(),
+      prestador: getColumnValue(item, ['Prestador'], '-'),
 
-      unidadeSolicitante: getColumnValue(item, ['Unidade Solicitante', 'UNIDADE SOLICITANTE'], '-'),
+      unidadeSolicitante: getColumnValue(item, ['Unidade Solicitante'], '-'),
 
-      cboEspecialidade: (() => {
-        let cbo = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'], '-');
-        if (cbo === '-') {
-          const keys = Object.keys(item);
-          for (let key of keys) {
-            const keyLower = key.toLowerCase();
-            if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
-              const val = item[key];
-              if (val && val.toString().trim() !== '') {
-                cbo = val.toString().trim();
-                break;
-              }
-            }
-          }
-        }
-        return cbo;
-      })(),
+      cboEspecialidade: getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade'], '-'),
 
       dataInicioPendencia: formatDate(dataInicioPendencia),
 
@@ -2208,7 +2034,7 @@ function updateDemandasTable() {
       prazo30: prazos.prazo30,
       email30: formatDate(email30Planilha),
 
-      status: getColumnValue(item, ['Status', 'STATUS', 'status'], '-')
+      status: getColumnValue(item, ['Status'], '-')
     };
   });
 
@@ -2250,6 +2076,8 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
+    // ✅ NOVA LÓGICA DESTAQUE AMARELO:
+    // Somente aba PENDÊNCIAS + Usuário preenchido + faltam 4 dias ou menos para prazo 30
     if (
       r._item['_tipo'] === 'PENDENTE' &&
       r._prazo30Data
