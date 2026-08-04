@@ -151,7 +151,6 @@ let tableColumnFilters = {};
 
 // ===================================
 // FUNÇÃO AUXILIAR PARA VERIFICAR SE SOLICITAÇÃO ESTÁ PREENCHIDA
-// (SUBSTITUI A VERIFICAÇÃO DE USUÁRIO)
 // ===================================
 function hasUsuarioPreenchido(item) {
   const solicitacao = getColumnValue(item, ['Solicitação', 'SOLICITAÇÃO', 'Solicitacao', 'solicitacao'], '');
@@ -160,20 +159,14 @@ function hasUsuarioPreenchido(item) {
 
 // ===================================
 // FUNÇÃO PARA CANCELADOS POR VENCIMENTO
-// (MANTIDA EXATAMENTE IGUAL, APENAS USA A NOVA hasUsuarioPreenchido)
 // ===================================
 function getCanceladoPorVencimentoInfo(item) {
-  // Deve estar na aba RESOLVIDOS
   if (item['_tipo'] !== 'RESOLVIDO') return { isCancelado: false, dataVencimento: null };
-
-  // Deve ter solicitação preenchida (antigamente era usuário)
   if (!hasUsuarioPreenchido(item)) return { isCancelado: false, dataVencimento: null };
 
-  // Verifica se o STATUS é exatamente "CANCELADO/VENCIMENTO DO PRAZO"
   const status = getColumnValue(item, ['Status', 'STATUS', 'status'], '').trim().toUpperCase();
   
   if (status === 'CANCELADO/VENCIMENTO DO PRAZO') {
-    // Busca a data de vencimento (se houver)
     const dataEmail30 = getColumnValue(item, [
       'Data do envio do Email (Prazo: Pendência com 30 dias)',
       'Data do envio do Email (Prazo Pendência com 30 dias)',
@@ -199,26 +192,22 @@ function getCanceladoPorVencimentoInfo(item) {
   return { isCancelado: false, dataVencimento: null };
 }
 
-// Função auxiliar para compatibilidade com código existente
 function isCanceladoPorVencimentoPrazo(item) {
   return getCanceladoPorVencimentoInfo(item).isCancelado;
 }
 
 // ===================================
-// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA (VERSÃO SUPER MELHORADA)
+// FUNÇÃO AUXILIAR PARA BUSCAR VALOR DE COLUNA - CORRIGIDA
 // ===================================
 function getColumnValue(item, possibleNames, defaultValue = '-') {
-  // Se o item for null ou undefined, retorna defaultValue
   if (!item) return defaultValue;
   
-  // Primeiro, tenta encontrar exatamente como está no objeto
   for (let name of possibleNames) {
     if (item.hasOwnProperty(name) && item[name] !== undefined && item[name] !== null && item[name].toString().trim() !== '') {
       return item[name].toString().trim();
     }
   }
   
-  // Se não encontrar, tenta com case insensitive
   const keys = Object.keys(item);
   
   for (let key of keys) {
@@ -227,7 +216,6 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
     for (let searchName of possibleNames) {
       const searchLower = searchName.toLowerCase().trim();
       
-      // Verifica correspondência exata ignorando maiúsculas/minúsculas
       if (keyLower === searchLower) {
         const value = item[key];
         if (value !== undefined && value !== null && value.toString().trim() !== '') {
@@ -235,7 +223,6 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
         }
       }
       
-      // Verifica se uma string contém a outra (para casos como "Nº Solicitação" vs "Solicitação")
       if (keyLower.includes(searchLower) || searchLower.includes(keyLower)) {
         const value = item[key];
         if (value !== undefined && value !== null && value.toString().trim() !== '') {
@@ -245,7 +232,7 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
     }
   }
   
-  // Tenta encontrar qualquer chave que contenha "solicita" (para o caso específico da solicitação)
+  // Busca específica para SOLICITAÇÃO
   const isSolicitacao = possibleNames.some(name => 
     name.toLowerCase().includes('solicita') || name.toLowerCase().includes('solic')
   );
@@ -253,6 +240,44 @@ function getColumnValue(item, possibleNames, defaultValue = '-') {
   if (isSolicitacao) {
     for (let key of keys) {
       if (key.toLowerCase().includes('solicita') || key.toLowerCase().includes('solic')) {
+        const value = item[key];
+        if (value !== undefined && value !== null && value.toString().trim() !== '') {
+          return value.toString().trim();
+        }
+      }
+    }
+  }
+  
+  // ================================================================
+  // CORREÇÃO: Busca específica para PRESTADOR
+  // ================================================================
+  const isPrestador = possibleNames.some(name => 
+    name.toLowerCase().includes('prestad')
+  );
+  
+  if (isPrestador) {
+    for (let key of keys) {
+      const keyLower = key.toLowerCase();
+      if (keyLower.includes('prestad') || keyLower.includes('prest')) {
+        const value = item[key];
+        if (value !== undefined && value !== null && value.toString().trim() !== '') {
+          return value.toString().trim();
+        }
+      }
+    }
+  }
+  
+  // ================================================================
+  // CORREÇÃO: Busca específica para CBO ESPECIALIDADE
+  // ================================================================
+  const isCbo = possibleNames.some(name => 
+    name.toLowerCase().includes('cbo') || name.toLowerCase().includes('especialidade')
+  );
+  
+  if (isCbo) {
+    for (let key of keys) {
+      const keyLower = key.toLowerCase();
+      if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
         const value = item[key];
         if (value !== undefined && value !== null && value.toString().trim() !== '') {
           return value.toString().trim();
@@ -273,7 +298,6 @@ function debugColumns() {
     console.log('Colunas disponíveis:', Object.keys(allData[0]));
     console.log('Valores completos:', allData[0]);
     
-    // Verifica especificamente a coluna de solicitação
     const solicitacaoKeys = Object.keys(allData[0]).filter(key => 
       key.toLowerCase().includes('solicita') || key.toLowerCase().includes('solic')
     );
@@ -479,7 +503,6 @@ async function loadData() {
     populateFilters();
     updateDashboard();
     
-    // Adiciona debug para verificar as colunas
     debugColumns();
 
   } catch (error) {
@@ -543,7 +566,7 @@ function showLoading(show) {
 }
 
 // ===================================
-// POPULAR FILTROS (COM CBO ESPECIALIDADE)
+// POPULAR FILTROS - CORRIGIDO
 // ===================================
 function populateFilters() {
   const distritos = [...new Set(allData.map(item => item['_distrito']))].filter(Boolean).sort();
@@ -554,11 +577,52 @@ function populateFilters() {
   renderMultiSelect('msUnidadePanel', unidades, applyFilters);
   setMultiSelectText('msUnidadeText', [], 'Todas');
 
-  const prestadores = [...new Set(allData.map(item => item['Prestador']))].filter(Boolean).sort();
+  // ================================================================
+  // CORREÇÃO: PRESTADOR - Busca mais abrangente
+  // ================================================================
+  const prestadoresSet = new Set();
+  allData.forEach(item => {
+    let prestador = item['Prestador'];
+    if (!prestador || prestador === '') {
+      for (let key of Object.keys(item)) {
+        if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            prestador = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    if (prestador && prestador !== '') {
+      prestadoresSet.add(prestador);
+    }
+  });
+  const prestadores = [...prestadoresSet].filter(Boolean).sort();
   renderMultiSelect('msPrestadorPanel', prestadores, applyFilters);
   setMultiSelectText('msPrestadorText', [], 'Todos');
 
-  const cboEspecialidades = [...new Set(allData.map(item => getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO'])))].filter(v => v && v !== '-').sort();
+  // ================================================================
+  // CORREÇÃO: CBO ESPECIALIDADE - Busca mais abrangente
+  // ================================================================
+  const cboSet = new Set();
+  allData.forEach(item => {
+    let cbo = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    if (!cbo || cbo === '' || cbo === '-') {
+      for (let key of Object.keys(item)) {
+        const keyLower = key.toLowerCase();
+        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            cbo = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    if (cbo && cbo !== '' && cbo !== '-') {
+      cboSet.add(cbo);
+    }
+  });
+  const cboEspecialidades = [...cboSet].filter(Boolean).sort();
   renderMultiSelect('msCboEspecialidadePanel', cboEspecialidades, applyFilters);
   setMultiSelectText('msCboEspecialidadeText', [], 'Todas');
 
@@ -605,6 +669,9 @@ function populateMonthFilter() {
   setMultiSelectText('msMesText', [], 'Todos os Meses');
 }
 
+// ===================================
+// APLICAR FILTROS - CORRIGIDO
+// ===================================
 function applyFilters() {
   const distritoSel = getSelectedFromPanel('msDistritoPanel');
   const unidadeSel = getSelectedFromPanel('msUnidadePanel');
@@ -623,9 +690,38 @@ function applyFilters() {
   filteredData = allData.filter(item => {
     const okDistrito = (distritoSel.length === 0) || distritoSel.includes(item['_distrito'] || '');
     const okUnidade = (unidadeSel.length === 0) || unidadeSel.includes(item['Unidade Solicitante'] || '');
-    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(item['Prestador'] || '');
+    
+    // ================================================================
+    // CORREÇÃO: PRESTADOR - Busca mais abrangente no filtro
+    // ================================================================
+    let prestadorVal = item['Prestador'];
+    if (!prestadorVal || prestadorVal === '') {
+      for (let key of Object.keys(item)) {
+        if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            prestadorVal = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    const okPrest = (prestadorSel.length === 0) || prestadorSel.includes(prestadorVal || '');
 
-    const cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    // ================================================================
+    // CORREÇÃO: CBO ESPECIALIDADE - Busca mais abrangente no filtro
+    // ================================================================
+    let cboValue = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    if (!cboValue || cboValue === '' || cboValue === '-') {
+      for (let key of Object.keys(item)) {
+        const keyLower = key.toLowerCase();
+        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            cboValue = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
     const okCbo = (cboEspecialidadeSel.length === 0) || cboEspecialidadeSel.includes(cboValue);
 
     const okStatus = (statusSel.length === 0) || statusSel.includes(item['Status'] || '');
@@ -702,7 +798,6 @@ function updateCards() {
     item['_tipo'] === 'PENDENTE' && hasUsuarioPreenchido(item)
   ).length;
 
-  //CONTA APENAS STATUS = "CANCELADO/VENCIMENTO DO PRAZO"
   const totalCanceladosVencimento = filteredComUsuario.filter(item =>
     isCanceladoPorVencimentoPrazo(item)
   ).length;
@@ -729,7 +824,7 @@ function updateCards() {
 }
 
 // ===================================
-// ATUALIZAR GRÁFICOS
+// ATUALIZAR GRÁFICOS - CORRIGIDO
 // ===================================
 function updateCharts() {
   // Pendências Não Resolvidas por Distrito
@@ -833,12 +928,25 @@ function updateCharts() {
   const evoValues = evoKeys.map(k => evoCount[k]);
   createEvolucaoTemporalChart('chartEvolucaoTemporal', evoLabels, evoValues);
 
-  // ESPECIALIDADES - TOP 10
+  // ================================================================
+  // CORREÇÃO: ESPECIALIDADES - Usando busca mais abrangente
+  // ================================================================
   const especialidadesCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    const especialidade = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
-    if (especialidade && especialidade !== '-') {
+    let especialidade = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    if (!especialidade || especialidade === '' || especialidade === '-') {
+      for (let key of Object.keys(item)) {
+        const keyLower = key.toLowerCase();
+        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            especialidade = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    if (especialidade && especialidade !== '' && especialidade !== '-') {
       especialidadesCount[especialidade] = (especialidadesCount[especialidade] || 0) + 1;
     }
   });
@@ -851,8 +959,19 @@ function updateCharts() {
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
     if (item['_tipo'] !== 'PENDENTE') return;
-    const especialidade = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
-    if (especialidade && especialidade !== '-') {
+    let especialidade = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+    if (!especialidade || especialidade === '' || especialidade === '-') {
+      for (let key of Object.keys(item)) {
+        const keyLower = key.toLowerCase();
+        if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            especialidade = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    if (especialidade && especialidade !== '' && especialidade !== '-') {
       especialidadesCountPendentes[especialidade] = (especialidadesCountPendentes[especialidade] || 0) + 1;
     }
   });
@@ -861,11 +980,24 @@ function updateCharts() {
   const especialidadesValuesPendentes = especialidadesLabelsPendentes.map(label => especialidadesCountPendentes[label]);
   createEspecialidadePendenteChart('chartEspecialidadesPendentes', especialidadesLabelsPendentes, especialidadesValuesPendentes);
 
-  // Prestadores
+  // ================================================================
+  // CORREÇÃO: PRESTADORES - Usando busca mais abrangente
+  // ================================================================
   const prestadoresCount = {};
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
-    const prestador = item['Prestador'] || 'Não informado';
+    let prestador = item['Prestador'];
+    if (!prestador || prestador === '') {
+      for (let key of Object.keys(item)) {
+        if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            prestador = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    prestador = prestador || 'Não informado';
     prestadoresCount[prestador] = (prestadoresCount[prestador] || 0) + 1;
   });
 
@@ -877,7 +1009,18 @@ function updateCharts() {
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
     if (item['_tipo'] !== 'PENDENTE') return;
-    const prestador = item['Prestador'] || 'Não informado';
+    let prestador = item['Prestador'];
+    if (!prestador || prestador === '') {
+      for (let key of Object.keys(item)) {
+        if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            prestador = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    prestador = prestador || 'Não informado';
     prestadoresCountPendentes[prestador] = (prestadoresCountPendentes[prestador] || 0) + 1;
   });
 
@@ -887,8 +1030,6 @@ function updateCharts() {
 
   createResolutividadePrestadorChart();
 
-  // Como statusLabels/statusValues não têm mais AGENDADO,
-  // o gráfico de rosca também fica sem a legenda AGENDADO.
   createPieChart('chartPizzaStatus', statusLabels, statusValues);
 
   // Pendências por mês
@@ -943,7 +1084,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#dc2626', // Vermelho similar à imagem
+        backgroundColor: '#dc2626',
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -951,7 +1092,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x', // ✅ BARRAS VERTICAIS
+      indexAxis: 'x',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -984,7 +1125,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // ✅ RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -994,7 +1135,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // ✅ NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2);
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -1006,7 +1147,7 @@ function createDistritoPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Pendências Resolvidas por Distrito (VERDE MAIS ESCURO)
+// GRÁFICO: Pendências Resolvidas por Distrito
 // ===================================
 function createDistritoResolvidasChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1020,7 +1161,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#059669', // VERDE ESCURO
+        backgroundColor: '#059669',
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1039,7 +1180,7 @@ function createDistritoResolvidasChart(canvasId, labels, data) {
         x: {
           ticks: {
             font: { size: 12, weight: 'bold' },
-            color: '#059669' // VERDE ESCURO
+            color: '#059669'
           },
           grid: { display: false },
           border: { display: false }
@@ -1097,7 +1238,7 @@ function createStatusChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#f97316', // LARANJA
+        backgroundColor: '#f97316',
         borderWidth: 0,
         borderRadius: 6,
         barPercentage: 0.7,
@@ -1105,7 +1246,7 @@ function createStatusChart(canvasId, labels, data) {
       }]
     },
     options: {
-      indexAxis: 'x', // BARRAS VERTICAIS
+      indexAxis: 'x',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -1138,7 +1279,7 @@ function createStatusChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 18px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1148,7 +1289,7 @@ function createStatusChart(canvasId, labels, data) {
           if (value <= 0) return;
           
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2);
           
           ctx.fillText(text, bar.x, yPos);
         });
@@ -1215,7 +1356,7 @@ function createEvolucaoTemporalChart(canvasId, labels, data) {
 }
 
 // ===================================
-// Total de Pendências por Mês (AZUL ESCURO, RÓTULOS BRANCOS NO MEIO)
+// Total de Pendências por Mês
 // ===================================
 function createPendenciasPorMesChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1229,7 +1370,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
       datasets: [{
         label: '',
         data,
-        backgroundColor: '#1e3a8a', // AZUL ESCURO
+        backgroundColor: '#1e3a8a',
         borderWidth: 0,
         borderRadius: 6
       }]
@@ -1262,7 +1403,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         if (!meta || !meta.data) return;
 
         ctx.save();
-        ctx.fillStyle = '#ffffff'; // RÓTULOS BRANCOS
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1270,7 +1411,7 @@ function createPendenciasPorMesChart(canvasId, labels, data) {
         meta.data.forEach((bar, i) => {
           const value = dataset.data[i];
           const text = `${value}`;
-          const yPos = bar.y + (bar.height / 2); // NO MEIO DA BARRA
+          const yPos = bar.y + (bar.height / 2);
           ctx.fillText(text, bar.x, yPos);
         });
 
@@ -1660,7 +1801,7 @@ function createResolutividadeDistritoChart() {
 }
 
 // ===================================
-// GRÁFICO: Resolutividade por Prestador
+// GRÁFICO: Resolutividade por Prestador - CORRIGIDO
 // ===================================
 function createResolutividadePrestadorChart() {
   const ctx = document.getElementById('chartResolutividadePrestador');
@@ -1670,7 +1811,19 @@ function createResolutividadePrestadorChart() {
   filteredData.forEach(item => {
     if (!hasUsuarioPreenchido(item)) return;
 
-    const prestador = item['Prestador'] || 'Não informado';
+    let prestador = item['Prestador'];
+    if (!prestador || prestador === '') {
+      for (let key of Object.keys(item)) {
+        if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+          if (item[key] && item[key].toString().trim() !== '') {
+            prestador = item[key].toString().trim();
+            break;
+          }
+        }
+      }
+    }
+    prestador = prestador || 'Não informado';
+    
     if (!prestadorStats[prestador]) prestadorStats[prestador] = { total: 0, resolvidos: 0 };
 
     prestadorStats[prestador].total++;
@@ -1935,7 +2088,7 @@ function downloadExcel() {
 }
 
 // ===================================
-// ✅ TABELA (NOVA LÓGICA DESTAQUE AMARELO - FALTAM 4 DIAS)
+// TABELA
 // ===================================
 function updateDemandasTable() {
   const baseItems = filteredData.filter(item => hasUsuarioPreenchido(item));
@@ -1976,7 +2129,6 @@ function updateDemandasTable() {
       origem: item['_origem'] || '-',
 
       numeroSolicitacao: (() => {
-        // Tenta encontrar o valor da solicitação com a função melhorada
         const valor = getColumnValue(item, [
           'Solicitação',
           'SOLICITAÇÃO',
@@ -1992,12 +2144,10 @@ function updateDemandasTable() {
           'Solic'
         ], '-');
         
-        // Se encontrou um valor diferente de '-', retorna ele
         if (valor !== '-') {
           return valor;
         }
         
-        // Se não encontrou, tenta buscar qualquer coluna que contenha "solicita"
         const keys = Object.keys(item);
         for (let key of keys) {
           if (key.toLowerCase().includes('solicita')) {
@@ -2021,11 +2171,38 @@ function updateDemandasTable() {
 
       prontuario: getColumnValue(item, ['Nº Prontuário', 'Numero Prontuário'], '-'),
 
-      prestador: getColumnValue(item, ['Prestador'], '-'),
+      prestador: (() => {
+        let prestador = item['Prestador'];
+        if (!prestador || prestador === '') {
+          for (let key of Object.keys(item)) {
+            if (key.toLowerCase().includes('prestad') || key.toLowerCase().includes('prest')) {
+              if (item[key] && item[key].toString().trim() !== '') {
+                prestador = item[key].toString().trim();
+                break;
+              }
+            }
+          }
+        }
+        return prestador || '-';
+      })(),
 
       unidadeSolicitante: getColumnValue(item, ['Unidade Solicitante'], '-'),
 
-      cboEspecialidade: getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade'], '-'),
+      cboEspecialidade: (() => {
+        let cbo = getColumnValue(item, ['Cbo Especialidade', 'CBO Especialidade', 'CBO', 'Especialidade', 'Especialidade CBO']);
+        if (!cbo || cbo === '' || cbo === '-') {
+          for (let key of Object.keys(item)) {
+            const keyLower = key.toLowerCase();
+            if (keyLower.includes('cbo') || keyLower.includes('especialidade') || keyLower.includes('espec')) {
+              if (item[key] && item[key].toString().trim() !== '') {
+                cbo = item[key].toString().trim();
+                break;
+              }
+            }
+          }
+        }
+        return cbo || '-';
+      })(),
 
       dataInicioPendencia: formatDate(dataInicioPendencia),
 
@@ -2076,8 +2253,6 @@ function updateDemandasTable() {
   pageRows.forEach(r => {
     const tr = document.createElement('tr');
 
-    // ✅ NOVA LÓGICA DESTAQUE AMARELO:
-    // Somente aba PENDÊNCIAS + Usuário preenchido + faltam 4 dias ou menos para prazo 30
     if (
       r._item['_tipo'] === 'PENDENTE' &&
       r._prazo30Data
