@@ -409,7 +409,7 @@ body {
 .ms-item span{ font-size: 0.95rem; color: var(--cinza-800); }
 
 /* ===================================
-   GRÁFICOS
+   GRÁFICOS - AJUSTADOS PARA ALINHAMENTO
 =================================== */
 .chart-box-full {
   background: var(--branco);
@@ -418,12 +418,6 @@ body {
   box-shadow: var(--sombra-md);
   margin-bottom: 2rem;
   border: 3px solid var(--azul-escuro);
-}
-
-.chart-wrapper-distrito {
-  position: relative;
-  height: 380px;
-  min-height: 350px;
 }
 
 .charts-container-resolutividade {
@@ -451,15 +445,90 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--azul-escuro);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
   border-bottom: 2px solid var(--cinza-200);
 }
 
-.chart-wrapper, .chart-wrapper-pizza {
+/* ===================================
+   CHART WRAPPERS - TODOS COM A MESMA ALTURA PADRÃO
+=================================== */
+.chart-wrapper {
   position: relative;
-  height: 380px;
-  min-height: 350px;
+  height: 420px;
+  min-height: 380px;
+}
+
+.chart-wrapper-large {
+  position: relative;
+  height: 420px;
+  min-height: 380px;
+}
+
+.chart-wrapper-pizza {
+  position: relative;
+  height: 420px;
+  min-height: 380px;
+}
+
+.chart-wrapper-distrito {
+  position: relative;
+  height: 420px;
+  min-height: 380px;
+}
+
+.chart-wrapper-horizontal {
+  position: relative;
+  height: 420px;
+  min-height: 380px;
+}
+
+/* ===================================
+   RESPONSIVIDADE DOS GRÁFICOS
+=================================== */
+@media (max-width: 1400px) {
+  .cards-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 1200px) {
+  .charts-container { grid-template-columns: 1fr; }
+  .charts-container-resolutividade { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .paineis-distrito-grid { grid-template-columns: repeat(2, 1fr); }
+  
+  .chart-wrapper,
+  .chart-wrapper-large,
+  .chart-wrapper-pizza,
+  .chart-wrapper-distrito,
+  .chart-wrapper-horizontal {
+    height: 380px;
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-title { font-size: 1.8rem; }
+  .header-subtitle { font-size: 0.95rem; }
+  .header-credits { font-size: 0.75rem; }
+
+  .container { padding: 0 1rem; }
+  .top-actions { flex-direction: column; gap: 1rem; }
+  .action-buttons { width: 100%; flex-direction: column; }
+  .btn { width: 100%; justify-content: center; }
+
+  .cards-grid { grid-template-columns: 1fr; }
+  .filters-grid { grid-template-columns: 1fr; }
+
+  .chart-wrapper,
+  .chart-wrapper-large,
+  .chart-wrapper-pizza,
+  .chart-wrapper-distrito,
+  .chart-wrapper-horizontal {
+    height: 340px;
+    min-height: 300px;
+  }
+
+  .paineis-distrito-grid { grid-template-columns: 1fr; }
 }
 
 /* ===================================
@@ -675,38 +744,8 @@ body {
 }
 
 /* ===================================
-   RESPONSIVIDADE
+   ANIMAÇÕES
 =================================== */
-@media (max-width: 1400px) {
-  .cards-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 1200px) {
-  .charts-container { grid-template-columns: 1fr; }
-  .charts-container-resolutividade { grid-template-columns: 1fr; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); }
-  .paineis-distrito-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .header-title { font-size: 1.8rem; }
-  .header-subtitle { font-size: 0.95rem; }
-  .header-credits { font-size: 0.75rem; }
-
-  .container { padding: 0 1rem; }
-  .top-actions { flex-direction: column; gap: 1rem; }
-  .action-buttons { width: 100%; flex-direction: column; }
-  .btn { width: 100%; justify-content: center; }
-
-  .cards-grid { grid-template-columns: 1fr; }
-  .filters-grid { grid-template-columns: 1fr; }
-
-  .chart-wrapper, .chart-wrapper-pizza { height: 350px; }
-  .chart-wrapper-distrito { height: 320px; }
-
-  .paineis-distrito-grid { grid-template-columns: 1fr; }
-}
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -717,13 +756,3 @@ body {
 }
 
 html { scroll-behavior: smooth; }
-
-/* =========================================================
-    REMOÇÃO DAS GRADES
-========================================================= */
-/* Remove grids dos gráficos específicos via CSS */
-#chartResolutividadeDistrito,
-#chartResolutividadePrestador,
-#chartEvolucaoTemporal {
-  /* Força a remoção de qualquer grid que possa aparecer */
-}
