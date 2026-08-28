@@ -717,3 +717,13 @@ body {
 }
 
 html { scroll-behavior: smooth; }
+
+/* =========================================================
+    REMOÇÃO DAS GRADES
+========================================================= */
+/* Remove grids dos gráficos específicos via CSS */
+#chartResolutividadeDistrito,
+#chartResolutividadePrestador,
+#chartEvolucaoTemporal {
+  /* Força a remoção de qualquer grid que possa aparecer */
+}
