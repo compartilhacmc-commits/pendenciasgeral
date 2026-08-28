@@ -1160,7 +1160,7 @@ function createStatusChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Evolução Temporal
+// GRÁFICO: Evolução Temporal (COM VALORES NAS BOLINHAS E SEM GRID)
 // ===================================
 function createEvolucaoTemporalChart(canvasId, labels, data) {
   const ctx = document.getElementById(canvasId);
@@ -1179,7 +1179,7 @@ function createEvolucaoTemporalChart(canvasId, labels, data) {
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointRadius: 5,
+        pointRadius: 6,
         pointBackgroundColor: '#3b82f6',
         pointBorderColor: '#ffffff',
         pointBorderWidth: 2
@@ -1202,15 +1202,46 @@ function createEvolucaoTemporalChart(canvasId, labels, data) {
       scales: {
         x: {
           ticks: { font: { size: 12 }, color: '#4a5568' },
-          grid: { display: false }
+          grid: { display: false } // ✅ REMOVE GRADE
         },
         y: {
           beginAtZero: true,
           ticks: { font: { size: 12 }, color: '#4a5568' },
-          grid: { color: 'rgba(0,0,0,0.06)' }
+          grid: { display: false } // ✅ REMOVE GRADE
         }
       }
-    }
+    },
+    plugins: [{
+      id: 'evolucaoTemporalLabels',
+      afterDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        meta.data.forEach((point, i) => {
+          const value = dataset.data[i];
+          if (value <= 0) return;
+
+          const x = point.x;
+          const y = point.y - 10; // ACIMA DA BOLINHA
+
+          // Fundo branco para melhor legibilidade
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = '#1e3a8a';
+          ctx.shadowColor = 'transparent';
+          ctx.fillText(`${value}`, x, y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
@@ -1577,7 +1608,7 @@ function createPrestadorPendenteChart(canvasId, labels, data) {
 }
 
 // ===================================
-// GRÁFICO: Resolutividade por Distrito
+// GRÁFICO: Resolutividade por Distrito (COM VALORES NO MEIO DAS BARRAS E SEM GRID)
 // ===================================
 function createResolutividadeDistritoChart() {
   const ctx = document.getElementById('chartResolutividadeDistrito');
@@ -1651,16 +1682,45 @@ function createResolutividadeDistritoChart() {
             color: '#4a5568',
             callback: function(value) { return value + '%'; }
           },
-          grid: { color: 'rgba(0,0,0,0.06)' }
+          grid: { display: false } // ✅ REMOVE GRADE
         },
-        y: { ticks: { font: { size: 12, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
+        y: { 
+          ticks: { font: { size: 12, weight: 'bold' }, color: '#059669' }, 
+          grid: { display: false } // ✅ REMOVE GRADE
+        }
       }
-    }
+    },
+    plugins: [{
+      id: 'resolutividadeDistritoInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          if (value <= 0) return;
+          
+          const text = `${value}%`;
+          const xPos = bar.x - 8; // ✅ POSIÇÃO FIXA NO MEIO DA BARRA
+          ctx.fillText(text, xPos, bar.y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
 // ===================================
-// GRÁFICO: Resolutividade por Prestador
+// GRÁFICO: Resolutividade por Prestador (COM VALORES NO MEIO DAS BARRAS E SEM GRID)
 // ===================================
 function createResolutividadePrestadorChart() {
   const ctx = document.getElementById('chartResolutividadePrestador');
@@ -1737,11 +1797,40 @@ function createResolutividadePrestadorChart() {
             color: '#4a5568',
             callback: function(value) { return value + '%'; }
           },
-          grid: { color: 'rgba(0,0,0,0.06)' }
+          grid: { display: false } // ✅ REMOVE GRADE
         },
-        y: { ticks: { font: { size: 12, weight: 'bold' }, color: '#059669' }, grid: { display: false } }
+        y: { 
+          ticks: { font: { size: 12, weight: 'bold' }, color: '#059669' }, 
+          grid: { display: false } // ✅ REMOVE GRADE
+        }
       }
-    }
+    },
+    plugins: [{
+      id: 'resolutividadePrestadorInsideLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const dataset = chart.data.datasets[0];
+        if (!meta || !meta.data) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((bar, i) => {
+          const value = dataset.data[i];
+          if (value <= 0) return;
+          
+          const text = `${value}%`;
+          const xPos = bar.x - 8; // ✅ POSIÇÃO FIXA NO MEIO DA BARRA
+          ctx.fillText(text, xPos, bar.y);
+        });
+
+        ctx.restore();
+      }
+    }]
   });
 }
 
